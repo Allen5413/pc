@@ -7,6 +7,7 @@ import com.allen.util.StringUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -46,8 +47,12 @@ public class FindUserDao extends BaseQueryDao {
         String fields = "u";
         String[] tableNames = {"User u"};
         Map<String, Object> paramsMap = new HashMap<String, Object>();
+        LinkedHashMap<String, Object> paramsMap2 = new LinkedHashMap<String, Object>();
         paramsMap.put("loginName",loginName);
         paramsMap.put("pwd", pwd);
+        paramsMap2.put("loginName",loginName);
+        paramsMap2.put("pwd",pwd);
+        paramsMap2.put("state",0);
         String[] paramsIf = {"=", "="};
         return (User) super.findByHql(tableNames, fields, paramsMap, paramsIf, null, User.class);
     }
