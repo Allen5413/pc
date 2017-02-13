@@ -13,5 +13,5 @@
 <%--</body>--%>
 <%--</html>--%>
 <script>
-  app.alert("出错啦1212：${errorMsg}", 1);
+  app.alert("666669999翻了的砖家：${errorMsg}", 1);
 </script>
