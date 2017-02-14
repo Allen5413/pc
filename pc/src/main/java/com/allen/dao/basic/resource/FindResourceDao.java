@@ -4,7 +4,7 @@ import com.allen.dao.BaseQueryDao;
 import com.allen.entity.basic.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +34,7 @@ public class FindResourceDao extends BaseQueryDao {
     public Resource findByNameAndMenuId(String name, long menuId)throws Exception{
         String fields = "r";
         String[] tableNames = {"Resource r"};
-        Map<String, Object> paramsMap = new HashMap<String, Object>();
+        LinkedHashMap<String, Object> paramsMap = new LinkedHashMap<String, Object>();
         paramsMap.put("name",name);
         paramsMap.put("menuId", menuId);
         String[] paramsIf = {"=", "="};

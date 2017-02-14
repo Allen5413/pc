@@ -27,7 +27,7 @@ public class FindUserDao extends BaseQueryDao {
     public PageInfo findPage(PageInfo pageInfo, String name, Integer state)throws Exception{
         String[] tableNames = {"User"};
         String defaultWhere = "state > 0";
-        Map<String, Object> paramsMap = new HashMap<String, Object>(2);
+        LinkedHashMap<String, Object> paramsMap = new LinkedHashMap<String, Object>(2);
         paramsMap.put("name", StringUtil.isEmpty(name) ? "" : "%"+name+"%");
         paramsMap.put("state", state);
         Map<String, Boolean> sortMap = new HashMap<String, Boolean>(1);
@@ -46,14 +46,11 @@ public class FindUserDao extends BaseQueryDao {
     public User findByLoginNameAndPwd(String loginName, String pwd)throws Exception{
         String fields = "u";
         String[] tableNames = {"User u"};
-        Map<String, Object> paramsMap = new HashMap<String, Object>();
-        LinkedHashMap<String, Object> paramsMap2 = new LinkedHashMap<String, Object>();
+        LinkedHashMap<String, Object> paramsMap = new LinkedHashMap<String, Object>();
         paramsMap.put("loginName",loginName);
-        paramsMap.put("pwd", pwd);
-        paramsMap2.put("loginName",loginName);
-        paramsMap2.put("pwd",pwd);
-        paramsMap2.put("state",0);
-        String[] paramsIf = {"=", "="};
+        paramsMap.put("pwd",pwd);
+        paramsMap.put("state",0);
+        String[] paramsIf = {"=", "=", ">"};
         return (User) super.findByHql(tableNames, fields, paramsMap, paramsIf, null, User.class);
     }
 }
