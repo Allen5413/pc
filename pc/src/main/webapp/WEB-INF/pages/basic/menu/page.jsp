@@ -54,7 +54,7 @@
 <script>
   function edit(id){
     var url = '${pageContext.request.contextPath}/editMenu/open.html?id='+id;
-    app.openDialog(url, '编辑菜单', 600, 0.4, function(index){
+    app.openDialog(url, '编辑菜单', 450, 280, function(index){
       var name = $("#edit_name").val().trim();
       if(name == ""){
         app.msg("请输入名称", 1);
@@ -65,7 +65,7 @@
   }
 
   function add(){
-    app.openDialog("${pageContext.request.contextPath}/addMenu/open.html", "新增菜单", 600, 0.4, function(index){
+    app.openDialog("${pageContext.request.contextPath}/addMenu/open.html", "新增菜单", 450, 280, function(index){
       app.add("${pageContext.request.contextPath}/addMenu/add.json", $('#addForm').serialize(), index);
     });
   }

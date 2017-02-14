@@ -7,6 +7,9 @@ import com.allen.entity.basic.Resource;
 import com.allen.service.basic.resource.EditResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Created by Allen on 2016/12/22 0022.
@@ -20,7 +23,8 @@ public class EditResourceServiceImpl implements EditResourceService {
     private FindResourceDao findResourceDao;
 
     @Override
-    public void edit(Resource resource) throws Exception {
+    @Transactional
+    public void edit(Resource resource, List<Resource> buttons) throws Exception {
         Resource resourceByName = findResourceDao.findByNameAndMenuId(resource.getName(), resource.getMenuId());
         if(null != resourceByName && resourceByName.getId() != resource.getId()){
             throw new BusinessException("名称已存在！");
@@ -33,5 +37,30 @@ public class EditResourceServiceImpl implements EditResourceService {
         oldResource.setOperateTime(resource.getOperateTime());
         oldResource.setVersion(resource.getVersion());
         resourceDao.save(oldResource);
+        //查找原有buttons
+        List<Resource> oldButtons = findResourceDao.findButtonsByResourceId(resource.getId());
+        for(Resource button : buttons){
+            if(button.getId()==0){//保存
+                resourceDao.save(button);
+                continue;
+            }
+        }
+        for (Resource oldButton:oldButtons){
+            boolean hasButton = false;
+            for(Resource button : buttons){
+                if(button.getId()==oldButton.getId()){
+                    hasButton = true;
+                    oldButton.setName(button.getName());
+                    oldButton.setButtonCode(button.getButtonCode());
+                    oldButton.setOperator(button.getOperator());
+                    oldButton.setOperateTime(button.getOperateTime());
+                    resourceDao.save(oldButton);
+                    break;
+                }
+            }
+            if(!hasButton){
+                resourceDao.delete(oldButton);
+            }
+        }
     }
 }

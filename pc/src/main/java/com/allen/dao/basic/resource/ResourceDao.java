@@ -18,4 +18,6 @@ public interface ResourceDao extends CrudRepository<Resource, Long> {
      */
     @Query("select r from Resource r, UserGroupResource ugr, UserGroupUser ugu where r.id = ugr.resourceId and ugr.userGroupId = ugu.userGroupId and ugu.userId = ?1")
     public List<Resource> findByUserId(long userId);
+
+    public List<Resource> findByParentId(long parentId);
 }
