@@ -9,6 +9,7 @@ import com.allen.service.basic.menu.FindMenuByIdService;
 import com.allen.service.basic.resource.FindResourceByUserIdService;
 import com.allen.service.user.user.LoginUserService;
 import com.allen.util.DateUtil;
+import com.allen.util.MD5Util;
 import com.allen.util.UserUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,7 +47,7 @@ public class LoginController {
                             @RequestParam("pwd")String pwd,
                             HttpServletRequest request)throws Exception{
         JSONObject jsonObject = new JSONObject();
-        User user = loginUserService.login(loginName, pwd);
+        User user = loginUserService.login(loginName, MD5Util.MD5(pwd));
         if(null != user){
             this.setSession(request, user.getId(), user.getLoginName(), user.getName());
             jsonObject.put("state", 0);
