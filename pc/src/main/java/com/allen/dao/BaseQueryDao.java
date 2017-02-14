@@ -236,7 +236,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
         return pageInfo;
     }
 
-    public PageInfo findPageByJpal(PageInfo pageInfo, String fields, String[] tableNames, Map<String, Object> paramsMap, String[] paramsIf, Map<String, Boolean> sortMap)throws Exception{
+    public PageInfo findPageByJpal(PageInfo pageInfo, String fields, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List paramsList = new ArrayList();
         String sql = new String("select "+fields+" from ");
         for(int i=0; i<tableNames.length; i++){
@@ -265,7 +265,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
         return pageInfo;
     }
 
-    public PageInfo findPageByJpal(PageInfo pageInfo, String[] tableNames, Map<String, Object> paramsMap, String[] paramsIf, Map<String, Boolean> sortMap)throws Exception{
+    public PageInfo findPageByJpal(PageInfo pageInfo, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List paramsList = new ArrayList();
         String sql = new String("from ");
         for(int i=0; i<tableNames.length; i++){

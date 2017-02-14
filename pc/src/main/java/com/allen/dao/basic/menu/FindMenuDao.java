@@ -23,8 +23,7 @@ public class FindMenuDao extends BaseQueryDao{
      */
     public PageInfo findPage(PageInfo pageInfo, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         String[] tableNames = {"Menu"};
-        String[] paramsIf = {"like"};
-        return super.findPageByJpal(pageInfo, tableNames, paramsMap, paramsIf, sortMap);
+        return super.findPageByJpal(pageInfo, tableNames, paramsMap, sortMap);
     }
 
     /**
