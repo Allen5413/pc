@@ -22,8 +22,7 @@ public class FindResourceDao extends BaseQueryDao {
     public List<Resource> findByMenuId(Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         String fields = "r";
         String[] tableNames = {"Resource r"};
-        String[] paramsIf = {"="};
-        return  super.findListByHql(tableNames, fields, paramsMap, paramsIf, sortMap, Resource.class);
+        return  super.findListByHql(tableNames, fields, paramsMap, sortMap, Resource.class);
     }
 
     /**
@@ -37,7 +36,6 @@ public class FindResourceDao extends BaseQueryDao {
         LinkedHashMap<String, Object> paramsMap = new LinkedHashMap<String, Object>();
         paramsMap.put("name",name);
         paramsMap.put("menuId", menuId);
-        String[] paramsIf = {"=", "="};
-        return (Resource) super.findByHql(tableNames, fields, paramsMap, paramsIf, null, Resource.class);
+        return (Resource) super.findByHql(tableNames, fields, paramsMap, null, Resource.class);
     }
 }

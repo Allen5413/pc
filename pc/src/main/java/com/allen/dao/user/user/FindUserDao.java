@@ -28,12 +28,11 @@ public class FindUserDao extends BaseQueryDao {
         String[] tableNames = {"User"};
         String defaultWhere = "state > 0";
         LinkedHashMap<String, Object> paramsMap = new LinkedHashMap<String, Object>(2);
-        paramsMap.put("name", StringUtil.isEmpty(name) ? "" : "%"+name+"%");
+        paramsMap.put("name",new Object[]{StringUtil.isEmpty(name) ? "" : "%"+name+"%","like"});
         paramsMap.put("state", state);
         Map<String, Boolean> sortMap = new HashMap<String, Boolean>(1);
         sortMap.put("id", true);
-        String[] paramsIf = {">", "like", "="};
-        return super.findPageByJpal(pageInfo, tableNames, defaultWhere, paramsMap, paramsIf, sortMap);
+        return super.findPageByJpal(pageInfo, tableNames, defaultWhere, paramsMap, sortMap);
     }
 
     /**
@@ -49,8 +48,7 @@ public class FindUserDao extends BaseQueryDao {
         LinkedHashMap<String, Object> paramsMap = new LinkedHashMap<String, Object>();
         paramsMap.put("loginName",loginName);
         paramsMap.put("pwd",pwd);
-        paramsMap.put("state",0);
-        String[] paramsIf = {"=", "=", ">"};
-        return (User) super.findByHql(tableNames, fields, paramsMap, paramsIf, null, User.class);
+        paramsMap.put("state",new Object[]{0,">"});
+        return (User) super.findByHql(tableNames, fields, paramsMap, null, User.class);
     }
 }

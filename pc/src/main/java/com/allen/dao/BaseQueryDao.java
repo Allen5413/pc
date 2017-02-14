@@ -197,7 +197,17 @@ public class BaseQueryDao extends JapDynamicQueryDao {
         return sb.toString();
     }
 
-    public PageInfo findPageByNativeSql(PageInfo pageInfo, String fields, String[] tableNames, Map<String, Object> paramsMap, String[] paramsIf, Map<String, Boolean> sortMap)throws Exception{
+    /**
+     * 功能：根据原声sql 分页查询
+     * @param pageInfo 分页信息
+     * @param fields 查询字段名称
+     * @param tableNames 数据库表名称
+     * @param paramsMap 参数对象
+     * @param sortMap 排序方式
+     * @return
+     * @throws Exception
+     */
+    public PageInfo findPageByNativeSql(PageInfo pageInfo, String fields, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List<Object> paramsList = new ArrayList<Object>();
         String sql = new String("from ");
         for(int i=0; i<tableNames.length; i++){
@@ -209,17 +219,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
             }
         }
         sql += "where 1=1 ";
-        if(null != paramsMap && 0 < paramsMap.size()){
-            int num= 0;
-            for (Object key : paramsMap.keySet()) {
-                Object value = paramsMap.get(key);
-                if(null != value && !StringUtil.isEmpty(value.toString())) {
-                    sql += "and " + key + " " + paramsIf[num] + " ? ";
-                    paramsList.add(value);
-                }
-                num++;
-            }
-        }
+        sql = getParamListVal(sql,paramsMap,paramsList);
         if(null != sortMap) {
             sql += "order by ";
             int i = 0;
@@ -248,17 +248,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
             }
         }
         sql += "where 1=1 ";
-        if(null != paramsMap && 0 < paramsMap.size()){
-            int num= 0;
-            for (Object key : paramsMap.keySet()) {
-                Object value = paramsMap.get(key);
-                if(null != value && !StringUtil.isEmpty(value.toString())) {
-                    sql += "and " + key + " " + paramsIf[num] + " ? ";
-                    paramsList.add(value);
-                }
-                num++;
-            }
-        }
+        sql = getParamListVal(sql,paramsMap,paramsList);
         if(null != sortMap) {
             sql += "order by ";
             int i = 0;
@@ -287,17 +277,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
             }
         }
         sql += "where 1=1 ";
-        if(null != paramsMap && 0 < paramsMap.size()){
-            int num= 0;
-            for (Object key : paramsMap.keySet()) {
-                Object value = paramsMap.get(key);
-                if(null != value && !StringUtil.isEmpty(value.toString())) {
-                    sql += "and " + key + " " + paramsIf[num] + " ? ";
-                    paramsList.add(value);
-                }
-                num++;
-            }
-        }
+        sql = getParamListVal(sql,paramsMap,paramsList);
         if(null != sortMap) {
             sql += "order by ";
             int i = 0;
@@ -314,7 +294,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
         return pageInfo;
     }
 
-    public PageInfo findPageByJpal(PageInfo pageInfo, String[] tableNames, String defaultWhere, Map<String, Object> paramsMap, String[] paramsIf, Map<String, Boolean> sortMap)throws Exception{
+    public PageInfo findPageByJpal(PageInfo pageInfo, String[] tableNames, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List paramsList = new ArrayList();
         String sql = new String("from ");
         for(int i=0; i<tableNames.length; i++){
@@ -326,17 +306,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
             }
         }
         sql += " where "+defaultWhere+" ";
-        if(null != paramsMap && 0 < paramsMap.size()){
-            int num= 0;
-            for (Object key : paramsMap.keySet()) {
-                Object value = paramsMap.get(key);
-                if(null != value && !StringUtil.isEmpty(value.toString())) {
-                    sql += "and " + key + " " + paramsIf[num] + " ? ";
-                    paramsList.add(value);
-                }
-                num++;
-            }
-        }
+        sql = getParamListVal(sql,paramsMap,paramsList)+" ";
         if(null != sortMap) {
             sql += "order by ";
             int i = 0;
@@ -353,7 +323,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
         return pageInfo;
     }
 
-    public List findListByHql(String[] tableNames, String fields, Map<String, Object> paramsMap, String[] paramsIf, Map<String, Boolean> sortMap, Class returnClass){
+    public List findListByHql(String[] tableNames, String fields, Map<String, Object> paramsMap, Map<String, Boolean> sortMap, Class returnClass){
         List paramsList = new ArrayList();
         String sql = new String("select "+fields+" from ");
         for(int i=0; i<tableNames.length; i++){
@@ -365,17 +335,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
             }
         }
         sql += "where 1=1 ";
-        if(null != paramsMap && 0 < paramsMap.size()){
-            int num= 0;
-            for (Object key : paramsMap.keySet()) {
-                Object value = paramsMap.get(key);
-                if(null != value && !StringUtil.isEmpty(value.toString())) {
-                    sql += "and " + key + paramsIf[num] + " ? ";
-                    paramsList.add(value);
-                }
-                num++;
-            }
-        }
+        sql = getParamListVal(sql,paramsMap,paramsList);
         if(null != sortMap) {
             sql += "order by ";
             int i = 0;
@@ -391,12 +351,32 @@ public class BaseQueryDao extends JapDynamicQueryDao {
         return this.sqlQueryByHql(sql, returnClass, paramsList.toArray());
     }
 
-    public Object findByHql(String[] tableNames, String fields, Map<String, Object> paramsMap, String[] paramsIf, Map<String, Boolean> sortMap, Class returnClass){
-        List list =  this.findListByHql(tableNames, fields, paramsMap, paramsIf, sortMap, returnClass);
+    public Object findByHql(String[] tableNames, String fields, Map<String, Object> paramsMap,Map<String, Boolean> sortMap, Class returnClass){
+        List list =  this.findListByHql(tableNames, fields, paramsMap, sortMap, returnClass);
         if(null != list && 0 < list.size()){
             return list.get(0);
         }else{
             return  null;
         }
+    }
+    private String getParamListVal(String sql,Map<String,Object> paramsMap,List<Object> paramsList){
+        if(null != paramsMap && 0 < paramsMap.size()){
+            for (Object key : paramsMap.keySet()) {
+                Object value = paramsMap.get(key);
+                if(null != value&&!StringUtil.isEmpty(value.toString())) {
+                    if(value.getClass().isArray()){
+                        if (StringUtil.isEmpty(((Object[])value)[0].toString())){
+                            continue;
+                        }
+                        sql += "and " + key + " " + ((Object[])value)[1] + " ? ";
+                        paramsList.add(((Object[])value)[0]);
+                        continue;
+                    }
+                    sql += "and " + key + " = ? ";
+                    paramsList.add(value);
+                }
+            }
+        }
+        return  sql;
     }
 }

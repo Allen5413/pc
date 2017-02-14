@@ -39,7 +39,7 @@
 </table>
 <script>
   function addResource(){
-    app.openDialog('${pageContext.request.contextPath}/addResource/open.html?menuId=${param.menuId}', '新增资源', 700, 0.5, function(index){
+    app.openDialog('${pageContext.request.contextPath}/addResource/open.html?menuId=${param.menuId}', '新增资源', 500, 0.7, function(index){
       var name = $("#add_name").val().trim();
       var url = $("#add_url").val().trim();
       if(name == ""){
@@ -50,6 +50,38 @@
         app.msg("请输入url", 1);
         return false;
       }
+      var buttonsArr = [];
+      var buttonNameArr = {};
+      var buttonCodeArr = {};
+      var flag = false;
+      //获取按钮信息
+      $("input[name^='button_code']").each(function(){
+          var buttonIndex = $(this).attr('name').replace('button_code','');
+          var buttonName = $("input[name='button_name"+buttonIndex+"']").val().trim();
+          if(buttonName == ""){
+              return true;
+          }
+          if(buttonNameArr[buttonName]){
+              flag = true;
+              return false;
+          }
+          buttonNameArr[buttonName] = true;
+          var buttonCode = $(this).val().trim();
+          if(buttonCode == ""){
+              return true;
+          }
+          if(buttonCodeArr[buttonCode]){
+              flag = true;
+              return false;
+          }
+          buttonCodeArr[buttonName] = true;
+          buttonsArr.push(buttonName+"!_!"+buttonCode);
+      });
+      if(flag){
+          app.msg("按钮名称或编码重复", 1);
+          return false;
+      }
+      $('#buttons').val(buttonsArr.join("!!"));
       $.ajax({
         cache: true,
         type: "POST",

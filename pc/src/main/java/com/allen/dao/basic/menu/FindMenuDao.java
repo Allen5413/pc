@@ -36,7 +36,6 @@ public class FindMenuDao extends BaseQueryDao{
     public Menu findByName(Map<String, Object> paramsMap)throws Exception{
         String fields = "m";
         String[] tableNames = {"Menu m"};
-        String[] paramsIf = {"="};
-        return (Menu) super.findByHql(tableNames, fields, paramsMap, paramsIf, null, Menu.class);
+        return (Menu) super.findByHql(tableNames, fields, paramsMap, null, Menu.class);
     }
 }

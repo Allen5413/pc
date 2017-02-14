@@ -9,6 +9,9 @@ import java.util.Date;
 @Entity
 @Table(name = "resource")
 public class Resource {
+    public static final int MENU = 1;     //删除
+    public static final int BUTTON = 2;     //启用
+
     @Id
     @GeneratedValue
     private long id;
@@ -20,6 +23,9 @@ public class Resource {
     private Date createTime = new Date();
     private String operator;
     private Date operateTime = new Date();
+    private long parentId=0;//上级资源id
+    private int isButton = MENU;//1菜单 2按钮
+    private String buttonCode="";//按钮编码
     @Version
     private int version;
 
@@ -101,5 +107,29 @@ public class Resource {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(long parentId) {
+        this.parentId = parentId;
+    }
+
+    public int getIsButton() {
+        return isButton;
+    }
+
+    public void setIsButton(int isButton) {
+        this.isButton = isButton;
+    }
+
+    public String getButtonCode() {
+        return buttonCode;
+    }
+
+    public void setButtonCode(String buttonCode) {
+        this.buttonCode = buttonCode;
     }
 }

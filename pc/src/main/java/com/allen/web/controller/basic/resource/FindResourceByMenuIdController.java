@@ -10,6 +10,7 @@ import com.allen.entity.basic.Resource;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,8 +27,9 @@ public class FindResourceByMenuIdController extends BaseController {
     @RequestMapping(value = "open")
     public String open(@RequestParam("menuId") long menuId,
                        HttpServletRequest request) throws Exception {
-        Map<String, Object> paramsMap = new HashMap<String, Object>(1);
+        Map<String, Object> paramsMap = new LinkedHashMap<String, Object>(2);
         paramsMap.put("menuId", menuId);
+        paramsMap.put("isButton", Resource.MENU);
         Map<String, Boolean> sortMap = new HashMap<String, Boolean>(1);
         sortMap.put("id", true);
         List<Resource> resourceList = findResourceByMenuIdService.find(paramsMap, sortMap);
