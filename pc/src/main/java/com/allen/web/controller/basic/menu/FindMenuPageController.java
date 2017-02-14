@@ -26,7 +26,7 @@ public class FindMenuPageController extends BaseController {
     public String find(@RequestParam(value="name", required=false, defaultValue="") String name,
                                   HttpServletRequest request) throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("name", StringUtil.isEmpty(name.trim()) ? "" : "%"+name.trim()+"%");
+        params.put("name", new Object[]{StringUtil.isEmpty(name) ? "" : "%"+name+"%","like"});
         PageInfo pageInfo = super.getPageInfo(request);
         Map<String, Boolean> sortMap = new HashMap<String, Boolean>();
         sortMap.put("id", true);
