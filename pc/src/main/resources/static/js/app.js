@@ -664,7 +664,7 @@ App.prototype.edit = function(url, params, index){
  */
 App.prototype.del = function(confirmStr, url, params, btnObj){
     app.confirm(confirmStr, function(){
-        if(typeof (btnObj) == "undefined") {
+        if(typeof (btnObj) != "undefined") {
             $(btnObj).button('loading');
         }
         setTimeout(function(){
@@ -679,7 +679,7 @@ App.prototype.del = function(confirmStr, url, params, btnObj){
                         $("#searchBtn").click();
                     }else {
                         app.msg(data.msg, 1);
-                        if(typeof (btnObj) == "undefined") {
+                        if(typeof (btnObj) != "undefined") {
                             $(btnObj).button('reset');
                         }
                     }

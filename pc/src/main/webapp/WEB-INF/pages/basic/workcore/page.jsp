@@ -11,6 +11,13 @@
   <input type="text" id="code" name="code" value="${param.code}" />&nbsp;&nbsp;&nbsp;&nbsp;
   <label >名称：</label>
   <input type="text" id="name" name="name" value="${param.name}" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <label >是否公用：</label>
+  <select id="isPublic" name="isPublic" onchange="app.changeSelect(this)">
+    <option value=""></option>
+    <option value="null">全部</option>
+    <option value="1" <c:if test="${param.isPublic eq '1'}">selected="selected" </c:if> >是</option>
+    <option value="0" <c:if test="${param.isPublic eq '2'}">selected="selected" </c:if> >否</option>
+  </select>
 
   <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
           data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
@@ -26,9 +33,10 @@
   </tr>
   <tr class="am-primary">
     <th style="width: 5%;">序号</th>
-    <th style="width: 30%;">编号</th>
-    <th style="width: 30%;">名称</th>
-    <th style="width: 7%;">操作人</th>
+    <th style="width: 15%;">编号</th>
+    <th style="width: 20%;">名称</th>
+    <th style="width: 15%;">是否公用</th>
+    <th style="width: 10%;">操作人</th>
     <th style="width: 15%;">操作时间</th>
     <th>操作</th>
   </tr>
@@ -42,12 +50,13 @@
       <td align="center">${status.index+1}</td>
       <td>${workCore.code}</td>
       <td>${workCore.name}</td>
+      <td>${workCore.isPublicStr}</td>
       <td>${workCore.operator}</td>
       <td><fmt:formatDate value="${workCore.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
-        <a class="am-badge am-badge-success am-radius am-text-lg" onClick="openResource(${workCore.id})"><span class="am-icon-cog"></span> 关联资源</a>
+        <a class="am-badge am-badge-success am-radius am-text-lg" onClick="openResource(${workCore.id})"><span class="am-icon-cog"></span> 关联工作组</a>
         <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${workCore.id})"><span class="am-icon-edit"></span> 修改</a>
-        <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${workCore.id}, this)"><span class="am-icon-trash-o"></span> 删除</a>
+        <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${workCore.id})"><span class="am-icon-trash-o"></span> 删除</a>
       </td>
     </tr>
   </c:forEach>
@@ -56,25 +65,40 @@
 <script>
 
   function edit(id){
-    var url = '${pageContext.request.contextPath}/editMenu/open.html?id='+id;
-    app.openDialog(url, '编辑菜单', 600, 0.4, function(index){
+    var url = '${pageContext.request.contextPath}/editWorkCore/open.html?id='+id;
+    app.openDialog(url, '编辑工作中心', 600, 260, function(index){
+      var code = $("#edit_code").val().trim();
       var name = $("#edit_name").val().trim();
+      if(code == ""){
+        app.msg("请输入编号", 1);
+        return;
+      }
       if(name == ""){
         app.msg("请输入名称", 1);
         return;
       }
-      app.edit("${pageContext.request.contextPath}/editMenu/editor.json", $('#editForm').serialize(), index);
+      app.edit("${pageContext.request.contextPath}/editWorkCore/editor.json", $('#editForm').serialize(), index);
     });
   }
 
   function add(){
     app.openDialog("${pageContext.request.contextPath}/addWorkCore/open.html", "新增工作中心", 600, 260, function(index){
+      var code = $("#add_code").val().trim();
+      var name = $("#add_name").val().trim();
+      if(code == ""){
+        app.msg("请输入编号", 1);
+        return;
+      }
+      if(name == ""){
+        app.msg("请输入名称", 1);
+        return;
+      }
       app.add("${pageContext.request.contextPath}/addWorkCore/add.json", $('#addForm').serialize(), index);
     });
   }
 
-  function del(id, btnObj){
-    app.del("您确定要删除该菜单信息？", "${pageContext.request.contextPath}/delMenu/del.json", {"id":id}, btnObj);
+  function del(id){
+    app.del("您确定要删除该工作中心信息？", "${pageContext.request.contextPath}/delWorkCore/del.json", {"id":id});
   }
 
   function openResource(id){

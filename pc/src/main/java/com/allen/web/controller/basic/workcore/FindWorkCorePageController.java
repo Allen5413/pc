@@ -23,12 +23,14 @@ public class FindWorkCorePageController extends BaseController {
     private FindWorkCorePageService findWorkCorePageService;
 
     @RequestMapping(value = "find")
-    public String find(@RequestParam(value="name", required=false, defaultValue="") String name,
-                       @RequestParam(value="code", required=false, defaultValue="") String code,
+    public String find(@RequestParam(value="name", required=false) String name,
+                       @RequestParam(value="code", required=false) String code,
+                       @RequestParam(value="isPublic", required=false) Integer isPublic,
                                   HttpServletRequest request) throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("code", code);
         params.put("name", new Object[]{StringUtil.isEmpty(name) ? "" : "%"+name+"%", "like"});
+        params.put("isPublic", isPublic);
         PageInfo pageInfo = super.getPageInfo(request);
         Map<String, Boolean> sortMap = new HashMap<String, Boolean>();
         sortMap.put("id", true);

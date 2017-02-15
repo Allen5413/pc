@@ -29,6 +29,8 @@ public class WorkCore {
     private Date createTime = new Date();
     private String operator;
     private Date operateTime = new Date();
+    @Transient
+    private String isPublicStr;
 
     public long getId() {
         return id;
@@ -92,5 +94,20 @@ public class WorkCore {
 
     public void setOperateTime(Date operateTime) {
         this.operateTime = operateTime;
+    }
+
+    public String getIsPublicStr() {
+        switch (this.getIsPublic()){
+            case 1:
+                this.isPublicStr = "是";
+                break;
+            case 0:
+                this.isPublicStr = "否";
+                break;
+            default:
+                this.isPublicStr = "未知";
+                break;
+        }
+        return isPublicStr;
     }
 }
