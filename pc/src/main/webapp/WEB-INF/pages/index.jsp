@@ -60,7 +60,7 @@
         </a>
         <ul class="am-dropdown-content">
           <li><a href="#" onclick="openEditPwd()"><span class="am-icon-cog"></span> 修改密码</a></li>
-          <li><a href="${pageContext.request.contextPath}/logoutUser/logou.htm"><span class="am-icon-power-off"></span> 退出</a></li>
+          <li><a href="${pageContext.request.contextPath}/logout.html"><span class="am-icon-power-off"></span> 退出</a></li>
         </ul>
       </li>
     </ul>
