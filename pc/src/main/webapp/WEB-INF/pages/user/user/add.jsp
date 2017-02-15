@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
          pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<form class="am-form" id="addResourceForm" name="addResourceForm" method="post">
-  <input type="hidden" name="menuId" value="${param.menuId}" />
+<form class="am-form" id="addForm" name="addForm" method="post">
   <div class="am-g am-margin-top">
     <div class="am-u-sm-3 am-text-right"><label >登录名：</label></div>
     <div class="am-u-sm-4">
@@ -30,9 +29,9 @@
   <div class="am-g am-margin-top">
     <div class="am-u-sm-3 am-text-right"><label >状态：</label></div>
     <div class="am-u-sm-4">
-      <div class="am-btn-group" data-am-button="">
-        <label class="am-btn am-btn-primary am-btn-s">
-          <input type="radio" name="state" value="1"> 启用
+      <div class="am-btn-group doc-js-btn-1" data-am-button>
+        <label class="am-btn am-btn-primary am-btn-s am-active">
+          <input type="radio" name="state" value="1" checked> 启用
         </label>
         <label class="am-btn am-btn-primary am-btn-s">
           <input type="radio" name="state" value="2"> 停用

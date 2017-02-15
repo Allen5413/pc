@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 新增资源
+ * 新增用户
  * Created by Allen on 2015/4/28.
  */
 @Controller
@@ -29,7 +29,7 @@ public class AddUserController extends BaseController {
     private AddUserService addUserService;
 
     /**
-     * 打开新增资源页面
+     * 打开新增用户页面
      * @return
      */
     @RequestMapping(value = "open")
@@ -38,7 +38,7 @@ public class AddUserController extends BaseController {
     }
 
     /**
-     * 新增资源
+     * 新增用户
      * @param request
      * @return
      */

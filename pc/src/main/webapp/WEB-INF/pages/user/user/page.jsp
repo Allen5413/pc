@@ -78,7 +78,7 @@
   }
 
   function add(){
-    app.openDialog("${pageContext.request.contextPath}/addUser/open.html", "新增用户", 600, 0.4, function(index){
+    app.openDialog("${pageContext.request.contextPath}/addUser/open.html", "新增用户", 600, 450, function(index){
       app.add("${pageContext.request.contextPath}/addUser/add.json", $('#addForm').serialize(), index);
     });
   }
