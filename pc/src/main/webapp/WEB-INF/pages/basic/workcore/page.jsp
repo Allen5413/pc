@@ -33,9 +33,9 @@
   </tr>
   <tr class="am-primary">
     <th style="width: 5%;">序号</th>
-    <th style="width: 15%;">编号</th>
+    <th style="width: 10%;">编号</th>
     <th style="width: 20%;">名称</th>
-    <th style="width: 15%;">是否公用</th>
+    <th style="width: 10%;">是否公用</th>
     <th style="width: 10%;">操作人</th>
     <th style="width: 15%;">操作时间</th>
     <th>操作</th>
@@ -102,8 +102,8 @@
   }
 
   function setWorkGroupCore(id){
-    app.openDialog('${pageContext.request.contextPath}/setWorkGroupCore/open.html?wcId='+id, '关联工作组', 800, 600, function(index){
-
+    app.openDialog('${pageContext.request.contextPath}/setWorkGroupCoreForWcId/open.html?wcId='+id, '关联工作组', 800, 600, function(index){
+      app.add("${pageContext.request.contextPath}/setWorkGroupCoreForWcId/set.json", $('#setForm').serialize(), index);
     });
   }
 </script>

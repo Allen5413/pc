@@ -44,7 +44,7 @@
       <td>${workGroup.operator}</td>
       <td><fmt:formatDate value="${workGroup.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
-        <a class="am-badge am-badge-success am-radius am-text-lg" onClick="openResource(${workGroup.id})"><span class="am-icon-cog"></span> 关联工作中心</a>
+        <a class="am-badge am-badge-success am-radius am-text-lg" onClick="setWorkGroupCore(${workGroup.id})"><span class="am-icon-cog"></span> 关联工作中心</a>
         <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${workGroup.id})"><span class="am-icon-edit"></span> 修改</a>
         <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${workGroup.id})"><span class="am-icon-trash-o"></span> 删除</a>
       </td>
@@ -91,7 +91,9 @@
     app.del("您确定要删除该工作组信息？", "${pageContext.request.contextPath}/delWorkGroup/del.json", {"id":id});
   }
 
-  function openResource(id){
-    app.openOneBtnDialog('${pageContext.request.contextPath}/findResourceByMenuId/open.html?menuId='+id, '关联资源', 1200, 0.8);
+  function setWorkGroupCore(id){
+    app.openDialog('${pageContext.request.contextPath}/setWorkGroupCoreForWgId/open.html?wgId='+id, '关联工作中心', 800, 600, function(index){
+      app.add("${pageContext.request.contextPath}/setWorkGroupCoreForWgId/set.json", $('#setForm').serialize(), index);
+    });
   }
 </script>

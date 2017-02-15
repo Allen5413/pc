@@ -2,6 +2,8 @@ package com.allen.web.controller.basic.workgroupcore;
 
 import com.alibaba.fastjson.JSONObject;
 import com.allen.service.basic.workgroup.FindWorkGroupAndWorkCoreIdByWorkCoreIdService;
+import com.allen.service.basic.workgroupcore.SetWorkGroupCoreService;
+import com.allen.util.UserUtil;
 import com.allen.web.controller.BaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +18,13 @@ import java.util.List;
  * Created by Allen on 2016/12/22 0022.
  */
 @Controller
-@RequestMapping("/setWorkGroupCore")
-public class SetWorkGroupCoreController extends BaseController {
+@RequestMapping("/setWorkGroupCoreForWcId")
+public class SetWorkGroupCoreForWcIdController extends BaseController {
 
     @Resource
     private FindWorkGroupAndWorkCoreIdByWorkCoreIdService findWorkGroupAndWorkCoreIdByWorkCoreIdService;
+    @Resource
+    private SetWorkGroupCoreService setWorkGroupCoreService;
 
     /**
      * @return
@@ -46,9 +50,9 @@ public class SetWorkGroupCoreController extends BaseController {
     @ResponseBody
     public JSONObject set(HttpServletRequest request,
                           @RequestParam("wcId")long wcId,
-                          @RequestParam("wgIds")String wgIds) throws Exception {
+                          @RequestParam(value = "wgIds", required = false)Long[] wgIds) throws Exception {
         JSONObject jsonObject = new JSONObject();
-
+        setWorkGroupCoreService.setForCore(wcId, wgIds, UserUtil.getLoginUserForName(request));
         jsonObject.put("state", 0);
         return jsonObject;
     }
