@@ -54,7 +54,7 @@
       <td>${workCore.operator}</td>
       <td><fmt:formatDate value="${workCore.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
-        <a class="am-badge am-badge-success am-radius am-text-lg" onClick="openResource(${workCore.id})"><span class="am-icon-cog"></span> 关联工作组</a>
+        <a class="am-badge am-badge-success am-radius am-text-lg" onClick="setWorkGroupCore(${workCore.id})"><span class="am-icon-cog"></span> 关联工作组</a>
         <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${workCore.id})"><span class="am-icon-edit"></span> 修改</a>
         <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${workCore.id})"><span class="am-icon-trash-o"></span> 删除</a>
       </td>
@@ -101,7 +101,9 @@
     app.del("您确定要删除该工作中心信息？", "${pageContext.request.contextPath}/delWorkCore/del.json", {"id":id});
   }
 
-  function openResource(id){
-    app.openOneBtnDialog('${pageContext.request.contextPath}/findResourceByMenuId/open.html?menuId='+id, '关联资源', 1200, 0.8);
+  function setWorkGroupCore(id){
+    app.openDialog('${pageContext.request.contextPath}/setWorkGroupCore/open.html?wcId='+id, '关联工作组', 800, 600, function(index){
+
+    });
   }
 </script>
