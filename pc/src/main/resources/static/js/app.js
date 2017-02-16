@@ -598,6 +598,66 @@ App.prototype.add = function(url, params, index,callBack){
 }
 
 /**
+ * 常用的新增数据的操作
+ * @param url
+ * @param params
+ * @param btnId
+ * @param callBack
+ */
+App.prototype.addAjax = function(url,params,btnId,callBack){
+    $("#"+btnId).button('loading');
+    $.ajax({
+        cache: true,
+        type: "POST",
+        url:url,
+        data:params,
+        async: false,
+        success: function(data) {
+            $("#"+btnId).button('reset');
+            if(data.state == 0){
+                app.msg('提交成功', 0);
+                if(callBack){
+                    callBack(data.data);
+                }
+            }else{
+                app.msg(data.msg, 1);
+            }
+        },
+        error:function(data){
+            $("#"+btnId).button('reset');
+            app.msg('服务器异常', 0);
+        }
+    });
+}
+/**
+ * 常用的新增数据的操作
+ * @param url
+ * @param params
+ * @param isShow
+ * @param callBack
+ */
+App.prototype.getAjaxData = function(url,params,isShow,callBack){
+    $.ajax({
+        cache: true,
+        type: "POST",
+        url:url,
+        data:params,
+        async: false,
+        success: function(data) {
+            if(data.state == 0){
+                if(callBack){
+                    callBack(data.data);
+                }
+            }else{
+                app.msg(data.msg, 1);
+            }
+        },
+        error:function(data){
+            app.msg('服务器异常', 0);
+        }
+    });
+}
+/**
  * 新增有文件上传的数据操作
  * @param url
  * @param formId

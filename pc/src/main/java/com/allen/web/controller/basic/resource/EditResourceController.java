@@ -74,6 +74,7 @@ public class EditResourceController extends BaseController {
                     buttonResource.setId(Long.parseLong(buttonInfo[2]));
                     buttonResource.setParentId(resource.getId());
                     buttonResource.setIsButton(Resource.BUTTON);
+                    buttonResource.setMenuId(resource.getMenuId());
                     buttonList.add(buttonResource);
                 }
             }
