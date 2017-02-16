@@ -7,7 +7,7 @@
 </head>
 <script type="text/javascript">
   function openEditPwd(){
-    app.openDialog('${pageContext.request.contextPath}/editPwd/open.html', '修改密码', 500, 0.3, function(index){
+    app.openDialog('${pageContext.request.contextPath}/editPwd/open.html', '修改密码', 500, 300, function(index){
       var oldPwd = $("#oldPwd").val();
       var newPwd = $("#newPwd").val();
       var newPwdAgain = $("#newPwdAgain").val();
