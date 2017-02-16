@@ -30,9 +30,11 @@ public class AddResourceServiceImpl implements AddResourceService {
             throw new BusinessException("名称已存在！");
         }
         resource = resourceDao.save(resource);
-        for (Resource button:buttons){
-            button.setParentId(resource.getId());
-            resourceDao.save(button);
+        if(buttons!=null){
+            for (Resource button:buttons){
+                button.setParentId(resource.getId());
+                resourceDao.save(button);
+            }
         }
     }
 }

@@ -572,7 +572,7 @@ App.prototype.selectProv = function(provSel, spotSelId, contextPath){
  * @param width
  * @param height
  */
-App.prototype.add = function(url, params, index){
+App.prototype.add = function(url, params, index,callBack){
     $.ajax({
         cache: true,
         type: "POST",
@@ -585,7 +585,11 @@ App.prototype.add = function(url, params, index){
                 if(typeof(index) != "undefined") {
                     layer.close(index);
                 }
-                $("#searchBtn").click();
+                if(callBack){
+                    callBack(data.data);
+                }else{
+                    $("#searchBtn").click();
+                }
             }else{
                 app.msg(data.msg, 1);
             }

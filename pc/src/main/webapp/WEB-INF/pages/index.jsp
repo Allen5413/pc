@@ -99,12 +99,12 @@
       </ul>
       <span class="am-icon-remove" style="margin-top:-26px; float:right"> <a href="#" onclick="app.removeTab()">关闭</a></span>
 
-      <div class="am-tabs-bd" style="height:1110px; min-height:1110px; overflow-y:auto;">
+      <div class="am-tabs-bd" style="height:100%; overflow-y:auto;">
         <div class="am-tab-panel am-fade am-in am-active" id="contentPage">
           欢迎使用Allen的后台管理系统
         </div>
       </div>
-      <footer data-am-widget="footer" class="am-footer am-footer-default" data-am-footer="{  }">
+      <footer data-am-widget="footer" class="am-footer am-footer-default no-padding" style="padding: 0 !important;" data-am-footer="{  }">
         <div class="am-footer-miscs ">
           <p class="browsehappy">如果你样式有问题，可能是你正在使用<strong>过时</strong>的浏览器，UI 不支持。 请 <a href="http://browsehappy.com/" target="_blank">升级浏览器</a>
             以获得更好的体验！</p>
@@ -114,4 +114,9 @@
   </div>
 </div>
 </body>
+<script type="application/javascript">
+  $(function(){
+      $('.am-tabs-bd').height($(window).height()-$('.am-footer').height()-$('.admin-header').height()-35);
+  });
+</script>
 </html>

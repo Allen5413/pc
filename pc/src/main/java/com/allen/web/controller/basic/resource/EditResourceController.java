@@ -59,10 +59,9 @@ public class EditResourceController extends BaseController {
         if(null != resource) {
             resource.setOperator(UserUtil.getLoginUserForName(request));
             resource.setOperateTime(DateUtil.getLongNowTime());
-            List<Resource> buttonList = null;
+            List<Resource> buttonList = buttonList = new ArrayList<Resource>();
             if(!StringUtil.isEmpty(buttons)){//获取资源按钮信息
                 String[] buttonArr = buttons.split("!!");
-                buttonList = new ArrayList<Resource>();
                 Resource buttonResource = null;
                 for (String str:buttonArr){
                     buttonResource = new Resource();
