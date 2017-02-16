@@ -7,7 +7,7 @@
 </head>
 <script type="text/javascript">
   function openEditPwd(){
-    app.openDialog('${pageContext.request.contextPath}/editPwd/openEditUserPwdPage.htm', '修改密码', 500, 0.3, function(index){
+    app.openDialog('${pageContext.request.contextPath}/editPwd/open.html', '修改密码', 500, 0.3, function(index){
       var oldPwd = $("#oldPwd").val();
       var newPwd = $("#newPwd").val();
       var newPwdAgain = $("#newPwdAgain").val();
@@ -23,21 +23,7 @@
         app.msg("新密码不一致", 1);
         return;
       }
-      $.ajax({
-        cache: true,
-        type: "POST",
-        url:"${pageContext.request.contextPath}/editPwd/pwdEdit.htm",
-        data:$('#editPwdForm').serialize(),
-        async: false,
-        success: function(data) {
-          if(data.state == 0){
-            app.msg('提交成功', 0);
-            layer.close(index);
-          }else{
-            alert(data.msg);
-          }
-        }
-      });
+      app.edit("${pageContext.request.contextPath}/editPwd/editor.json", $('#editForm').serialize(), index);
     });
   }
 </script>

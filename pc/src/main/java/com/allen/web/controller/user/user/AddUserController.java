@@ -1,9 +1,7 @@
 package com.allen.web.controller.user.user;
 
 import com.alibaba.fastjson.JSONObject;
-import com.allen.entity.basic.Resource;
 import com.allen.entity.user.User;
-import com.allen.service.basic.resource.AddResourceService;
 import com.allen.service.user.user.AddUserService;
 import com.allen.util.UserUtil;
 import com.allen.web.controller.BaseController;
