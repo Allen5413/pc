@@ -29,7 +29,7 @@
 var app = new App();
 function App(){
     /*用来存储每个url对应的页面html代码，用去切换tab的时候保存之前请求的结果*/
-    this.pageHtmlJSON = {"indexmain":"欢迎使用教材系统"};
+    this.pageHtmlJSON = {"index":"欢迎使用教材系统"};
 }
 
 App.prototype.clickMenu = function(id){

@@ -10,7 +10,8 @@ $skinList:[
 	{name:"blue",charset:"gb2312"},
 	{name:"green",charset:"gb2312"},
 	{name:"ext",charset:"gb2312"},
-	{name:"blueFresh",charset:"gb2312"}
+	{name:"blueFresh",charset:"gb2312"},
+	{name:"twoer",charset:"gb2312"}
 ],
 $wdate:true,
 $crossFrame:true,
@@ -22,7 +23,7 @@ autoUpdateOnChanged:null,
 weekMethod:"ISO8601",
 position:{},
 lang:"auto",
-skin:"default",
+skin:"twoer",
 dateFmt:"yyyy-MM-dd",
 realDateFmt:"yyyy-MM-dd",
 realTimeFmt:"HH:mm:ss",
