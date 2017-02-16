@@ -32,7 +32,7 @@ public class EditCustomerController extends BaseController {
      * @return
      */
     @RequestMapping(value = "open")
-    public String openEditMenuPage(@RequestParam("id") long id, HttpServletRequest request) throws Exception {
+    public String open(@RequestParam("id") long id, HttpServletRequest request) throws Exception {
         Customer customer = findCustomerByIdService.find(id);
         request.setAttribute("customer", customer);
         return "basic/customer/edit";

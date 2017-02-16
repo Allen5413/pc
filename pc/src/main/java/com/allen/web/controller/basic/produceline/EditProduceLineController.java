@@ -1,9 +1,9 @@
-package com.allen.web.controller.basic.producttype;
+package com.allen.web.controller.basic.produceline;
 
 import com.alibaba.fastjson.JSONObject;
-import com.allen.entity.basic.ProductType;
-import com.allen.service.basic.producttype.EditProductTypeService;
-import com.allen.service.basic.producttype.FindProductTypeByIdService;
+import com.allen.entity.basic.ProduceLine;
+import com.allen.service.basic.produceline.EditProduceLineService;
+import com.allen.service.basic.produceline.FindProduceLineByIdService;
 import com.allen.util.DateUtil;
 import com.allen.util.UserUtil;
 import com.allen.web.controller.BaseController;
@@ -19,13 +19,13 @@ import javax.servlet.http.HttpServletRequest;
  * Created by Allen on 2015/4/28.
  */
 @Controller
-@RequestMapping(value = "/editProductType")
-public class EditProductTypeController extends BaseController {
+@RequestMapping(value = "/editProduceLine")
+public class EditProduceLineController extends BaseController {
 
     @Resource
-    private EditProductTypeService editProductTypeService;
+    private EditProduceLineService editProduceLineService;
     @Resource
-    private FindProductTypeByIdService findProductTypeByIdService;
+    private FindProduceLineByIdService findProduceLineByIdService;
 
     /**
      * 打开
@@ -33,9 +33,9 @@ public class EditProductTypeController extends BaseController {
      */
     @RequestMapping(value = "open")
     public String open(@RequestParam("id") long id, HttpServletRequest request) throws Exception {
-        ProductType productType = findProductTypeByIdService.find(id);
-        request.setAttribute("productType", productType);
-        return "basic/producttype/edit";
+        ProduceLine produceLine = findProduceLineByIdService.find(id);
+        request.setAttribute("produceLine", produceLine);
+        return "basic/produceline/edit";
     }
 
     /**
@@ -45,12 +45,12 @@ public class EditProductTypeController extends BaseController {
      */
     @RequestMapping(value = "editor")
     @ResponseBody
-    public JSONObject editor(HttpServletRequest request, ProductType productType)throws Exception{
+    public JSONObject editor(HttpServletRequest request, ProduceLine produceLine)throws Exception{
         JSONObject jsonObject = new JSONObject();
-        if(null != productType) {
-            productType.setOperator(UserUtil.getLoginUserForName(request));
-            productType.setOperateTime(DateUtil.getLongNowTime());
-            editProductTypeService.edit(productType);
+        if(null != produceLine) {
+            produceLine.setOperator(UserUtil.getLoginUserForName(request));
+            produceLine.setOperateTime(DateUtil.getLongNowTime());
+            editProduceLineService.edit(produceLine);
         }
         jsonObject.put("state", 0);
         return jsonObject;

@@ -32,7 +32,7 @@ public class EditWorkGroupController extends BaseController {
      * @return
      */
     @RequestMapping(value = "open")
-    public String openEditMenuPage(@RequestParam("id") long id, HttpServletRequest request) throws Exception {
+    public String open(@RequestParam("id") long id, HttpServletRequest request) throws Exception {
         WorkGroup workGroup = findWorkGroupByIdService.find(id);
         request.setAttribute("workGroup", workGroup);
         return "basic/workgroup/edit";

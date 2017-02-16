@@ -33,7 +33,7 @@ public class EditWorkCoreController extends BaseController {
      * @return
      */
     @RequestMapping(value = "open")
-    public String openEditMenuPage(@RequestParam("id") long id, HttpServletRequest request) throws Exception {
+    public String open(@RequestParam("id") long id, HttpServletRequest request) throws Exception {
         WorkCore workCore = findWorkCoreByIdService.find(id);
         request.setAttribute("workCore", workCore);
         return "basic/workcore/edit";
