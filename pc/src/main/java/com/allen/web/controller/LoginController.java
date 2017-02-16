@@ -57,7 +57,7 @@ public class LoginController {
         return jsonObject;
     }
 
-    @RequestMapping("/index")
+    @RequestMapping("/openIndex")
     public String index(HttpServletRequest request){
         //获取当前年月日星期
         String year = DateUtil.getThisYear();

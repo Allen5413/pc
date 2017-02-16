@@ -36,7 +36,7 @@
         data:params,
         success:function(data){
           if(data.state == "0"){
-            location.href = "${pageContext.request.contextPath}/index.html";
+            location.href = "${pageContext.request.contextPath}/openIndex.html";
           }else {
             $("#msg").html(data.msg);
           }
