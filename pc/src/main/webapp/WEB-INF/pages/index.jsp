@@ -64,9 +64,11 @@
           </a>
           <ul class="am-list am-collapse admin-sidebar-sub" id="menu_${status.index}" style="padding-left:0px;">
             <c:forEach var="resource" items="${menu.value}" varStatus="status2">
-              <li style="background-color:#f9f9f9">
-                <a href="#" style="color:#19a7f0;" onclick="app.addTab('${pageContext.request.contextPath}${resource.url}', '${resource.name}', ${status.index}, ${status2.index}, 0)"><span class="am-icon-table" style="padding-left:14px;"></span> ${resource.name}</a>
-              </li>
+              <c:if test="${resource.isButton==1}">
+                  <li style="background-color:#f9f9f9">
+                    <a href="#" style="color:#19a7f0;" onclick="app.addTab('${pageContext.request.contextPath}${resource.url}?resourceId=${resource.id}', '${resource.name}', ${status.index}, ${status2.index}, 0)"><span class="am-icon-table" style="padding-left:14px;"></span> ${resource.name}</a>
+                  </li>
+              </c:if>
             </c:forEach>
           </ul>
         </li>

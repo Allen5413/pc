@@ -21,6 +21,12 @@ public class LoginInterceptor implements HandlerInterceptor {
         // 只有返回true才会继续向下执行，返回false取消当前请求
         boolean flag = false;
         String url = request.getRequestURL().toString();
+        String resourceId = request.getParameter("resourceId");
+        //获取resourceId
+        if(StringUtil.isEmpty(resourceId)){
+            resourceId = "0";
+        }
+        request.setAttribute("resourceId",resourceId);
         for (String s : IGNORE_URI) {
             if (url.contains(s)) {
                 flag = true;

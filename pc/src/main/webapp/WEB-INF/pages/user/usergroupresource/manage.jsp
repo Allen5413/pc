@@ -1,16 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
          pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="my" uri="/WEB-INF/permission.tld" %>
 <div id="userGourpResourceManage">
   <div class="am-panel am-panel-primary no-margin-bottom" style="width:30%;float: left;">
     <div class="am-panel-hd am-cf">角色信息</div>
     <div id="with" class="am-in" style="overflow-y:auto;">
       <table id="userGroupTable" class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
-        <tr>
-          <td colspan="2" style="background-color:#FFF">
-            <button class="am-btn am-btn-primary am-btn-sm" id="addUserGroup" type="button"><span class="am-icon-plus"></span>添加</button>
-          </td>
-        </tr>
+        <c:if test="${my:isPermission(requestScope.resourceId,'addRole',sessionScope.menuMap)}">
+          <tr>
+            <td colspan="2" style="background-color:#FFF">
+              <button class="am-btn am-btn-primary am-btn-sm" id="addUserGroup" type="button"><span class="am-icon-plus"></span>添加</button>
+            </td>
+          </tr>
+        </c:if>
         <tr class="am-primary">
           <th style="width: 20%;">序号</th>
           <th style="width: 80%;">名称</th>
@@ -26,7 +29,12 @@
   </div>
   <div class="am-panel am-panel-primary no-margin-bottom" style="width:69%; float: left;margin-left: 10px;">
     <div class="am-panel-hd am-cf">菜单信息</div>
-    <div id="notWith" class="am-in" style="overflow-y:auto;">
+    <div id="notWith" class="am-in">
+        <div style="background-color: #fFF;width: 100%;padding: 0.7rem;border-bottom: solid 1px #ddd;">
+          <button class="am-btn am-btn-primary am-btn-sm btn-loading-example" id="saveUserGroupResource" type="button"
+                  data-am-loading="{spinner: 'circle-o-notch', loadingText: '保存中...'}">
+            <span class="am-icon-save"></span>保存</button>
+        </div>
         <ul id="resourceTree" class="ztree"></ul>
     </div>
   </div>
@@ -35,6 +43,8 @@
  $(function(){
     $('#userGourpResourceManage .am-in').height( $('.am-tabs-bd').height()-65);
     var userGroupResourceManager={
+        userGroupId:-1,
+        userGroupResourceTree:null,
         addUserGroup:function(){
             app.openDialog("${pageContext.request.contextPath}/addUserGroup/open.html", "新增角色", 400, 300, function(index){
                 var name = $("#add_name").val().trim();
@@ -54,45 +64,66 @@
             $('#userGroupTable tbody').append(rowVal);
         },
         changeUserGroup:function(userGroupId){
-
+            this.userGroupId = userGroupId;
+            userGroupResourceManager.userGroupResourceTree.checkAllNodes(false);
+            app.getAjaxData('${pageContext.request.contextPath}/findResourceByGroupId/find.json',
+                    {'userGroupId':this.userGroupId},false,this.reCheckedTree)
+        },
+        loadMenuTree:function(){
+            //初始化资源树
+            var setting = {
+              check: {
+                enable: true
+              },
+              data: {
+                simpleData: {
+                    enable: true
+                    }
+                }
+            };
+            this.userGroupResourceTree = $.fn.zTree.init($("#resourceTree"), setting, ${resourceTree});
+        },
+        addUserGroupResource:function(){
+            if(this.userGroupId==-1){
+                app.msg("请选择角色信息", 1);
+                return false;
+            }
+            var selectIds = this.userGroupResourceTree.getCheckedNodes(true);
+            var idsArr = [];
+            $.each(selectIds,function(i,val){
+                if(val.id>0){
+                    idsArr.push(val.id);
+                }
+            });
+            app.addAjax('${pageContext.request.contextPath}/addUserGroupResource/add.json',
+                    {'userGroupId':this.userGroupId,'sourceIds':idsArr.join(',')},'saveUserGroupResource');
+        },
+        reCheckedTree:function(data){
+            if(data){
+                var treeNode = null;
+               $.each(data,function(i,val){
+                       console.log(val);
+                   treeNode= userGroupResourceManager.userGroupResourceTree.getNodeByParam('id',val.resourceId,null);
+                   userGroupResourceManager.userGroupResourceTree.checkNode(treeNode,true,true);
+               });
+            }
         }
     };
     $('#addUserGroup').on('click',function(){
         userGroupResourceManager.addUserGroup();
     });
-   $('#userGroupTable').on('click','tr',function(){
+     $('#saveUserGroupResource').on('click',function(){
+           userGroupResourceManager.addUserGroupResource();
+     });
+   $('#userGroupTable').on('dblclick','tr',function(){
         var userGroupId = $(this).attr('data-id');
         if(userGroupId){
-            userGroupResourceManager.changeUserGroup(userGroupId);
+            if(userGroupResourceManager.userGroupId!=userGroupId){
+                userGroupResourceManager.changeUserGroup(userGroupId);
+            }
+            userGroupResourceManager.userGroupId = userGroupId;
         }
     });
-   //初始化资源树
-     var setting = {
-             check: {
-                 enable: true
-             },
-             data: {
-                 simpleData: {
-                     enable: true
-                 }
-             }
-     };
-
-     var zNodes =[
-                 { id:1, pId:0, name:"can check 1", open:true},
-                 { id:11, pId:1, name:"can check 1-1", open:true},
-                 { id:111, pId:11, name:"can check 1-1-1"},
-                 { id:112, pId:11, name:"can check 1-1-2"},
-                 { id:12, pId:1, name:"can check 1-2", open:true},
-                 { id:121, pId:12, name:"can check 1-2-1"},
-                 { id:122, pId:12, name:"can check 1-2-2"},
-                 { id:2, pId:0, name:"can check 2", checked:true, open:true},
-                 { id:21, pId:2, name:"can check 2-1"},
-                 { id:22, pId:2, name:"can check 2-2", open:true},
-                 { id:221, pId:22, name:"can check 2-2-1", checked:true},
-                 { id:222, pId:22, name:"can check 2-2-2"},
-                 { id:23, pId:2, name:"can check 2-3"}
-                 ];
-   $.fn.zTree.init($("#resourceTree"), setting, zNodes);
+    userGroupResourceManager.loadMenuTree();
  });
 </script>

@@ -4,6 +4,7 @@
 <form class="am-form am-form-horizontal" style="margin-top: 10px;" id="editResourceForm" name="editResourceForm" method="post">
   <input type="hidden" name="id" value="${resource.id}" />
   <input type="hidden" name="version" value="${resource.version}" />
+  <input type="hidden" name="menuId" value="${resource.menuId}" />
   <div class="am-form-group">
     <label class="am-u-sm-2 am-form-label no-padding-right" for="edit_name"><i class="red">*</i>资源名称</label>
     <div class="am-u-sm-10">

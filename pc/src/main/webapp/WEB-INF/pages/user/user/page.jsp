@@ -56,7 +56,7 @@
       <td>${user.operator}</td>
       <td><fmt:formatDate value="${user.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
-        <a class="am-badge am-badge-success am-radius am-text-lg" onClick="openGroup(${user.id})"><span class="am-icon-cog"></span> 关联用户组</a>
+        <a class="am-badge am-badge-success am-radius am-text-lg" onClick="openUserGroup(${user.id})"><span class="am-icon-cog"></span> 关联用户组</a>
         <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${user.id})"><span class="am-icon-edit"></span> 修改</a>
         <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${user.id}, this)"><span class="am-icon-trash-o"></span> 删除</a>
       </td>
@@ -87,7 +87,15 @@
     app.del("您确定要删除该用户信息？", "${pageContext.request.contextPath}/delUser/del.json", {"id":id}, btnObj);
   }
 
-  function openResource(id){
-    app.openOneBtnDialog('${pageContext.request.contextPath}/findResourceByMenuId/open.html?menuId='+id, '关联用户组', 1200, 0.8);
+  function openUserGroup(id){
+    app.openDialog('${pageContext.request.contextPath}/addUserGroupUser/open.html?userId='+id, '关联用户组',
+            500, 400,function(index){
+        var selectUserGroup = [];
+        $("input[name='userGroupCheck']:checked").each(function(){
+            selectUserGroup.push($(this).val());
+        });
+        app.add("${pageContext.request.contextPath}/addUserGroupUser/add.json",
+                {'userId':id,'userGroupIds':selectUserGroup.join(",")}, index,function(){});
+      });
   }
 </script>

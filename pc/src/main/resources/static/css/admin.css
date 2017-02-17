@@ -392,3 +392,6 @@ body {
 .no-padding{
   padding: 0 !important
 }
+.tr.focus{
+  background-color:#eee;
+}
