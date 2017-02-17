@@ -44,6 +44,7 @@
       <td>${produceLine.operator}</td>
       <td><fmt:formatDate value="${produceLine.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
+        <a class="am-badge am-badge-success am-radius am-text-lg" onClick="setProduceLineCore(${produceLine.id})"><span class="am-icon-cog"></span> 关联工作中心</a>
         <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${produceLine.id})"><span class="am-icon-edit"></span> 修改</a>
         <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${produceLine.id})"><span class="am-icon-trash-o"></span> 删除</a>
       </td>
@@ -88,5 +89,11 @@
 
   function del(id){
     app.del("您确定要删除该生产线？", "${pageContext.request.contextPath}/delProduceLine/del.json", {"id":id});
+  }
+
+  function setProduceLineCore(id){
+    app.openDialog('${pageContext.request.contextPath}/setProduceLineCoreForPlId/open.html?plId='+id, '关联工作中心', 800, 600, function(index){
+      app.add("${pageContext.request.contextPath}/setProduceLineCoreForPlId/set.json", $('#setForm').serialize(), index);
+    });
   }
 </script>

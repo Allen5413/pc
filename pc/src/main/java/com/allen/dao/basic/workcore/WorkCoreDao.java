@@ -21,7 +21,19 @@ public interface WorkCoreDao extends CrudRepository<WorkCore, Long> {
     @Query(nativeQuery = true, value = "SELECT wc.id, wc.code, wc.name, wgc.work_group_id " +
             "FROM work_core wc LEFT JOIN work_group_core wgc ON wc.id = wgc.work_core_id AND wgc.work_group_id = ?1 " +
             "ORDER BY wc.code")
-    public List<Object[]> findWorkGroupAndWorkGroupIdByWorkGroupId(long workCoreId)throws Exception;
+    public List<Object[]> findWorkCoreAndWorkGroupIdByWorkGroupId(long workCoreId)throws Exception;
+
+    /**
+     * 通过生产线id查询工作中心信息
+     * 查询结果的生产线id字段，如果有值说明有关联，没有值说明没有关联
+     * @param produceLineId
+     * @return
+     * @throws Exception
+     */
+    @Query(nativeQuery = true, value = "SELECT wc.id, wc.code, wc.name, plc.produce_line_id " +
+            "FROM work_core wc LEFT JOIN produce_line_core plc ON wc.id = plc.work_core_id AND plc.produce_line_id = ?1 " +
+            "ORDER BY wc.code")
+    public List<Object[]> findWorkCoreAndProduceLineIdByProduceLineId(long produceLineId)throws Exception;
 
     /**
      * 通过code查询
