@@ -2,6 +2,7 @@
          pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="my" uri="/WEB-INF/permission.tld" %>
 <p />
 <form id="pageForm" name="pageForm" action="${pageContext.request.contextPath}/findCustomerPage/find.html" method="post">
   <input type="hidden" id="rows" name="rows" />
@@ -20,7 +21,9 @@
 <table class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
   <tr>
     <td colspan="999" style="background-color:#FFF">
-      <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="add()"><span class="am-icon-plus"></span> 新增</button>
+      <c:if test="${my:isPermission(requestScope.resourceId,'按钮编码',sessionScope.menuMap)}">
+        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="add()"><span class="am-icon-plus"></span> 新增</button>
+      </c:if>
     </td>
   </tr>
   <tr class="am-primary">
