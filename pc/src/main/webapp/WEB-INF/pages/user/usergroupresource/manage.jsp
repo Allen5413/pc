@@ -10,7 +10,7 @@
         <c:if test="${my:isPermission(requestScope.resourceId,'addRole',sessionScope.menuMap)}">
           <tr>
             <td colspan="2" style="background-color:#FFF">
-              <button class="am-btn am-btn-primary am-btn-sm" id="addUserGroup" type="button"><span class="am-icon-plus"></span>添加</button>
+              <button class="am-btn am-btn-primary am-btn-sm" id="addUserGroup" type="button"><span class="am-icon-plus"></span>&nbsp;&nbsp;添加</button>
             </td>
           </tr>
         </c:if>
@@ -33,7 +33,7 @@
         <div style="background-color: #fFF;width: 100%;padding: 0.7rem;border-bottom: solid 1px #ddd;">
           <button class="am-btn am-btn-primary am-btn-sm btn-loading-example" id="saveUserGroupResource" type="button"
                   data-am-loading="{spinner: 'circle-o-notch', loadingText: '保存中...'}">
-            <span class="am-icon-save"></span>保存</button>
+            <span class="am-icon-save"></span>&nbsp;&nbsp;保存</button>
         </div>
         <ul id="resourceTree" class="ztree"></ul>
     </div>

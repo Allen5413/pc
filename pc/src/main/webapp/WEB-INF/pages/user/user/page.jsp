@@ -57,17 +57,17 @@
       <td><fmt:formatDate value="${user.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
         <a class="am-badge am-badge-success am-radius am-text-lg" onClick="openUserGroup(${user.id})"><span class="am-icon-cog"></span> 关联用户组</a>
-        <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${user.id})"><span class="am-icon-edit"></span> 修改</a>
-        <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${user.id}, this)"><span class="am-icon-trash-o"></span> 删除</a>
+        <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="editUser(${user.id})"><span class="am-icon-edit"></span> 修改</a>
+        <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="delUser(${user.id}, this)"><span class="am-icon-trash-o"></span> 删除</a>
       </td>
     </tr>
   </c:forEach>
 </table>
 <%@ include file="../../common/page.jsp"%>
 <script>
-  function edit(id){
+  function editUser(id){
     var url = '${pageContext.request.contextPath}/editUser/open.html?id='+id;
-    app.openDialog(url, '编辑用户', 600, 0.4, function(index){
+    app.openDialog(url, '编辑用户', 600, 450, function(index){
       var name = $("#edit_name").val().trim();
       if(name == ""){
         app.msg("请输入名称", 1);
@@ -83,7 +83,7 @@
     });
   }
 
-  function del(id, btnObj){
+  function delUser(id, btnObj){
     app.del("您确定要删除该用户信息？", "${pageContext.request.contextPath}/delUser/del.json", {"id":id}, btnObj);
   }
 

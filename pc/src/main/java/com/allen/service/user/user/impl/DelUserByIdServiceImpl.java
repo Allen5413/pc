@@ -20,11 +20,7 @@ public class DelUserByIdServiceImpl implements DelUserByIdService {
 
     @Override
     @Transactional
-    public void del(long id, String loginName) throws Exception {
-        User user = userDao.findOne(id);
-        user.setState(User.STATE_DELETE);
-        user.setOperator(loginName);
-        user.setOperateTime(DateUtil.getLongNowTime());
-        userDao.save(user);
+    public void del(long id) throws Exception {
+        userDao.delete(id);
     }
 }
