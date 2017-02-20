@@ -2,6 +2,7 @@
          pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="my" uri="/WEB-INF/permission.tld" %>
 <p />
 <form id="pageForm" name="pageForm" action="${pageContext.request.contextPath}/findProductTypePage/find.html" method="post">
   <input type="hidden" id="rows" name="rows" />
