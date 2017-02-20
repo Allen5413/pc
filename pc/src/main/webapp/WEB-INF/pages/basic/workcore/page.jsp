@@ -6,6 +6,14 @@
 <form id="pageForm" name="pageForm" action="${pageContext.request.contextPath}/findWorkCorePage/find.html" method="post">
   <input type="hidden" id="rows" name="rows" />
   <input type="hidden" id="currentPage" name="page" value="${pageInfo.currentPage}"/>
+  <input type="hidden" name="resourceId" value="${requestScope.resourceId}" />
+
+  <c:set var="isShowAddBtn" value="${my:isPermission(requestScope.resourceId,'add',sessionScope.menuMap)}" />
+  <c:set var="isShowEditBtn" value="${my:isPermission(requestScope.resourceId,'edit',sessionScope.menuMap)}" />
+  <c:set var="isShowDelBtn" value="${my:isPermission(requestScope.resourceId,'del',sessionScope.menuMap)}" />
+  <c:set var="isShowFindBtn" value="${my:isPermission(requestScope.resourceId,'find',sessionScope.menuMap)}" />
+  <c:set var="isShowSetWorkGroupBtn" value="${my:isPermission(requestScope.resourceId,'setWorkGroup',sessionScope.menuMap)}" />
+  <c:set var="isShowSetProduceLineBtn" value="${my:isPermission(requestScope.resourceId,'setProduceLine',sessionScope.menuMap)}" />
 
   <label >编码：</label>
   <input type="text" id="code" name="code" value="${param.code}" />&nbsp;&nbsp;&nbsp;&nbsp;
@@ -18,19 +26,22 @@
     <option value="1" <c:if test="${param.isPublic eq '1'}">selected="selected" </c:if> >是</option>
     <option value="0" <c:if test="${param.isPublic eq '2'}">selected="selected" </c:if> >否</option>
   </select>&nbsp;&nbsp;&nbsp;&nbsp;
-
-  <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
+  <c:if test="${isShowFindBtn}">
+    <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
           data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
           onclick="app.searchFormPage($('#pageForm'), $('#pageForm').attr('action'), this)"><span class="am-icon-search"></span> 查询</button>
+  </c:if>
 </form>
 <p /><p />
 
 <table class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
-  <tr>
-    <td colspan="999" style="background-color:#FFF">
-      <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="add()"><span class="am-icon-plus"></span> 新增</button>
-    </td>
-  </tr>
+  <c:if test="${isShowAddBtn}">
+    <tr>
+      <td colspan="999" style="background-color:#FFF">
+        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="add()"><span class="am-icon-plus"></span> 新增</button>
+      </td>
+    </tr>
+  </c:if>
   <tr class="am-primary">
     <th style="width: 5%;">序号</th>
     <th style="width: 10%;">编号</th>
@@ -54,10 +65,18 @@
       <td>${workCore.operator}</td>
       <td><fmt:formatDate value="${workCore.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
-        <a class="am-badge am-badge-success am-radius am-text-lg" onClick="setWorkGroupCore(${workCore.id})"><span class="am-icon-cog"></span> 关联工作组</a>
-        <a class="am-badge am-badge-success am-radius am-text-lg" onClick="setProduceLineCore(${workCore.id})"><span class="am-icon-cog"></span> 关联生产线</a>
-        <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${workCore.id})"><span class="am-icon-edit"></span> 修改</a>
-        <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${workCore.id})"><span class="am-icon-trash-o"></span> 删除</a>
+        <c:if test="${isShowSetWorkGroupBtn}">
+          <a class="am-badge am-badge-success am-radius am-text-lg" onClick="setWorkGroupCore(${workCore.id})"><span class="am-icon-cog"></span> 关联工作组</a>
+        </c:if>
+        <c:if test="${isShowSetProduceLineBtn}">
+          <a class="am-badge am-badge-success am-radius am-text-lg" onClick="setProduceLineCore(${workCore.id})"><span class="am-icon-cog"></span> 关联生产线</a>
+        </c:if>
+        <c:if test="${isShowEditBtn}">
+          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${workCore.id})"><span class="am-icon-edit"></span> 修改</a>
+        </c:if>
+        <c:if test="${isShowDelBtn}">
+          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${workCore.id})"><span class="am-icon-trash-o"></span> 删除</a>
+        </c:if>
       </td>
     </tr>
   </c:forEach>
