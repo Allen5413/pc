@@ -12,16 +12,18 @@
   <input type="text" id="code" name="code" value="${param.code}" />&nbsp;&nbsp;&nbsp;&nbsp;
   <label >名称：</label>
   <input type="text" id="name" name="name" value="${param.name}" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
-          data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
-          onclick="app.searchFormPage($('#pageForm'), $('#pageForm').attr('action'), this)"><span class="am-icon-search"></span> 查询</button>
+  <c:if test="${my:isPermission(requestScope.resourceId,'find',sessionScope.menuMap)}">
+    <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
+            data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
+            onclick="app.searchFormPage($('#pageForm'), $('#pageForm').attr('action'), this)"><span class="am-icon-search"></span> 查询</button>
+  </c:if>
 </form>
 <p /><p />
 
 <table class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
   <tr>
     <td colspan="999" style="background-color:#FFF">
-      <c:if test="${my:isPermission(requestScope.resourceId,'按钮编码',sessionScope.menuMap)}">
+      <c:if test="${my:isPermission(requestScope.resourceId,'add',sessionScope.menuMap)}">
         <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="add()"><span class="am-icon-plus"></span> 新增</button>
       </c:if>
     </td>
@@ -47,8 +49,12 @@
       <td>${customer.operator}</td>
       <td><fmt:formatDate value="${customer.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
-        <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${customer.id})"><span class="am-icon-edit"></span> 修改</a>
-        <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${customer.id})"><span class="am-icon-trash-o"></span> 删除</a>
+        <c:if test="${my:isPermission(requestScope.resourceId,'edit',sessionScope.menuMap)}">
+          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${customer.id})"><span class="am-icon-edit"></span> 修改</a>
+        </c:if>
+        <c:if test="${my:isPermission(requestScope.resourceId,'del',sessionScope.menuMap)}">
+          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${customer.id})"><span class="am-icon-trash-o"></span> 删除</a>
+        </c:if>
       </td>
     </tr>
   </c:forEach>
