@@ -29,12 +29,12 @@
   <div class="am-g am-margin-top">
     <div class="am-u-sm-3 am-text-right"><label >状态：</label></div>
     <div class="am-u-sm-4">
-      <div class="am-btn-group doc-js-btn-1" data-am-button>
-        <label class="am-btn am-btn-primary am-btn-s am-active">
+      <div class="am-form-group">
+        <label class="am-radio-inline">
           <input type="radio" name="state" value="1" checked> 启用
         </label>
-        <label class="am-btn am-btn-primary am-btn-s">
-          <input type="radio" name="state" value="2"> 停用
+        <label class="am-radio-inline">
+          <input type="radio" name="state" value="2" > 停用
         </label>
       </div>
     </div>
@@ -48,3 +48,8 @@
     </div>
   </div>
 </form>
+<script>
+  $(function() {
+    $("input[type='checkbox'], input[type='radio']").uCheck();
+  });
+</script>

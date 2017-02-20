@@ -21,15 +21,20 @@
   <div class="am-g am-margin-top">
     <div class="am-u-sm-3 am-text-right"><label >是否公用：</label></div>
     <div class="am-u-sm-4">
-      <div class="am-btn-group doc-js-btn-1" data-am-button>
-        <label class="am-btn am-btn-primary am-btn-s am-active">
+      <div class="am-form-group">
+        <label class="am-radio-inline">
           <input type="radio" name="isPublic" value="1" checked> 是
         </label>
-        <label class="am-btn am-btn-primary am-btn-s">
-          <input type="radio" name="isPublic" value="0"> 否
+        <label class="am-radio-inline">
+          <input type="radio" name="isPublic" value="0" > 否
         </label>
       </div>
     </div>
     <div class="am-u-sm-5"></div>
   </div>
 </form>
+<script>
+  $(function() {
+    $("input[type='checkbox'], input[type='radio']").uCheck();
+  });
+</script>
