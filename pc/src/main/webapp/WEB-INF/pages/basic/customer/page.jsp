@@ -4,7 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="my" uri="/WEB-INF/permission.tld" %>
 <p />
-<form id="pageForm" name="pageForm" action="${pageContext.request.contextPath}/findCustomerPage/find.html?resourceId=${requestScope.resourceId}" method="post">
+<form id="pageForm" name="pageForm" action="${pageContext.request.contextPath}/findCustomerPage/find.html" method="post">
   <input type="hidden" id="rows" name="rows" />
   <input type="hidden" id="currentPage" name="page" value="${pageInfo.currentPage}"/>
   <input type="hidden" name="resourceId" value="${requestScope.resourceId}" />
@@ -27,13 +27,13 @@
 <p /><p />
 
 <table class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
-  <tr>
-    <td colspan="999" style="background-color:#FFF">
-      <c:if test="${isShowAddBtn}">
-        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="add()"><span class="am-icon-plus"></span> 新增</button>
-      </c:if>
-    </td>
-  </tr>
+  <c:if test="${isShowAddBtn}">
+    <tr>
+      <td colspan="999" style="background-color:#FFF">
+          <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="add()"><span class="am-icon-plus"></span> 新增</button>
+      </td>
+    </tr>
+  </c:if>
   <tr class="am-primary">
     <th style="width: 5%;">序号</th>
     <th style="width: 15%;">编号</th>
