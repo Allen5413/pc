@@ -41,10 +41,10 @@
               <input type="hidden" value="${buttonInfo.id}" name="button_id_${status.index}"/></td>
             <td style="width: 40%;"><input class="am-input-sm" type="text"  value="${buttonInfo.buttonCode}" name="button_code_${status.index}"/></td>
             <c:if test="${status.index==0}">
-              <td><a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="addButton()"><span class="am-icon-plus"></span>添加</a></td>
+              <td><a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="addButton()"><span class="am-icon-plus"></span>&nbsp;添加</a></td>
             </c:if>
             <c:if test="${status.index!=0}">
-              <td><a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="removeButton(this)"><span class="am-icon-remove"></span>删除</a></td>
+              <td><a class="am-badge am-badge-danger am-radius am-text-lg" onClick="removeButton(this)"><span class="am-icon-trash-o"></span>&nbsp;删除</a></td>
             </c:if>
           </tr>
         </c:forEach>
@@ -66,8 +66,8 @@
                       '<td style="width: 40%;"><input class="am-input-sm" type="text" name="button_name_'+buttonIndex+'"/>' +
                       '<input type="hidden" value="0" name="button_id_'+buttonIndex+'"/></td>'+
                       '<td style="width: 40%;"><input class="am-input-sm" type="text" name="button_code_'+buttonIndex+'"/></td>'+
-                      '<td><a class="am-badge am-badge-secondary am-radius am-text-lg" onclick="removeButton(this)" >' +
-                      '   <span class="am-icon-remove"></span>删除</a>' +
+                      '<td><a class="am-badge am-badge-danger am-radius am-text-lg" onclick="removeButton(this)" >' +
+                      '   <span class="am-icon-trash-o"></span>&nbsp;删除</a>' +
                       '</td>'+
                       '</tr>');
               buttonIndex++;

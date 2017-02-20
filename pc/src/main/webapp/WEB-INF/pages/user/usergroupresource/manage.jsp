@@ -105,9 +105,8 @@
             if(data){
                 var treeNode = null;
                $.each(data,function(i,val){
-                       console.log(val);
                    treeNode= userGroupResourceManager.userGroupResourceTree.getNodeByParam('id',val.resourceId,null);
-                   userGroupResourceManager.userGroupResourceTree.checkNode(treeNode,true,true);
+                   userGroupResourceManager.userGroupResourceTree.checkNode(treeNode,true);
                });
             }
         }

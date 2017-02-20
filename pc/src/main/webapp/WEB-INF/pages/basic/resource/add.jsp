@@ -28,7 +28,7 @@
         <tr>
           <td style="width: 40%;"><input class="am-input-sm" type="text" name="button_name_0"/></td>
           <td style="width: 40%;"><input class="am-input-sm" type="text" name="button_code_0"/></td>
-          <td><a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="addButton()"><span class="am-icon-plus"></span>添加</a></td>
+          <td><a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="addButton()"><span class="am-icon-plus"></span>&nbsp;添加</a></td>
         </tr>
       </table>
     </div>
@@ -47,8 +47,8 @@
     $('#buttonArea tbody').append(' <tr>'+
             '<td style="width: 40%;"><input class="am-input-sm" type="text" name="button_name_'+buttonIndex+'"/></td>'+
             '<td style="width: 40%;"><input class="am-input-sm" type="text" name="button_code_'+buttonIndex+'"/></td>'+
-            '<td><a class="am-badge am-badge-secondary am-radius am-text-lg" onclick="removeButton(this)" >' +
-            '   <span class="am-icon-remove"></span>删除</a>' +
+            '<td><a class="am-badge am-badge-danger am-radius am-text-lg" onclick="removeButton(this)" >' +
+            '   <span class="am-icon-trash-o"></span>&nbsp;删除</a>' +
             '</td>'+
           '</tr>');
           buttonIndex++;

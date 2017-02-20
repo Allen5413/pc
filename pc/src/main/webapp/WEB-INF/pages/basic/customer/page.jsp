@@ -4,7 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="my" uri="/WEB-INF/permission.tld" %>
 <p />
-<form id="pageForm" name="pageForm" action="${pageContext.request.contextPath}/findCustomerPage/find.html" method="post">
+<form id="pageForm" name="pageForm" action="${pageContext.request.contextPath}/findCustomerPage/find.html?resourceId=${requestScope.resourceId}" method="post">
   <input type="hidden" id="rows" name="rows" />
   <input type="hidden" id="currentPage" name="page" value="${pageInfo.currentPage}"/>
 
