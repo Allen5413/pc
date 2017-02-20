@@ -19,7 +19,7 @@
           <th style="width: 80%;">名称</th>
         </tr>
         <c:forEach items="${userGroupList}" var="userGroup" varStatus="status">
-          <tr  data-id="${userGroup.id}">
+          <tr  data-id="${userGroup.id}" >
             <td>${status.index+1}</td>
             <td>${userGroup.name}</td>
           </tr>
@@ -35,13 +35,16 @@
                   data-am-loading="{spinner: 'circle-o-notch', loadingText: '保存中...'}">
             <span class="am-icon-save"></span>&nbsp;&nbsp;保存</button>
         </div>
-        <ul id="resourceTree" class="ztree"></ul>
+        <div id="zTreeDiv" style="overflow: auto;">
+          <ul id="resourceTree" class="ztree"></ul>
+        </div>
     </div>
   </div>
  </div>
 <script>
  $(function(){
     $('#userGourpResourceManage .am-in').height( $('.am-tabs-bd').height()-65);
+   $('#zTreeDiv').height( $('.am-tabs-bd').height()-112);
     var userGroupResourceManager={
         userGroupId:-1,
         userGroupResourceTree:null,
@@ -115,7 +118,9 @@
      $('#saveUserGroupResource').on('click',function(){
            userGroupResourceManager.addUserGroupResource();
      });
-   $('#userGroupTable').on('dblclick','tr',function(){
+     $('#userGroupTable').on('click','tr',function(){
+        $('#userGroupTable tr').removeClass('am-primary');
+        $(this).addClass('am-primary');
         var userGroupId = $(this).attr('data-id');
         if(userGroupId){
             if(userGroupResourceManager.userGroupId!=userGroupId){
