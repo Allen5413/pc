@@ -24,7 +24,7 @@
     <div class="am-u-sm-3 am-text-right"><label >开始时间：</label></div>
     <div class="am-u-sm-4">
       <input type="text" id="edit_beginTime" name="beginTime" class="Wdate" placeholder="选择开始时间" style="width: 175px; height: 28px;"
-             onfocus="WdatePicker({readOnly:true, dateFmt:'yyyy-MM-dd HH:mm'})" value="${workTime.beginTimeStr}"/>
+             onfocus="WdatePicker({readOnly:true, dateFmt:'HH:mm'})" value="${workTime.beginTimeStr}"/>
     </div>
     <div class="am-u-sm-5">*必填</div>
   </div>
@@ -33,7 +33,7 @@
     <div class="am-u-sm-3 am-text-right"><label >结束时间：</label></div>
     <div class="am-u-sm-4">
       <input type="text" id="edit_endTime" name="endTime" class="Wdate" placeholder="选择结束时间" style="width: 175px; height: 28px;"
-             onfocus="WdatePicker({readOnly:true, dateFmt:'yyyy-MM-dd HH:mm'})" value="${workTime.endTimeStr}"/>
+             onfocus="WdatePicker({readOnly:true, dateFmt:'HH:mm'})" value="${workTime.endTimeStr}"/>
     </div>
     <div class="am-u-sm-5">*必填</div>
   </div>

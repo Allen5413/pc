@@ -28,6 +28,10 @@ public class WorkTime {
     private String beginTimeStr;
     @Transient
     private String endTimeStr;
+    @Transient
+    private long timeSub;   //结束时间-开始时间，得到毫秒值
+    @Transient
+    private String timeSubStr;  //结束时间-开始时间，算出单班时间用于页面显示
 
     public long getId() {
         return id;
@@ -102,10 +106,18 @@ public class WorkTime {
     }
 
     public String getBeginTimeStr() {
-        return DateUtil.getFormattedString(this.getBeginTime(), "yyyy-MM-dd HH:mm");
+        return DateUtil.getFormattedString(this.getBeginTime(), "HH:mm");
     }
 
     public String getEndTimeStr() {
-        return DateUtil.getFormattedString(this.getEndTime(), "yyyy-MM-dd HH:mm");
+        return DateUtil.getFormattedString(this.getEndTime(), "HH:mm");
+    }
+
+    public long getTimeSub() {
+        return this.getEndTime().getTime() - this.getBeginTime().getTime();
+    }
+
+    public String getTimeSubStr() {
+        return DateUtil.subtractDateTime(this.getEndTime(), this.getBeginTime(), "hour");
     }
 }

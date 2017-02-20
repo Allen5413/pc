@@ -38,8 +38,9 @@
     <th style="width: 5%;">序号</th>
     <th style="width: 10%;">编号</th>
     <th style="width: 10%;">名称</th>
-    <th style="width: 15%;">开始时间</th>
-    <th style="width: 15%;">结束时间</th>
+    <th style="width: 10%;">开始时间</th>
+    <th style="width: 10%;">结束时间</th>
+    <th style="width: 10%;">单班时间</th>
     <th style="width: 10%;">操作人</th>
     <th style="width: 15%;">操作时间</th>
     <th>操作</th>
@@ -56,6 +57,7 @@
       <td>${workTime.name}</td>
       <td>${workTime.beginTimeStr}</td>
       <td>${workTime.endTimeStr}</td>
+      <td>${workTime.timeSub}</td>
       <td>${workTime.operator}</td>
       <td><fmt:formatDate value="${workTime.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
@@ -95,12 +97,13 @@
         app.msg("请选择结束时间", 1);
         return;
       }
+
+      $("#edit_beginTime").val("1999-01-01 "+beginTime+":00");
       if(beginTime >= endTime){
-        app.msg("开始时间不能大于等于结束时间", 1);
-        return;
+        $("#edit_endTime").val("1999-01-02 "+endTime+":00");
+      }else{
+        $("#edit_endTime").val("1999-01-01 "+endTime+":00");
       }
-      $("#edit_beginTime").val(beginTime+":00");
-      $("#edit_endTime").val(endTime+":00");
       app.edit("${pageContext.request.contextPath}/editWorkTime/editor.json", $('#editForm').serialize(), index);
     });
   }
@@ -127,12 +130,12 @@
         app.msg("请选择结束时间", 1);
         return;
       }
+      $("#add_beginTime").val("1999-01-01 "+beginTime+":00");
       if(beginTime >= endTime){
-        app.msg("开始时间不能大于等于结束时间", 1);
-        return;
+        $("#add_endTime").val("1999-01-02 "+endTime+":00");
+      }else{
+        $("#add_endTime").val("1999-01-01 "+endTime+":00");
       }
-      $("#add_beginTime").val(beginTime+":00");
-      $("#add_endTime").val(endTime+":00");
       app.add("${pageContext.request.contextPath}/addWorkTime/add.json", $('#addForm').serialize(), index);
     });
   }

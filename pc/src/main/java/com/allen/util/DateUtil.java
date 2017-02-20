@@ -1,5 +1,6 @@
 package com.allen.util;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -225,5 +226,17 @@ public class DateUtil {
      */
     public static boolean compareDateTime(Date time1, Date time2, int gap) {
         return time1.getTime() - time2.getTime() > gap * 60 * 1000;
+    }
+
+    public static String subtractDateTime(Date time1, Date time2, String flag){
+        String str = "";
+        long temp = time1.getTime() - time2.getTime();
+        if("hour".equals(flag)){
+            long hour = temp / (1000 * 60 * 60);
+            long minute = (temp % (1000 * 60 * 60)) / (1000 * 60);
+            str += hour+"小时";
+            str += 0 == minute ? "" : minute+"分钟";
+        }
+        return str;
     }
 }
