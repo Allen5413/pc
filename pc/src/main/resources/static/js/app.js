@@ -445,14 +445,19 @@ App.prototype.openTab = function(url, isServiceLoad){
 }
 
 /**
- * 点击查询按钮
+ * 点击查询按钮  btnObj为undefined，说明是从点击页码跳转来的，否则是点击查询按钮来的
  * @param obj
  * @param url
  */
 App.prototype.searchFormPage = function(obj, url, btnObj){
     $("#rows").val($("#rows_txt").val());
+    if(typeof (btnObj) != "undefined") {
+        $("#currentPage").val(1);
+    }
     if(url != "") {
-        $(btnObj).button('loading');
+        if(typeof (btnObj) != "undefined") {
+            $(btnObj).button('loading');
+        }
         setTimeout(function(){
             var falg = url.replace("/", "").replace("/", "").replace(".html", "");
             var params = {};

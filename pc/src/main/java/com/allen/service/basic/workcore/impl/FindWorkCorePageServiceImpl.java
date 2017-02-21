@@ -19,6 +19,20 @@ public class FindWorkCorePageServiceImpl implements FindWorkCorePageService {
 
     @Override
     public PageInfo find(PageInfo pageInfo, Map<String, Object> params, Map<String, Boolean> sortMap) throws Exception {
-        return findWorkCoreDao.findPage(pageInfo, params, sortMap);
+        Long wgId = (Long) params.get("wgc.workGroupId");
+        Long plId = (Long) params.get("plc.produceLineId");
+        if(null == wgId && null == plId) {
+            return findWorkCoreDao.findPage(pageInfo, params, sortMap);
+        }
+        if(null != wgId && null == plId) {
+            return findWorkCoreDao.findPageByWgId(pageInfo, params, sortMap);
+        }
+        if(null == wgId && null != plId) {
+            return findWorkCoreDao.findPageByPlId(pageInfo, params, sortMap);
+        }
+        if(null != wgId && null != plId) {
+            return findWorkCoreDao.findPageByWgIdAndPlId(pageInfo, params, sortMap);
+        }
+        return null;
     }
 }

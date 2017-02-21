@@ -16,25 +16,56 @@
   <c:set var="isShowSetWorkGroupBtn" value="${my:isPermission(requestScope.resourceId,'setWorkGroup',sessionScope.menuMap)}" />
   <c:set var="isShowSetProduceLineBtn" value="${my:isPermission(requestScope.resourceId,'setProduceLine',sessionScope.menuMap)}" />
 
-  <label >编码：</label>
-  <input type="text" id="code" name="code" value="${param.code}" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <label >名称：</label>
-  <input type="text" id="name" name="name" value="${param.name}" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <label >是否公用：</label>
-  <select id="isPublic" name="isPublic" onchange="app.changeSelect(this)">
-    <option value=""></option>
-    <option value="null">全部</option>
-    <option value="1" <c:if test="${param.isPublic eq '1'}">selected="selected" </c:if> >是</option>
-    <option value="0" <c:if test="${param.isPublic eq '2'}">selected="selected" </c:if> >否</option>
-  </select>&nbsp;&nbsp;&nbsp;&nbsp;
-  <c:if test="${isShowFindBtn}">
-    <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
-          data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
-          onclick="app.searchFormPage($('#pageForm'), $('#pageForm').attr('action'), this)"><span class="am-icon-search"></span> 查询</button>
-  </c:if>
+  <table width="90%">
+    <tr height="40">
+      <td align="right"><label >编码：</label></td>
+      <td><input type="text" id="code" name="code" value="${param.code}" /></td>
+      <td align="right"><label >名称：</label></td>
+      <td><input type="text" id="name" name="name" value="${param.name}" /></td>
+      <td align="right"><label >是否公用：</label></td>
+      <td>
+        <select id="isPublic" name="isPublic" onchange="app.changeSelect(this)">
+          <option value=""></option>
+          <option value="null">全部</option>
+          <option value="1" <c:if test="${param.isPublic eq '1'}">selected="selected" </c:if> >是</option>
+          <option value="0" <c:if test="${param.isPublic eq '2'}">selected="selected" </c:if> >否</option>
+        </select>
+      </td>
+    </tr>
+    <tr height="40">
+      <td align="right"><label >工作组：</label></td>
+      <td>
+        <select id="wgId" name="wgId" data-am-selected="{maxHeight: 500, searchBox: 1}" onchange="app.changeSelect(this)">
+          <option value=""></option>
+          <option value="null">全部</option>
+          <c:forEach var="workGroup" items="${workGroupList}">
+            <option value="${workGroup.id}" <c:if test="${param.wgId eq workGroup.id}">selected="selected" </c:if> >${workGroup.name}</option>
+          </c:forEach>
+        </select>
+      </td>
+      <td align="right"><label >生产线：</label></td>
+      <td>
+        <select id="plId" name="plId" data-am-selected="{maxHeight: 500, searchBox: 1}" onchange="app.changeSelect(this)">
+          <option value=""></option>
+          <option value="null">全部</option>
+          <c:forEach var="produceLine" items="${produceLineList}">
+            <option value="${produceLine.id}" <c:if test="${param.plId eq produceLine.id}">selected="selected" </c:if> >${produceLine.name}</option>
+          </c:forEach>
+        </select>
+      </td>
+    </tr>
+    <c:if test="${isShowFindBtn}">
+      <tr>
+        <td colspan="99" style="padding-left:20px;">
+          <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
+                  data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
+                  onclick="app.searchFormPage($('#pageForm'), $('#pageForm').attr('action'), this)"><span class="am-icon-search"></span> 查询</button>
+        </td>
+      </tr>
+    </c:if>
+  </table>
 </form>
 <p /><p />
-
 <table class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
   <c:if test="${isShowAddBtn}">
     <tr>
@@ -44,17 +75,17 @@
     </tr>
   </c:if>
   <tr class="am-primary">
-    <th style="width: 5%;">序号</th>
-    <th style="width: 10%;">编号</th>
-    <th style="width: 20%;">名称</th>
-    <th style="width: 10%;">是否公用</th>
-    <th style="width: 10%;">操作人</th>
+    <th style="width: 4%;">序号</th>
+    <th style="width: 8%;">编号</th>
+    <th style="width: 14%;">名称</th>
+    <th style="width: 8%;">是否公用</th>
+    <th style="width: 8%;">操作人</th>
     <th style="width: 15%;">操作时间</th>
     <th>操作</th>
   </tr>
   <c:if test="${empty pageInfo || empty pageInfo.pageResults}">
     <tr>
-      <td colspan="6" align="center" style="color: red;">没有找到相关数据</td>
+      <td colspan="99" align="center" style="color: red;">没有找到相关数据</td>
     </tr>
   </c:if>
   <c:forEach var="workCore" items="${pageInfo.pageResults}" varStatus="status">
@@ -84,7 +115,6 @@
 </table>
 <%@ include file="../../common/page.jsp"%>
 <script>
-
   function edit(id){
     var url = '${pageContext.request.contextPath}/editWorkCore/open.html?id='+id;
     app.openDialog(url, '编辑工作中心', 600, 260, function(index){

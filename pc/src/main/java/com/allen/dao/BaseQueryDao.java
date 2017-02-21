@@ -265,6 +265,35 @@ public class BaseQueryDao extends JapDynamicQueryDao {
         return pageInfo;
     }
 
+    public PageInfo findPageByJpal(PageInfo pageInfo, String fields, String[] tableNames, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
+        List paramsList = new ArrayList();
+        String sql = new String("select "+fields+" from ");
+        for(int i=0; i<tableNames.length; i++){
+            sql += tableNames[i];
+            if(i == tableNames.length - 1){
+                sql += " ";
+            }else{
+                sql += ", ";
+            }
+        }
+        sql += "where " + defaultWhere + " ";
+        sql = getParamListVal(sql,paramsMap,paramsList);
+        if(null != sortMap) {
+            sql += "order by ";
+            int i = 0;
+            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
+                if(0 < i){
+                    sql += ",";
+                }
+                String key = it.next().toString();
+                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
+                i++;
+            }
+        }
+        this.pagedQueryByJpql(pageInfo, sql.toString(), paramsList.toArray());
+        return pageInfo;
+    }
+
     public PageInfo findPageByJpal(PageInfo pageInfo, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List paramsList = new ArrayList();
         String sql = new String("from ");
