@@ -2,6 +2,7 @@
          pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="my" uri="/WEB-INF/permission.tld" %>
 <p />
 <form id="pageForm" name="pageForm" action="${pageContext.request.contextPath}/findUserPage/find.htm" method="post">
   <input type="hidden" id="rows" name="rows" />
@@ -16,11 +17,15 @@
     <option value="1" <c:if test="${param.state eq '1'}">selected="selected" </c:if> >启用</option>
     <option value="2" <c:if test="${param.state eq '2'}">selected="selected" </c:if> >停用</option>
   </select>
-
-  <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
-          data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
-          onclick="app.searchFormPage($('#pageForm'), $('#pageForm').attr('action'), this)"><span class="am-icon-search"></span> 查询</button>
+  <c:if test="${my:isPermission(requestScope.resourceId,'find',sessionScope.menuMap )}">
+    <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
+            data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
+            onclick="app.searchFormPage($('#pageForm'), $('#pageForm').attr('action'), this)"><span class="am-icon-search"></span> 查询</button>
+  </c:if>
 </form>
+<c:set var="isUserGroup" value="${my:isPermission(requestScope.resourceId,'userGroup',sessionScope.menuMap)}" />
+<c:set var="isUserEdit" value="${my:isPermission(requestScope.resourceId,'edit',sessionScope.menuMap)}" />
+<c:set var="isUserDel" value="${my:isPermission(requestScope.resourceId,'del',sessionScope.menuMap)}" />
 <p /><p />
 
 <table class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
@@ -56,9 +61,15 @@
       <td>${user.operator}</td>
       <td><fmt:formatDate value="${user.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
-        <a class="am-badge am-badge-success am-radius am-text-lg" onClick="openUserGroup(${user.id})"><span class="am-icon-cog"></span> 关联用户组</a>
-        <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="editUser(${user.id})"><span class="am-icon-edit"></span> 修改</a>
-        <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="delUser(${user.id}, this)"><span class="am-icon-trash-o"></span> 删除</a>
+        <c:if test="${isUserGroup}">
+          <a class="am-badge am-badge-success am-radius am-text-lg" onClick="openUserGroup(${user.id})"><span class="am-icon-cog"></span> 关联用户组</a>
+        </c:if>
+        <c:if test="${isUserEdit}">
+          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="editUser(${user.id})"><span class="am-icon-edit"></span> 修改</a>
+        </c:if>
+        <c:if test="${isUserDel}">
+          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="delUser(${user.id}, this)"><span class="am-icon-trash-o"></span> 删除</a>
+        </c:if>
       </td>
     </tr>
   </c:forEach>
