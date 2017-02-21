@@ -3,7 +3,6 @@ package com.allen.dao.basic.workcore;
 import com.allen.dao.BaseQueryDao;
 import com.allen.dao.PageInfo;
 import org.springframework.stereotype.Service;
-
 import java.util.Map;
 
 /**

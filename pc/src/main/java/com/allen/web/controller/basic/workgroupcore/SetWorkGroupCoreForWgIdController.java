@@ -1,6 +1,7 @@
 package com.allen.web.controller.basic.workgroupcore;
 
 import com.alibaba.fastjson.JSONObject;
+import com.allen.entity.pojo.workcore.WorkCoreBean;
 import com.allen.service.basic.workcore.FindWorkCoreAndWorkGroupIdByWorkGroupIdService;
 import com.allen.service.basic.workgroupcore.SetWorkGroupCoreService;
 import com.allen.util.UserUtil;
@@ -34,8 +35,8 @@ public class SetWorkGroupCoreForWgIdController extends BaseController {
                        @RequestParam("wgId")long wgId)throws Exception{
         JSONObject json = findWorkCoreAndWorkGroupIdByWorkGroupIdService.find(wgId);
         if(null != json && 0 < json.size()){
-            List<JSONObject> withList = (List<JSONObject>) json.get("withList");
-            List<JSONObject> notWithList = (List<JSONObject>) json.get("notWithList");
+            List<WorkCoreBean> withList = (List<WorkCoreBean>) json.get("withList");
+            List<WorkCoreBean> notWithList = (List<WorkCoreBean>) json.get("notWithList");
             request.setAttribute("withList", withList);
             request.setAttribute("notWithList", notWithList);
         }

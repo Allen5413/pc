@@ -2,8 +2,10 @@ package com.allen.web.controller.basic.produceline;
 
 import com.alibaba.fastjson.JSONObject;
 import com.allen.entity.basic.ProduceLine;
+import com.allen.entity.pojo.workcore.WorkCoreBean;
 import com.allen.service.basic.produceline.EditProduceLineService;
 import com.allen.service.basic.produceline.FindProduceLineByIdService;
+import com.allen.service.basic.workcore.FindWorkCoreAndPlIdByPlIdService;
 import com.allen.util.DateUtil;
 import com.allen.util.UserUtil;
 import com.allen.web.controller.BaseController;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Created by Allen on 2015/4/28.
@@ -26,6 +29,8 @@ public class EditProduceLineController extends BaseController {
     private EditProduceLineService editProduceLineService;
     @Resource
     private FindProduceLineByIdService findProduceLineByIdService;
+    @Resource
+    private FindWorkCoreAndPlIdByPlIdService findWorkCoreAndPlIdByPlIdService;
 
     /**
      * 打开
@@ -34,7 +39,10 @@ public class EditProduceLineController extends BaseController {
     @RequestMapping(value = "open")
     public String open(@RequestParam("id") long id, HttpServletRequest request) throws Exception {
         ProduceLine produceLine = findProduceLineByIdService.find(id);
+        //查询工作组关联的工作中心
+        List<WorkCoreBean> wcList = findWorkCoreAndPlIdByPlIdService.findWith(id);
         request.setAttribute("produceLine", produceLine);
+        request.setAttribute("wcList", wcList);
         return "basic/produceline/edit";
     }
 

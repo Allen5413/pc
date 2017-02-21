@@ -2,6 +2,7 @@ package com.allen.service.basic.workgroup.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.allen.dao.basic.workgroup.WorkGroupDao;
+import com.allen.entity.pojo.workgroup.WorkGroupBean;
 import com.allen.service.basic.workgroup.FindWorkGroupAndWorkCoreIdByWorkCoreIdService;
 import com.allen.util.StringUtil;
 import org.springframework.stereotype.Service;
@@ -27,22 +28,22 @@ public class FindWorkGroupAndWorkCoreIdByWorkCoreIdServiceImpl implements FindWo
         List<Object[]> list = workGroupDao.findWorkGroupAndWorkCoreIdByWorkCoreId(workCoreId);
         if(null != list && 0 < list.size()){
             jsonObject = new JSONObject();
-            List<JSONObject> allList = new ArrayList<JSONObject>(list.size());
-            List<JSONObject> withList = new ArrayList<JSONObject>();
-            List<JSONObject> notWithList = new ArrayList<JSONObject>();
+            List<WorkGroupBean> allList = new ArrayList<WorkGroupBean>(list.size());
+            List<WorkGroupBean> withList = new ArrayList<WorkGroupBean>();
+            List<WorkGroupBean> notWithList = new ArrayList<WorkGroupBean>();
             for(Object[] objs : list){
-                JSONObject json = new JSONObject();
-                json.put("id", objs[0]);
-                json.put("code", objs[1]);
-                json.put("name", objs[2]);
-                json.put("wcId", objs[3]);
-                allList.add(json);
+                WorkGroupBean workGroupBean = new WorkGroupBean();
+                workGroupBean.setId(null == objs[0] ? null : Long.parseLong(objs[0].toString()));
+                workGroupBean.setCode((String)objs[1]);
+                workGroupBean.setName((String)objs[2]);
+                workGroupBean.setWcId(null == objs[3] ? null : Long.parseLong(objs[3].toString()));
+                allList.add(workGroupBean);
 
                 if(null != objs[3] && !StringUtil.isEmpty(objs[3].toString())){
-                    withList.add(json);
+                    withList.add(workGroupBean);
                 }
                 if(null == objs[3] || StringUtil.isEmpty(objs[3].toString())){
-                    notWithList.add(json);
+                    notWithList.add(workGroupBean);
                 }
             }
             jsonObject.put("allList", allList);
@@ -50,5 +51,25 @@ public class FindWorkGroupAndWorkCoreIdByWorkCoreIdServiceImpl implements FindWo
             jsonObject.put("notWithList", notWithList);
         }
         return jsonObject;
+    }
+
+    @Override
+    public List<WorkGroupBean> findWith(long workCoreId) throws Exception {
+        JSONObject json = this.find(workCoreId);
+        if(null != json){
+            List<WorkGroupBean> withList = (List<WorkGroupBean>) json.get("withList");
+            return withList;
+        }
+        return null;
+    }
+
+    @Override
+    public List<WorkGroupBean> findNotWith(long workCoreId) throws Exception {
+        JSONObject json = this.find(workCoreId);
+        if(null != json){
+            List<WorkGroupBean> notWithList = (List<WorkGroupBean>) json.get("notWithList");
+            return notWithList;
+        }
+        return null;
     }
 }

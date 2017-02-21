@@ -1,6 +1,9 @@
 package com.allen.service.basic.workcore;
 
 import com.alibaba.fastjson.JSONObject;
+import com.allen.entity.pojo.workcore.WorkCoreBean;
+
+import java.util.List;
 
 /**
  * 通过生产线id查询工作中心信息
@@ -16,4 +19,20 @@ public interface FindWorkCoreAndPlIdByPlIdService {
      * @throws Exception
      */
     public JSONObject find(long plId)throws Exception;
+
+    /**
+     * 返回已关联的工作中心
+     * @param workGroupId
+     * @return
+     * @throws Exception
+     */
+    public List<WorkCoreBean> findWith(long workGroupId)throws Exception;
+
+    /**
+     * 返回未关联的工作中心
+     * @param workGroupId
+     * @return
+     * @throws Exception
+     */
+    public List<WorkCoreBean> findNotWith(long workGroupId)throws Exception;
 }

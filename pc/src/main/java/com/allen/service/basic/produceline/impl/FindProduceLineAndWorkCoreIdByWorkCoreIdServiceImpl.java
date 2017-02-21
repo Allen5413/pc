@@ -2,6 +2,7 @@ package com.allen.service.basic.produceline.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.allen.dao.basic.produceline.ProduceLineDao;
+import com.allen.entity.pojo.produceline.ProduceLineBean;
 import com.allen.service.basic.produceline.FindProduceLineAndWorkCoreIdByWorkCoreIdService;
 import com.allen.util.StringUtil;
 import org.springframework.stereotype.Service;
@@ -27,22 +28,22 @@ public class FindProduceLineAndWorkCoreIdByWorkCoreIdServiceImpl implements Find
         List<Object[]> list = produceLineDao.findProduceLineAndWorkCoreIdByWorkCoreId(workCoreId);
         if(null != list && 0 < list.size()){
             jsonObject = new JSONObject();
-            List<JSONObject> allList = new ArrayList<JSONObject>(list.size());
-            List<JSONObject> withList = new ArrayList<JSONObject>();
-            List<JSONObject> notWithList = new ArrayList<JSONObject>();
+            List<ProduceLineBean> allList = new ArrayList<ProduceLineBean>(list.size());
+            List<ProduceLineBean> withList = new ArrayList<ProduceLineBean>();
+            List<ProduceLineBean> notWithList = new ArrayList<ProduceLineBean>();
             for(Object[] objs : list){
-                JSONObject json = new JSONObject();
-                json.put("id", objs[0]);
-                json.put("code", objs[1]);
-                json.put("name", objs[2]);
-                json.put("wcId", objs[3]);
-                allList.add(json);
+                ProduceLineBean produceLineBean = new ProduceLineBean();
+                produceLineBean.setId(null == objs[0] ? null : Long.parseLong(objs[0].toString()));
+                produceLineBean.setCode((String) objs[1]);
+                produceLineBean.setName((String) objs[2]);
+                produceLineBean.setWcId(null == objs[3] ? null : Long.parseLong(objs[3].toString()));
+                allList.add(produceLineBean);
 
                 if(null != objs[3] && !StringUtil.isEmpty(objs[3].toString())){
-                    withList.add(json);
+                    withList.add(produceLineBean);
                 }
                 if(null == objs[3] || StringUtil.isEmpty(objs[3].toString())){
-                    notWithList.add(json);
+                    notWithList.add(produceLineBean);
                 }
             }
             jsonObject.put("allList", allList);
@@ -50,5 +51,25 @@ public class FindProduceLineAndWorkCoreIdByWorkCoreIdServiceImpl implements Find
             jsonObject.put("notWithList", notWithList);
         }
         return jsonObject;
+    }
+
+    @Override
+    public List<ProduceLineBean> findWith(long workCoreId) throws Exception {
+        JSONObject json = this.find(workCoreId);
+        if(null != json){
+            List<ProduceLineBean> withList = (List<ProduceLineBean>) json.get("withList");
+            return withList;
+        }
+        return null;
+    }
+
+    @Override
+    public List<ProduceLineBean> findNotWith(long workCoreId) throws Exception {
+        JSONObject json = this.find(workCoreId);
+        if(null != json){
+            List<ProduceLineBean> notWithList = (List<ProduceLineBean>) json.get("notWithList");
+            return notWithList;
+        }
+        return null;
     }
 }

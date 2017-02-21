@@ -1,6 +1,9 @@
 package com.allen.service.basic.workgroup;
 
 import com.alibaba.fastjson.JSONObject;
+import com.allen.entity.pojo.workgroup.WorkGroupBean;
+
+import java.util.List;
 
 /**
  * 通过工作中心id查询工作组信息
@@ -16,4 +19,20 @@ public interface FindWorkGroupAndWorkCoreIdByWorkCoreIdService {
      * @throws Exception
      */
     public JSONObject find(long workCoreId)throws Exception;
+
+    /**
+     * 返回已关联的工作组
+     * @param workGroupId
+     * @return
+     * @throws Exception
+     */
+    public List<WorkGroupBean> findWith(long workGroupId)throws Exception;
+
+    /**
+     * 返回未关联的工作组
+     * @param workGroupId
+     * @return
+     * @throws Exception
+     */
+    public List<WorkGroupBean> findNotWith(long workGroupId)throws Exception;
 }
