@@ -32,7 +32,7 @@ public interface WorkCoreDao extends CrudRepository<WorkCore, Long> {
      */
     @Query(nativeQuery = true, value = "SELECT wc.id, wc.code, wc.name, plc.produce_line_id " +
             "FROM work_core wc LEFT JOIN produce_line_core plc ON wc.id = plc.work_core_id AND plc.produce_line_id = ?1 " +
-            "ORDER BY wc.code")
+            "ORDER BY plc.id")
     public List<Object[]> findWorkCoreAndProduceLineIdByProduceLineId(long produceLineId)throws Exception;
 
     /**

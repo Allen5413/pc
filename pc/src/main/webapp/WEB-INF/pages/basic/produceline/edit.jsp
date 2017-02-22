@@ -11,8 +11,11 @@
         <span style="color: red">暂时还没有关联的工作中心</span>
       </c:if>
       <c:if test="${!empty wcList}">
-        <c:forEach var="wc" items="${wcList}">
-          ${wc.name}&nbsp;&nbsp;
+        <c:forEach var="wc" items="${wcList}" varStatus="status">
+          <c:if test="${0 < status.index}">
+            &nbsp;<span class="am-icon-arrow-right"></span>&nbsp;
+          </c:if>
+          ${wc.name}
         </c:forEach>
       </c:if>
     </div>

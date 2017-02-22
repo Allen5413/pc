@@ -110,7 +110,7 @@
   }
 
   function setProduceLineCore(id){
-    app.openDialog('${pageContext.request.contextPath}/setProduceLineCoreForPlId/open.html?plId='+id, '关联工作中心', 800, 600, function(index){
+    app.openDialog('${pageContext.request.contextPath}/setProduceLineCoreForPlId/open.html?plId='+id, '关联工作中心', 800, 700, function(index){
       app.add("${pageContext.request.contextPath}/setProduceLineCoreForPlId/set.json", $('#setForm').serialize(), index);
     });
   }
