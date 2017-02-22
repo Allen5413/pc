@@ -29,7 +29,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
      */
     public PageInfo findPageByNativeSql(PageInfo pageInfo, String fields, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List<Object> paramsList = new ArrayList<Object>();
-        String sql = null;
+        String sql = new String("from ");
         this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
         this.pageSqlQueryByNativeSql(pageInfo, sql, fields, paramsList.toArray());
         return pageInfo;
@@ -49,14 +49,49 @@ public class BaseQueryDao extends JapDynamicQueryDao {
     public PageInfo findPageByNativeSqlToMap(PageInfo pageInfo, String fields, String defaultWhere, String[] tableNames,
                                              Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List<Object> paramsList = new ArrayList<Object>();
-        String sql = null;
+        String sql = new String("from ");
         this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
         this.pageSqlQueryByNativeSqlToMap(pageInfo, sql, fields, paramsList.toArray());
         return pageInfo;
     }
 
     /**
-     *
+     * Hql 分页查询 没有设置查询字段 适用于单表查询
+     * @param pageInfo
+     * @param tableNames
+     * @param paramsMap
+     * @param sortMap
+     * @return
+     * @throws Exception
+     */
+    public PageInfo findPageByJpal(PageInfo pageInfo, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
+        List paramsList = new ArrayList();
+        String sql = new String("from ");
+        this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
+        this.pagedQueryByJpql(pageInfo, sql.toString(), paramsList.toArray());
+        return pageInfo;
+    }
+
+    /**
+     * Hql 分页查询 没有设置查询字段  带有默认条件的
+     * @param pageInfo
+     * @param tableNames
+     * @param defaultWhere
+     * @param paramsMap
+     * @param sortMap
+     * @return
+     * @throws Exception
+     */
+    public PageInfo findPageByJpal(PageInfo pageInfo, String[] tableNames, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
+        List paramsList = new ArrayList();
+        String sql = new String("from ");
+        this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
+        this.pagedQueryByJpql(pageInfo, sql.toString(), paramsList.toArray());
+        return pageInfo;
+    }
+
+    /**
+     * Hql 分页查询 可以设置查询字段
      * @param pageInfo
      * @param fields
      * @param tableNames
@@ -68,181 +103,114 @@ public class BaseQueryDao extends JapDynamicQueryDao {
     public PageInfo findPageByJpal(PageInfo pageInfo, String fields, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List paramsList = new ArrayList();
         String sql = new String("select "+fields+" from ");
-        for(int i=0; i<tableNames.length; i++){
-            sql += tableNames[i];
-            if(i == tableNames.length - 1){
-                sql += " ";
-            }else{
-                sql += ", ";
-            }
-        }
-        sql += "where 1=1 ";
-        sql = getParamListVal(sql,paramsMap,paramsList);
-        if(null != sortMap) {
-            sql += "order by ";
-            int i = 0;
-            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
-                if(0 < i){
-                    sql += ",";
-                }
-                String key = it.next().toString();
-                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
-                i++;
-            }
-        }
+        this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
         this.pagedQueryByJpql(pageInfo, sql.toString(), paramsList.toArray());
         return pageInfo;
     }
 
+    /**
+     * Hql 分页查询 可以设置查询字段 带有默认条件的，如：多个表关联
+     * @param pageInfo
+     * @param fields
+     * @param tableNames
+     * @param defaultWhere
+     * @param paramsMap
+     * @param sortMap
+     * @return
+     * @throws Exception
+     */
     public PageInfo findPageByJpal(PageInfo pageInfo, String fields, String[] tableNames, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List paramsList = new ArrayList();
         String sql = new String("select "+fields+" from ");
-        for(int i=0; i<tableNames.length; i++){
-            sql += tableNames[i];
-            if(i == tableNames.length - 1){
-                sql += " ";
-            }else{
-                sql += ", ";
-            }
-        }
-        sql += "where " + defaultWhere + " ";
-        sql = getParamListVal(sql,paramsMap,paramsList);
-        if(null != sortMap) {
-            sql += "order by ";
-            int i = 0;
-            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
-                if(0 < i){
-                    sql += ",";
-                }
-                String key = it.next().toString();
-                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
-                i++;
-            }
-        }
+        this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
         this.pagedQueryByJpql(pageInfo, sql.toString(), paramsList.toArray());
         return pageInfo;
     }
 
-    public PageInfo findPageByJpal(PageInfo pageInfo, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
-        List paramsList = new ArrayList();
-        String sql = new String("from ");
-        for(int i=0; i<tableNames.length; i++){
-            sql += tableNames[i];
-            if(i == tableNames.length - 1){
-                sql += " ";
-            }else{
-                sql += ", ";
-            }
-        }
-        sql += "where 1=1 ";
-        sql = getParamListVal(sql,paramsMap,paramsList);
-        if(null != sortMap) {
-            sql += "order by ";
-            int i = 0;
-            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
-                if(0 < i){
-                    sql += ",";
-                }
-                String key = it.next().toString();
-                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
-                i++;
-            }
-        }
-        this.pagedQueryByJpql(pageInfo, sql.toString(), paramsList.toArray());
-        return pageInfo;
-    }
-
-    public PageInfo findPageByJpal(PageInfo pageInfo, String[] tableNames, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
-        List paramsList = new ArrayList();
-        String sql = new String("from ");
-        for(int i=0; i<tableNames.length; i++){
-            sql += tableNames[i];
-            if(i == tableNames.length - 1){
-                sql += " ";
-            }else{
-                sql += ", ";
-            }
-        }
-        sql += " where "+defaultWhere+" ";
-        sql = getParamListVal(sql,paramsMap,paramsList)+" ";
-        if(null != sortMap) {
-            sql += "order by ";
-            int i = 0;
-            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
-                if(0 < i){
-                    sql += ",";
-                }
-                String key = it.next().toString();
-                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
-                i++;
-            }
-        }
-        this.pagedQueryByJpql(pageInfo, sql.toString(), paramsList.toArray());
-        return pageInfo;
-    }
-
+    /**
+     * Hql 分页查询 可以设置查询字段 返回指定class对象
+     * @param tableNames
+     * @param fields
+     * @param paramsMap
+     * @param sortMap
+     * @param returnClass
+     * @return
+     */
     public List findListByHql(String[] tableNames, String fields, Map<String, Object> paramsMap, Map<String, Boolean> sortMap, Class returnClass){
         List paramsList = new ArrayList();
         String sql = new String("select "+fields+" from ");
-        for(int i=0; i<tableNames.length; i++){
-            sql += tableNames[i];
-            if(i == tableNames.length - 1){
-                sql += " ";
-            }else{
-                sql += ", ";
-            }
-        }
-        sql += "where 1=1 ";
-        sql = getParamListVal(sql,paramsMap,paramsList);
-        if(null != sortMap) {
-            sql += "order by ";
-            int i = 0;
-            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
-                if(0 < i){
-                    sql += ",";
-                }
-                String key = it.next().toString();
-                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
-                i++;
-            }
-        }
+        this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
         return this.sqlQueryByHql(sql, returnClass, paramsList.toArray());
     }
 
+    /**
+     * Hql 分页查询 可以设置查询字段 带有默认条件的，如：多个表关联  返回指定class对象
+     * @param tableNames
+     * @param fields
+     * @param defaultWhere
+     * @param paramsMap
+     * @param sortMap
+     * @param returnClass
+     * @return
+     */
     public List findListByHql(String[] tableNames, String fields, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap, Class returnClass){
         List paramsList = new ArrayList();
         String sql = new String("select "+fields+" from ");
-        for(int i=0; i<tableNames.length; i++){
-            sql += tableNames[i];
-            if(i == tableNames.length - 1){
-                sql += " ";
-            }else{
-                sql += ", ";
-            }
-        }
-        sql += "where " + defaultWhere + " ";
-        sql = getParamListVal(sql,paramsMap,paramsList);
-        if(null != sortMap) {
-            sql += "order by ";
-            int i = 0;
-            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
-                if(0 < i){
-                    sql += ",";
-                }
-                String key = it.next().toString();
-                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
-                i++;
-            }
-        }
+        this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
         return this.sqlQueryByHql(sql, returnClass, paramsList.toArray());
     }
 
+    /**
+     * 查询某一个对象，返回指定class对象
+     * @param tableNames
+     * @param fields
+     * @param paramsMap
+     * @param sortMap
+     * @param returnClass
+     * @return
+     */
     public Object findByHql(String[] tableNames, String fields, Map<String, Object> paramsMap,Map<String, Boolean> sortMap, Class returnClass){
         List list =  this.findListByHql(tableNames, fields, paramsMap, sortMap, returnClass);
         if(null != list && 0 < list.size()){
             return list.get(0);
         }else{
             return  null;
+        }
+    }
+
+    /***********************************下面是为了上面提供dao调用的方法的一些公用计算，组装方法；批量新增，批量修改方法******************************************************/
+
+    /**
+     * 配置各种查询语句组装，条件参数组装
+     * @param paramsList
+     * @param sql
+     * @param tableNames
+     * @param paramsMap
+     * @param sortMap
+     */
+    private void queryTableWhereConfigure(List<Object> paramsList, String sql, String defaultWhere, String[] tableNames,
+                                          Map<String, Object> paramsMap, Map<String, Boolean> sortMap){
+        for(int i=0; i<tableNames.length; i++){
+            sql += tableNames[i];
+            if(i == tableNames.length - 1){
+                sql += " ";
+            }else{
+                sql += ", ";
+            }
+        }
+        sql += StringUtil.isEmpty(defaultWhere) ? "where 1=1 " : "where "+defaultWhere+" ";
+        sql = getParamListVal(sql,paramsMap,paramsList);
+        if(null != sortMap) {
+            sql += "order by ";
+            int i = 0;
+            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
+                if(0 < i){
+                    sql += ",";
+                }
+                String key = it.next().toString();
+                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
+                i++;
+            }
         }
     }
 
@@ -273,56 +241,6 @@ public class BaseQueryDao extends JapDynamicQueryDao {
         }
         return  sql;
     }
-
-
-    /**
-     * 配置各种查询语句组装，条件参数组装
-     * @param paramsList
-     * @param sql
-     * @param tableNames
-     * @param paramsMap
-     * @param sortMap
-     */
-    private void queryTableWhereConfigure(List<Object> paramsList, String sql, String defaultWhere, String[] tableNames,
-                                          Map<String, Object> paramsMap, Map<String, Boolean> sortMap){
-        sql = new String("from ");
-        for(int i=0; i<tableNames.length; i++){
-            sql += tableNames[i];
-            if(i == tableNames.length - 1){
-                sql += " ";
-            }else{
-                sql += ", ";
-            }
-        }
-        sql += StringUtil.isEmpty(defaultWhere) ? "where 1=1 " : "where "+defaultWhere+" ";
-        sql = getParamListVal(sql,paramsMap,paramsList);
-        if(null != sortMap) {
-            sql += "order by ";
-            int i = 0;
-            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
-                if(0 < i){
-                    sql += ",";
-                }
-                String key = it.next().toString();
-                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
-                i++;
-            }
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * 执行sql原生方法，可以返回任何字段，不受entity的影响
