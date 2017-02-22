@@ -20,7 +20,9 @@ public class FindProductDao extends BaseQueryDao {
      * @throws Exception
      */
     public PageInfo findPage(PageInfo pageInfo, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
-        String[] tableNames = {"Product"};
-        return super.findPageByJpal(pageInfo, tableNames, paramsMap, sortMap);
+        String fields = "p.*,pt.name as tName";
+        String[] tableNames = {"product p, product_type pt"};
+        String defaultWhere = "p.type = pt.id";
+        return super.findPageByNativeSqlToMap(pageInfo, fields,defaultWhere,tableNames, paramsMap, sortMap);
     }
 }

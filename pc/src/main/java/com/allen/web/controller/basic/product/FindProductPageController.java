@@ -27,11 +27,11 @@ public class FindProductPageController extends BaseController {
                        @RequestParam(value="code", required=false) String code,
                        HttpServletRequest request) throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("code", code);
-        params.put("name", new Object[]{StringUtil.isEmpty(name) ? "" : "%"+name+"%", "like"});
+        params.put("p.code", code);
+        params.put("p.name", new Object[]{StringUtil.isEmpty(name) ? "" : "%"+name+"%", "like"});
         PageInfo pageInfo = super.getPageInfo(request);
         Map<String, Boolean> sortMap = new HashMap<String, Boolean>();
-        sortMap.put("id", true);
+        sortMap.put("p.id", true);
         pageInfo = findProductPageService.find(pageInfo, params, sortMap);
         request.setAttribute("pageInfo", pageInfo);
         return "/basic/product/page";

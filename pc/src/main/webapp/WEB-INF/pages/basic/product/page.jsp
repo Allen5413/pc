@@ -50,17 +50,17 @@
   <c:forEach var="product" items="${pageInfo.pageResults}" varStatus="status">
     <tr>
       <td align="center">${status.index+1}</td>
-      <td>${product.code}</td>
-      <td>${product.name}</td>
-      <td>${product.name}</td>
-      <td>${product.operator}</td>
-      <td><fmt:formatDate value="${product.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+      <td>${product['code']}</td>
+      <td>${product['name']}</td>
+      <td>${product['tName']}</td>
+      <td>${product['creator']}</td>
+      <td><fmt:formatDate value="${product['operate_time']}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
         <c:if test="${isShowEditBtn}">
-          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="editProduct(${product.id})"><span class="am-icon-edit"></span> 修改</a>
+          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="editProduct(${product['id']})"><span class="am-icon-edit"></span> 修改</a>
         </c:if>
         <c:if test="${isShowDelBtn}">
-          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${product.id})"><span class="am-icon-trash-o"></span> 删除</a>
+          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${product['id']})"><span class="am-icon-trash-o"></span> 删除</a>
         </c:if>
       </td>
     </tr>

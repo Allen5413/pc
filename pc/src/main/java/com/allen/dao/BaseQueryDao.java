@@ -3,6 +3,7 @@ package com.allen.dao;
 import com.allen.util.StringUtil;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.transform.Transformers;
 import org.springframework.util.Assert;
 
 import javax.persistence.Query;
@@ -56,6 +57,22 @@ public class BaseQueryDao extends JapDynamicQueryDao {
         sqlQuery.setMaxResults(pageInfo.getCountOfCurrentPage());
         sqlQuery.setFirstResult(pageInfo.getCountOfCurrentPage() * (pageInfo.getCurrentPage() - 1));
         pageInfo.setPageResults(sqlQuery.list());
+        return pageInfo;
+    }
+
+    protected PageInfo pageSqlQueryByNativeSqlToMap(PageInfo pageInfo, String sql, String field, Object... args) {
+        long totalCount = this.queryCount(true, sql, args);
+        pageInfo.setTotalCount(totalCount);
+        Session session = super.entityManager.unwrap(Session.class);
+        SQLQuery sqlQuery = session.createSQLQuery("select "+field+" "+sql);
+        if(args != null && args.length != 0) {
+            for(int i = 0; i < args.length; ++i) {
+                sqlQuery.setParameter(i, args[i]);
+            }
+        }
+        sqlQuery.setMaxResults(pageInfo.getCountOfCurrentPage());
+        sqlQuery.setFirstResult(pageInfo.getCountOfCurrentPage() * (pageInfo.getCurrentPage() - 1));
+        pageInfo.setPageResults(sqlQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list());
         return pageInfo;
     }
 
@@ -233,6 +250,47 @@ public class BaseQueryDao extends JapDynamicQueryDao {
             }
         }
         this.pageSqlQueryByNativeSql(pageInfo, sql.toString(), fields, paramsList.toArray());
+        return pageInfo;
+    }
+
+    /**
+     * 功能：根据原声sql 分页查询
+     * @param pageInfo 分页信息
+     * @param fields 查询字段名称
+     * @param defaultWhere 关联条件
+     * @param tableNames 数据库表名称
+     * @param paramsMap 参数对象
+     * @param sortMap 排序方式
+     * @return
+     * @throws Exception
+     */
+    public PageInfo findPageByNativeSqlToMap(PageInfo pageInfo, String fields,String defaultWhere, String[] tableNames,
+                     Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
+        List<Object> paramsList = new ArrayList<Object>();
+        String sql = new String("from ");
+        for(int i=0; i<tableNames.length; i++){
+            sql += tableNames[i];
+            if(i == tableNames.length - 1){
+                sql += " ";
+            }else{
+                sql += ", ";
+            }
+        }
+        sql += "where "+defaultWhere+" ";
+        sql = getParamListVal(sql,paramsMap,paramsList);
+        if(null != sortMap) {
+            sql += "order by ";
+            int i = 0;
+            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
+                if(0 < i){
+                    sql += ",";
+                }
+                String key = it.next().toString();
+                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
+                i++;
+            }
+        }
+        this.pageSqlQueryByNativeSqlToMap(pageInfo, sql.toString(), fields, paramsList.toArray());
         return pageInfo;
     }
 
