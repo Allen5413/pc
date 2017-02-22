@@ -18,204 +18,7 @@ import java.util.regex.Pattern;
 public class BaseQueryDao extends JapDynamicQueryDao {
 
     /**
-     * 执行sql原生方法，可以返回任何字段，不受entity的影响
-     * @param sql
-     * @param args
-     * @return
-     */
-    protected List sqlQueryByNativeSql(String sql, Object... args) {
-        Session session = super.entityManager.unwrap(Session.class);
-        SQLQuery sqlQuery = session.createSQLQuery(sql);
-        if(args != null && args.length != 0) {
-            for(int i = 0; i < args.length; ++i) {
-                sqlQuery.setParameter((i+1), args[i]);
-            }
-        }
-        return sqlQuery.list();
-    }
-
-    protected List sqlQueryByHql(String hql, Class returnClass, Object... args) {
-        Query query = this.entityManager.createQuery(hql, returnClass);
-        if(args != null && args.length != 0) {
-            for(int i = 0; i < args.length; ++i) {
-                query.setParameter((i+1), args[i]);
-            }
-        }
-        return query.getResultList();
-    }
-
-    protected PageInfo pageSqlQueryByNativeSql(PageInfo pageInfo, String sql, String field, Object... args) {
-        long totalCount = this.queryCount(true, sql, args);
-        pageInfo.setTotalCount(totalCount);
-        Session session = super.entityManager.unwrap(Session.class);
-        SQLQuery sqlQuery = session.createSQLQuery("select "+field+" "+sql);
-        if(args != null && args.length != 0) {
-            for(int i = 0; i < args.length; ++i) {
-                sqlQuery.setParameter(i, args[i]);
-            }
-        }
-        sqlQuery.setMaxResults(pageInfo.getCountOfCurrentPage());
-        sqlQuery.setFirstResult(pageInfo.getCountOfCurrentPage() * (pageInfo.getCurrentPage() - 1));
-        pageInfo.setPageResults(sqlQuery.list());
-        return pageInfo;
-    }
-
-    protected PageInfo pageSqlQueryByNativeSqlToMap(PageInfo pageInfo, String sql, String field, Object... args) {
-        long totalCount = this.queryCount(true, sql, args);
-        pageInfo.setTotalCount(totalCount);
-        Session session = super.entityManager.unwrap(Session.class);
-        SQLQuery sqlQuery = session.createSQLQuery("select "+field+" "+sql);
-        if(args != null && args.length != 0) {
-            for(int i = 0; i < args.length; ++i) {
-                sqlQuery.setParameter(i, args[i]);
-            }
-        }
-        sqlQuery.setMaxResults(pageInfo.getCountOfCurrentPage());
-        sqlQuery.setFirstResult(pageInfo.getCountOfCurrentPage() * (pageInfo.getCurrentPage() - 1));
-        pageInfo.setPageResults(sqlQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list());
-        return pageInfo;
-    }
-
-    protected PageInfo pagedQueryByJpql(PageInfo pageInfo, String ql, Object... args) {
-        long totalCount = this.queryCount(false, ql, args);
-        pageInfo.setTotalCount(totalCount);
-        Query query = this.entityManager.createQuery(ql);
-        if(args != null && args.length != 0) {
-            for(int i = 0; i < args.length; ++i) {
-                query.setParameter(i+1, args[i]);
-            }
-        }
-
-        query.setMaxResults(pageInfo.getCountOfCurrentPage());
-        query.setFirstResult(pageInfo.getCountOfCurrentPage() * (pageInfo.getCurrentPage() - 1));
-        pageInfo.setPageResults(query.getResultList());
-        return pageInfo;
-    }
-
-    protected PageInfo queryByNativeSql(Class resultClass, PageInfo pageInfo, String sql, Object... args) {
-        long totalCount = this.queryCount(true, sql, args);
-        pageInfo.setTotalCount(totalCount);
-        Query query = this.entityManager.createNativeQuery(sql, resultClass);
-        if(args != null && args.length != 0) {
-            for(int i = 0; i < args.length; ++i) {
-                query.setParameter(i+1, args[i]);
-            }
-        }
-
-        query.setMaxResults(pageInfo.getCountOfCurrentPage());
-        query.setFirstResult(pageInfo.getCountOfCurrentPage() * (pageInfo.getCurrentPage() - 1));
-        pageInfo.setPageResults(query.getResultList());
-        return pageInfo;
-    }
-
-    protected void batchInsert(List list, int num)throws Exception{
-        try {
-            if(null != list && 0 < list.size()) {
-                int tmp = 1;
-                for (int i = 0; i < list.size(); i++) {
-                    Session session = super.entityManager.unwrap(Session.class);
-                    session.persist(list.get(i));
-                    if (tmp == num) {
-                        session.flush();
-                        session.clear();
-                        tmp = 1;
-                    }
-                    tmp++;
-                }
-            }
-        }catch(Exception e){
-            throw e;
-        }
-    }
-
-    protected void batchUpdate(List list, int num)throws Exception{
-        try {
-            if(null != list && 0 < list.size()) {
-                int tmp = 1;
-                for (int i = 0; i < list.size(); i++) {
-                    Session session = super.entityManager.unwrap(Session.class);
-                    session.merge(list.get(i));
-                    if (tmp == num) {
-                        session.flush();
-                        session.clear();
-                        tmp = 1;
-                    }
-                    tmp++;
-                }
-            }
-        }catch(Exception e){
-            throw e;
-        }
-    }
-
-    private long queryCount(boolean nativeSql, String ql, Object... args) {
-        Query query = null;
-        if(nativeSql) {
-            String countQueryString = "select count(1) from (select 1 " + ql + ") tempAlias";
-            query = super.entityManager.createNativeQuery(countQueryString);
-        } else {
-            String countQueryString = "select count(*) " + removeSelect(removeOrders(ql));
-            query = super.entityManager.createQuery(countQueryString);
-        }
-
-        if(args != null && args.length != 0) {
-            for(int i = 0; i < args.length; ++i) {
-                query.setParameter(i+1, args[i]);
-            }
-        }
-        if(nativeSql) {
-            BigInteger result = (BigInteger)(query.getSingleResult());
-            return Long.valueOf(result.toString());
-        } else {
-            return ((Long)query.getSingleResult()).longValue();
-        }
-    }
-
-    private long queryHqlCount(boolean nativeSql, String ql, Object... args) {
-        String countQueryString = "select count(*) " + removeSelect(removeOrders(ql));
-        Query query = null;
-        if(nativeSql) {
-            query = super.entityManager.createNativeQuery(countQueryString);
-        } else {
-            query = super.entityManager.createQuery(countQueryString);
-        }
-
-        if(args != null && args.length != 0) {
-            for(int i = 0; i < args.length; ++i) {
-                query.setParameter(i+1, args[i]);
-            }
-        }
-        if(nativeSql) {
-            BigInteger result = (BigInteger)(query.getSingleResult());
-            return Long.valueOf(result.toString());
-        } else {
-            return ((Long)query.getSingleResult()).longValue();
-        }
-    }
-
-    private static String removeSelect(String hql) {
-        Assert.hasText(hql);
-        int beginPos = hql.toLowerCase().indexOf("from");
-        Assert.isTrue(beginPos != -1, " hql : " + hql + " must has a keyword \'from\'");
-        return hql.substring(beginPos);
-    }
-
-    private static String removeOrders(String hql) {
-        Assert.hasText(hql);
-        Pattern p = Pattern.compile("order\\s*by[\\w|\\W|\\s|\\S]*", 2);
-        Matcher m = p.matcher(hql);
-        StringBuffer sb = new StringBuffer();
-
-        while(m.find()) {
-            m.appendReplacement(sb, "");
-        }
-
-        m.appendTail(sb);
-        return sb.toString();
-    }
-
-    /**
-     * 功能：根据原声sql 分页查询
+     * 功能：根据原声sql 分页查询 返回object[]
      * @param pageInfo 分页信息
      * @param fields 查询字段名称
      * @param tableNames 数据库表名称
@@ -226,35 +29,14 @@ public class BaseQueryDao extends JapDynamicQueryDao {
      */
     public PageInfo findPageByNativeSql(PageInfo pageInfo, String fields, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List<Object> paramsList = new ArrayList<Object>();
-        String sql = new String("from ");
-        for(int i=0; i<tableNames.length; i++){
-            sql += tableNames[i];
-            if(i == tableNames.length - 1){
-                sql += " ";
-            }else{
-                sql += ", ";
-            }
-        }
-        sql += "where 1=1 ";
-        sql = getParamListVal(sql,paramsMap,paramsList);
-        if(null != sortMap) {
-            sql += "order by ";
-            int i = 0;
-            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
-                if(0 < i){
-                    sql += ",";
-                }
-                String key = it.next().toString();
-                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
-                i++;
-            }
-        }
-        this.pageSqlQueryByNativeSql(pageInfo, sql.toString(), fields, paramsList.toArray());
+        String sql = null;
+        this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
+        this.pageSqlQueryByNativeSql(pageInfo, sql, fields, paramsList.toArray());
         return pageInfo;
     }
 
     /**
-     * 功能：根据原声sql 分页查询
+     * 功能：根据原声sql 分页查询 返回map 带有默认条件的，如：多个表关联
      * @param pageInfo 分页信息
      * @param fields 查询字段名称
      * @param defaultWhere 关联条件
@@ -264,36 +46,25 @@ public class BaseQueryDao extends JapDynamicQueryDao {
      * @return
      * @throws Exception
      */
-    public PageInfo findPageByNativeSqlToMap(PageInfo pageInfo, String fields,String defaultWhere, String[] tableNames,
-                     Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
+    public PageInfo findPageByNativeSqlToMap(PageInfo pageInfo, String fields, String defaultWhere, String[] tableNames,
+                                             Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List<Object> paramsList = new ArrayList<Object>();
-        String sql = new String("from ");
-        for(int i=0; i<tableNames.length; i++){
-            sql += tableNames[i];
-            if(i == tableNames.length - 1){
-                sql += " ";
-            }else{
-                sql += ", ";
-            }
-        }
-        sql += "where "+defaultWhere+" ";
-        sql = getParamListVal(sql,paramsMap,paramsList);
-        if(null != sortMap) {
-            sql += "order by ";
-            int i = 0;
-            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
-                if(0 < i){
-                    sql += ",";
-                }
-                String key = it.next().toString();
-                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
-                i++;
-            }
-        }
-        this.pageSqlQueryByNativeSqlToMap(pageInfo, sql.toString(), fields, paramsList.toArray());
+        String sql = null;
+        this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
+        this.pageSqlQueryByNativeSqlToMap(pageInfo, sql, fields, paramsList.toArray());
         return pageInfo;
     }
 
+    /**
+     *
+     * @param pageInfo
+     * @param fields
+     * @param tableNames
+     * @param paramsMap
+     * @param sortMap
+     * @return
+     * @throws Exception
+     */
     public PageInfo findPageByJpal(PageInfo pageInfo, String fields, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List paramsList = new ArrayList();
         String sql = new String("select "+fields+" from ");
@@ -474,6 +245,14 @@ public class BaseQueryDao extends JapDynamicQueryDao {
             return  null;
         }
     }
+
+    /**
+     * 组装查询条件参数值
+     * @param sql
+     * @param paramsMap
+     * @param paramsList
+     * @return
+     */
     private String getParamListVal(String sql,Map<String,Object> paramsMap,List<Object> paramsList){
         if(null != paramsMap && 0 < paramsMap.size()){
             for (Object key : paramsMap.keySet()) {
@@ -493,5 +272,259 @@ public class BaseQueryDao extends JapDynamicQueryDao {
             }
         }
         return  sql;
+    }
+
+
+    /**
+     * 配置各种查询语句组装，条件参数组装
+     * @param paramsList
+     * @param sql
+     * @param tableNames
+     * @param paramsMap
+     * @param sortMap
+     */
+    private void queryTableWhereConfigure(List<Object> paramsList, String sql, String defaultWhere, String[] tableNames,
+                                          Map<String, Object> paramsMap, Map<String, Boolean> sortMap){
+        sql = new String("from ");
+        for(int i=0; i<tableNames.length; i++){
+            sql += tableNames[i];
+            if(i == tableNames.length - 1){
+                sql += " ";
+            }else{
+                sql += ", ";
+            }
+        }
+        sql += StringUtil.isEmpty(defaultWhere) ? "where 1=1 " : "where "+defaultWhere+" ";
+        sql = getParamListVal(sql,paramsMap,paramsList);
+        if(null != sortMap) {
+            sql += "order by ";
+            int i = 0;
+            for (Iterator it = sortMap.keySet().iterator(); it.hasNext(); ) {
+                if(0 < i){
+                    sql += ",";
+                }
+                String key = it.next().toString();
+                sql += key + " " + (sortMap.get(key) ? "asc" : "desc");
+                i++;
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * 执行sql原生方法，可以返回任何字段，不受entity的影响
+     * @param sql
+     * @param args
+     * @return
+     */
+    protected List sqlQueryByNativeSql(String sql, Object... args) {
+        Session session = super.entityManager.unwrap(Session.class);
+        SQLQuery sqlQuery = session.createSQLQuery(sql);
+        if(args != null && args.length != 0) {
+            for(int i = 0; i < args.length; ++i) {
+                sqlQuery.setParameter((i+1), args[i]);
+            }
+        }
+        return sqlQuery.list();
+    }
+
+    protected List sqlQueryByHql(String hql, Class returnClass, Object... args) {
+        Query query = this.entityManager.createQuery(hql, returnClass);
+        if(args != null && args.length != 0) {
+            for(int i = 0; i < args.length; ++i) {
+                query.setParameter((i+1), args[i]);
+            }
+        }
+        return query.getResultList();
+    }
+
+    /**
+     * 原生sql分页查询，返回object[]
+     * @param pageInfo
+     * @param sql
+     * @param field
+     * @param args
+     * @return
+     */
+    protected PageInfo pageSqlQueryByNativeSql(PageInfo pageInfo, String sql, String field, Object... args) {
+        this.pageQueryConfigure(pageInfo, sql, field, 0, false, args);
+        return pageInfo;
+    }
+
+
+    /**
+     * 原生sql分页查询，返回map
+     * @param pageInfo
+     * @param sql
+     * @param field
+     * @param args
+     * @return
+     */
+    protected PageInfo pageSqlQueryByNativeSqlToMap(PageInfo pageInfo, String sql, String field, Object... args) {
+        this.pageQueryConfigure(pageInfo, sql, field, 1, false, args);
+        return pageInfo;
+    }
+
+    /**
+     * Hql分页查询
+     * @param pageInfo
+     * @param ql
+     * @param args
+     * @return
+     */
+    protected PageInfo pagedQueryByJpql(PageInfo pageInfo, String ql, Object... args) {
+        this.pageQueryConfigure(pageInfo, ql, "", 0, true, args);
+        return pageInfo;
+    }
+
+    /**
+     * 分页查询装配
+     * @param pageInfo
+     * @param sql
+     * @param field
+     * @param flag   原生sql时用，0：返回object[]；1：返回map
+     * @param isHql
+     * @param args
+     */
+    private void pageQueryConfigure(PageInfo pageInfo, String sql, String field, int flag, boolean isHql, Object...args){
+        long totalCount = this.queryCount(true, sql, args);
+        pageInfo.setTotalCount(totalCount);
+        if(isHql){
+            Query query = this.entityManager.createQuery(sql);
+            if(args != null && args.length != 0) {
+                for(int i = 0; i < args.length; ++i) {
+                    query.setParameter(i+1, args[i]);
+                }
+            }
+
+            query.setMaxResults(pageInfo.getCountOfCurrentPage());
+            query.setFirstResult(pageInfo.getCountOfCurrentPage() * (pageInfo.getCurrentPage() - 1));
+            pageInfo.setPageResults(query.getResultList());
+        }else{
+            Session session = super.entityManager.unwrap(Session.class);
+            SQLQuery sqlQuery = session.createSQLQuery("select "+field+" "+sql);
+            if(args != null && args.length != 0) {
+                for(int i = 0; i < args.length; ++i) {
+                    sqlQuery.setParameter(i, args[i]);
+                }
+            }
+            sqlQuery.setMaxResults(pageInfo.getCountOfCurrentPage());
+            sqlQuery.setFirstResult(pageInfo.getCountOfCurrentPage() * (pageInfo.getCurrentPage() - 1));
+            if(0 == flag){
+                pageInfo.setPageResults(sqlQuery.list());
+            }
+            if(1 == flag){
+                pageInfo.setPageResults(sqlQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list());
+            }
+        }
+    }
+
+    private long queryCount(boolean nativeSql, String ql, Object... args) {
+        Query query = null;
+        if(nativeSql) {
+            String countQueryString = "select count(1) from (select 1 " + ql + ") tempAlias";
+            query = super.entityManager.createNativeQuery(countQueryString);
+        } else {
+            String countQueryString = "select count(*) " + removeSelect(removeOrders(ql));
+            query = super.entityManager.createQuery(countQueryString);
+        }
+
+        if(args != null && args.length != 0) {
+            for(int i = 0; i < args.length; ++i) {
+                query.setParameter(i+1, args[i]);
+            }
+        }
+        if(nativeSql) {
+            BigInteger result = (BigInteger)(query.getSingleResult());
+            return Long.valueOf(result.toString());
+        } else {
+            return ((Long)query.getSingleResult()).longValue();
+        }
+    }
+
+    private static String removeSelect(String hql) {
+        Assert.hasText(hql);
+        int beginPos = hql.toLowerCase().indexOf("from");
+        Assert.isTrue(beginPos != -1, " hql : " + hql + " must has a keyword \'from\'");
+        return hql.substring(beginPos);
+    }
+
+    private static String removeOrders(String hql) {
+        Assert.hasText(hql);
+        Pattern p = Pattern.compile("order\\s*by[\\w|\\W|\\s|\\S]*", 2);
+        Matcher m = p.matcher(hql);
+        StringBuffer sb = new StringBuffer();
+
+        while(m.find()) {
+            m.appendReplacement(sb, "");
+        }
+
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
+    /**
+     * 批量添加数据
+     * @param list
+     * @param num
+     * @throws Exception
+     */
+    protected void batchInsert(List list, int num)throws Exception{
+        try {
+            if(null != list && 0 < list.size()) {
+                int tmp = 1;
+                for (int i = 0; i < list.size(); i++) {
+                    Session session = super.entityManager.unwrap(Session.class);
+                    session.persist(list.get(i));
+                    if (tmp == num) {
+                        session.flush();
+                        session.clear();
+                        tmp = 1;
+                    }
+                    tmp++;
+                }
+            }
+        }catch(Exception e){
+            throw e;
+        }
+    }
+
+    /**
+     * 批量修改数据
+     * @param list
+     * @param num
+     * @throws Exception
+     */
+    protected void batchUpdate(List list, int num)throws Exception{
+        try {
+            if(null != list && 0 < list.size()) {
+                int tmp = 1;
+                for (int i = 0; i < list.size(); i++) {
+                    Session session = super.entityManager.unwrap(Session.class);
+                    session.merge(list.get(i));
+                    if (tmp == num) {
+                        session.flush();
+                        session.clear();
+                        tmp = 1;
+                    }
+                    tmp++;
+                }
+            }
+        }catch(Exception e){
+            throw e;
+        }
     }
 }
