@@ -12,8 +12,14 @@
   <c:set var="isShowAddBtn" value="${my:isPermission(requestScope.resourceId,'addProduct',sessionScope.menuMap)}" />
   <c:set var="isShowEditBtn" value="${my:isPermission(requestScope.resourceId,'editProduct',sessionScope.menuMap)}" />
   <c:set var="isShowFindBtn" value="${my:isPermission(requestScope.resourceId,'find',sessionScope.menuMap)}" />
-
-  <label >编码：</label>
+  <label >类别：</label>
+  <select id="type" name="type">
+    <option value="-1">全部</option>
+    <c:forEach items="${productTypes}" var="productType">
+      <option value="${productType.id}" <c:if test="${param.type==productType.id}"> selected </c:if>>${productType.name}</option>
+    </c:forEach>
+  </select>&nbsp;&nbsp;&nbsp;&nbsp;
+  <label>编码：</label>
   <input type="text" id="code" name="code" value="${param.code}" />&nbsp;&nbsp;&nbsp;&nbsp;
   <label >名称：</label>
   <input type="text" id="name" name="name" value="${param.name}" />&nbsp;&nbsp;&nbsp;&nbsp;

@@ -64,7 +64,7 @@ public class EditProductServiceImpl implements EditProductService {
             for (ProductSelfUse currentProduct:currentProductSelfUses){
                  flag = false;
                 for (ProductSelfUse operateProduct:product.getProductSelfUses()){
-                    if(currentProduct.getCode()==operateProduct.getCode()){
+                    if(currentProduct.getCode().equals(operateProduct.getCode())){
                         flag = true;
                         break;
                     }
@@ -78,7 +78,7 @@ public class EditProductServiceImpl implements EditProductService {
                 operateProduct.setOperator(product.getOperator());
                 operateProduct.setOperatorId(product.getOperatorId());
                 for (ProductSelfUse currentProduct:currentProductSelfUses){
-                    if(currentProduct.getCode()==operateProduct.getCode()){
+                    if(currentProduct.getCode().equals(operateProduct.getCode())){
                         flag = true;
                         operateProduct.setCreator(currentProduct.getCreator());
                         operateProduct.setCreatorId(currentProduct.getCreatorId());

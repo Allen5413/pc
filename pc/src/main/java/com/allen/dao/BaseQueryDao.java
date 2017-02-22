@@ -30,7 +30,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
     public PageInfo findPageByNativeSql(PageInfo pageInfo, String fields, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List<Object> paramsList = new ArrayList<Object>();
         String sql = new String("from ");
-        this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
+        sql = this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
         this.pageSqlQueryByNativeSql(pageInfo, sql, fields, paramsList.toArray());
         return pageInfo;
     }
@@ -50,7 +50,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
                                              Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List<Object> paramsList = new ArrayList<Object>();
         String sql = new String("from ");
-        this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
+        sql = this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
         this.pageSqlQueryByNativeSqlToMap(pageInfo, sql, fields, paramsList.toArray());
         return pageInfo;
     }
@@ -67,7 +67,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
     public PageInfo findPageByJpal(PageInfo pageInfo, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List paramsList = new ArrayList();
         String sql = new String("from ");
-        this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
+        sql = this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
         this.pagedQueryByJpql(pageInfo, sql.toString(), paramsList.toArray());
         return pageInfo;
     }
@@ -85,7 +85,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
     public PageInfo findPageByJpal(PageInfo pageInfo, String[] tableNames, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List paramsList = new ArrayList();
         String sql = new String("from ");
-        this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
+        sql = this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
         this.pagedQueryByJpql(pageInfo, sql.toString(), paramsList.toArray());
         return pageInfo;
     }
@@ -103,7 +103,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
     public PageInfo findPageByJpal(PageInfo pageInfo, String fields, String[] tableNames, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List paramsList = new ArrayList();
         String sql = new String("select "+fields+" from ");
-        this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
+        sql = this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
         this.pagedQueryByJpql(pageInfo, sql.toString(), paramsList.toArray());
         return pageInfo;
     }
@@ -122,7 +122,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
     public PageInfo findPageByJpal(PageInfo pageInfo, String fields, String[] tableNames, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         List paramsList = new ArrayList();
         String sql = new String("select "+fields+" from ");
-        this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
+        sql = this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
         this.pagedQueryByJpql(pageInfo, sql.toString(), paramsList.toArray());
         return pageInfo;
     }
@@ -139,7 +139,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
     public List findListByHql(String[] tableNames, String fields, Map<String, Object> paramsMap, Map<String, Boolean> sortMap, Class returnClass){
         List paramsList = new ArrayList();
         String sql = new String("select "+fields+" from ");
-        this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
+        sql = this.queryTableWhereConfigure(paramsList, sql, null, tableNames, paramsMap, sortMap);
         return this.sqlQueryByHql(sql, returnClass, paramsList.toArray());
     }
 
@@ -156,7 +156,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
     public List findListByHql(String[] tableNames, String fields, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap, Class returnClass){
         List paramsList = new ArrayList();
         String sql = new String("select "+fields+" from ");
-        this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
+        sql = this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
         return this.sqlQueryByHql(sql, returnClass, paramsList.toArray());
     }
 
@@ -188,7 +188,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
      * @param paramsMap
      * @param sortMap
      */
-    private void queryTableWhereConfigure(List<Object> paramsList, String sql, String defaultWhere, String[] tableNames,
+    private String queryTableWhereConfigure(List<Object> paramsList, String sql, String defaultWhere, String[] tableNames,
                                           Map<String, Object> paramsMap, Map<String, Boolean> sortMap){
         for(int i=0; i<tableNames.length; i++){
             sql += tableNames[i];
@@ -212,6 +212,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
                 i++;
             }
         }
+        return sql;
     }
 
     /**
@@ -318,7 +319,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
      * @param args
      */
     private void pageQueryConfigure(PageInfo pageInfo, String sql, String field, int flag, boolean isHql, Object...args){
-        long totalCount = this.queryCount(true, sql, args);
+        long totalCount = this.queryCount(!isHql, sql, args);
         pageInfo.setTotalCount(totalCount);
         if(isHql){
             Query query = this.entityManager.createQuery(sql);
