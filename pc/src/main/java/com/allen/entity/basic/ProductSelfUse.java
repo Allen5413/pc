@@ -20,6 +20,7 @@ public class ProductSelfUse {
     private String code;
     private String name;
     private long productId;
+    private long selfProductId;
     private BigDecimal quantity;
     private String creator;
     private BigDecimal ahead = new BigDecimal(0);
@@ -92,6 +93,14 @@ public class ProductSelfUse {
 
     public void setProductId(long productId) {
         this.productId = productId;
+    }
+
+    public long getSelfProductId() {
+        return selfProductId;
+    }
+
+    public void setSelfProductId(long selfProductId) {
+        this.selfProductId = selfProductId;
     }
 
     public BigDecimal getQuantity() {

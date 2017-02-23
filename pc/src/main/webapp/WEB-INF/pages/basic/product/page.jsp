@@ -97,8 +97,10 @@
               productDetail['quantity'] = $(this).children('td').eq(3).text();
               productDetail['ahead'] = $(this).children('td').eq(4).text();
               productDetail['level'] = $(this).children('td').eq(5).text();
+              productDetail['selfProductId'] = $(this).attr('product-id');
               productDetails.push(productDetail);
               });
+            console.log(productDetails);
       app.edit("${pageContext.request.contextPath}/editProduct/editor.json", {'code':code,'name':name,'type':$('#edit_type').val(),
               'selfMade':$("#editProductForm input[type='radio']:checked").val(),'id':$('#edit_id').val(),
               'productSelfUseList':JSON.stringify(productDetails)}, index);
@@ -126,6 +128,7 @@
           productDetail['quantity'] = $(this).children('td').eq(3).text();
           productDetail['ahead'] = $(this).children('td').eq(4).text();
           productDetail['level'] = $(this).children('td').eq(5).text();
+          productDetail['selfProductId'] = $(this).attr('product-id');
           productDetails.push(productDetail);
       });
       app.add("${pageContext.request.contextPath}/addProduct/add.json", {'code':code,'name':name,'type':$('#add_type').val(),

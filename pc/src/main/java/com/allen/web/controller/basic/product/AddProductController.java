@@ -5,6 +5,7 @@ import com.allen.entity.basic.Product;
 import com.allen.entity.basic.ProductSelfUse;
 import com.allen.entity.user.User;
 import com.allen.service.basic.product.AddProductService;
+import com.allen.service.basic.product.FindProductSelectService;
 import com.allen.service.basic.producttype.FindProductTypeSelectService;
 import com.allen.util.StringUtil;
 import com.allen.util.UserUtil;
@@ -27,13 +28,17 @@ public class AddProductController extends BaseController {
     private AddProductService addProductService;
     @Resource
     private FindProductTypeSelectService findProductTypeSelectService;
-
+    @Resource
+    private FindProductSelectService findProductSelectService;
     /**
      * @return
      */
     @RequestMapping(value = "open")
-    public String open(HttpServletRequest request){
+    public String open(HttpServletRequest request) throws Exception{
+        //查找产品类别信息
         request.setAttribute("productTypes",findProductTypeSelectService.find());
+        //获取包含产品信息
+        request.setAttribute("products",findProductSelectService.find(null));
         return "basic/product/add";
     }
 

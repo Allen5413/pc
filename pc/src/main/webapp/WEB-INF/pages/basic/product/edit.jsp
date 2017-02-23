@@ -33,7 +33,7 @@
         <div class="am-form-group">
           <label class="am-u-sm-3 am-form-label no-padding-right" for="edit_type"><i class="red">*</i>类别</label>
           <div class="am-u-sm-9">
-            <select class="am-input-sm" required id="edit_type" name="type">
+            <select class="am-input-sm" required id="edit_type" data-am-selected="{btnWidth:'226px'}" name="type">
               <c:forEach items="${productTypes}" var="productType">
                 <option value="${productType.id}" <c:if test="${productType.id==productInfo.type}"> selected </c:if>>${productType.name}</option>
               </c:forEach>
@@ -61,11 +61,15 @@
   <div class="am-panel am-panel-default am-u-sm-12 no-padding-left no-padding-right no-margin-bottom">
     <div class="am-panel-hd">产品组成</div>
     <div class="am-panel-bd am-u-sm-12 no-padding">
-      <div class="am-u-sm-6 no-padding-left no-padding-right" style="margin-top: 10px;">
+      <div class="am-u-sm-6 no-padding-left no-padding-right" style="margin-top: 8px;">
         <div class="am-form-group">
           <label class="am-u-sm-3 am-form-label no-padding-right" for="edit_product_name"><i class="red">*</i>产品</label>
           <div class="am-u-sm-9">
-            <input class="am-input-sm" type="text"  id="edit_product_name"  />
+            <select class="am-input-sm" type="text" id="edit_product_name" data-am-selected="{maxHeight: 500, searchBox: 1,btnWidth:'226px'}">
+              <c:forEach items="${products}" var="product">
+                <option value="${product.id}" data_name="${product.name}" data_code ="${product.code}">${product.name}|${product.code}</option>
+              </c:forEach>
+            </select>
           </div>
         </div>
       </div>
@@ -113,7 +117,7 @@
         <table id="editProductDetail" class="am-table am-table-bordered am-table-striped am-table-hover no-margin-bottom" style="width:100%;">
           <tbody>
           <c:forEach items="${productInfo.productSelfUses}" var="productSelfUse" varStatus="index">
-           <tr data-id="${productSelfUse.id}">
+           <tr data-id="${productSelfUse.id}" product-id="${productSelfUse.selfProductId}">
              <td style="width: 8%;">${index.index+1}</td>
              <td style="width: 20%;">${productSelfUse.code}</td>
              <td style="width: 20%;">${productSelfUse.name}</td>
@@ -133,19 +137,23 @@
 <script>
 $(function(){
   $("input[type='radio']").uCheck();
-  //绑定详细数据添加
+  $("select").selected();
+    //绑定详细数据添加
   $('#addProductDetail').on('click',function(){
-      if($('#quantity').val().trim().length==0){
+      if($('#edit_quantity').val().trim().length==0){
         app.msg("请输入用量", 1);
         return false;
       }
-      var code = $('#product_name').val();
+      var productSelect = $('#edit_product_name option:selected');
+      var code = productSelect.attr("data_code");
+      var name = productSelect.attr("data_name");
+      var productId = productSelect.val();
       var flag = false;
       $('#editProductDetail tr').each(function(){
           if($(this).children('td').eq(1).text()==code){
-              $(this).children('td').eq(3).text($('#quantity').val());
-              $(this).children('td').eq(4).text($('#ahead').val());
-              $(this).children('td').eq(5).text($('#level').val());
+              $(this).children('td').eq(3).text($('#edit_quantity').val());
+              $(this).children('td').eq(4).text($('#edit_ahead').val());
+              $(this).children('td').eq(5).text($('#edit_level').val());
               flag = true;
               return false;
           }
@@ -153,13 +161,13 @@ $(function(){
       if(flag){
           return false;
       }
-      $('#editProductDetail tbody').append('<tr>'+
+      $('#editProductDetail tbody').append('<tr product-id="'+productId+'">'+
               '<td style="width: 8%;">'+($('#productDetail tr').length+1)+'</td>'+
-              '<td style="width: 20%;">'+$('#product_name').val()+'</td>'+
-              '<td style="width: 20%;">'+$('#product_name').val()+'</td>'+
-              '<td style="width: 13%;">'+$('#quantity').val()+'</td>'+
-              '<td style="width: 15%;">'+$('#ahead').val()+'</td>'+
-              '<td style="width: 12%;">'+$('#level').val()+'</td>'+
+              '<td style="width: 20%;">'+code+'</td>'+
+              '<td style="width: 20%;">'+name+'</td>'+
+              '<td style="width: 13%;">'+$('#edit_quantity').val()+'</td>'+
+              '<td style="width: 15%;">'+$('#edit_ahead').val()+'</td>'+
+              '<td style="width: 12%;">'+$('#edit_level').val()+'</td>'+
               '<td style="width: 12%;"><a class="am-badge am-badge-danger am-radius am-text-lg" onclick="removeProductDetail(this)" >' +
               '   <span class="am-icon-trash-o"></span>&nbsp;删除</a></td></tr>');
   });

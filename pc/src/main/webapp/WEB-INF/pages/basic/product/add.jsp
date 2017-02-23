@@ -30,7 +30,7 @@
         <div class="am-form-group">
           <label class="am-u-sm-3 am-form-label no-padding-right" for="add_type"><i class="red">*</i>类别</label>
           <div class="am-u-sm-9">
-            <select class="am-input-sm" required id="add_type" name="type">
+            <select class="am-input-sm" required id="add_type" data-am-selected="{btnWidth:'226px'}" name="type">
               <c:forEach items="${productTypes}" var="productType">
                 <option value="${productType.id}">${productType.name}</option>
               </c:forEach>
@@ -58,11 +58,15 @@
   <div class="am-panel am-panel-default am-u-sm-12 no-padding-left no-padding-right no-margin-bottom">
     <div class="am-panel-hd">产品组成</div>
     <div class="am-panel-bd am-u-sm-12 no-padding">
-      <div class="am-u-sm-6 no-padding-left no-padding-right" style="margin-top: 10px;">
+      <div class="am-u-sm-6 no-padding-left no-padding-right" style="margin-top: 8px;">
         <div class="am-form-group">
           <label class="am-u-sm-3 am-form-label no-padding-right" for="product_name"><i class="red">*</i>产品</label>
           <div class="am-u-sm-9">
-            <input class="am-input-sm" type="text"  id="product_name"  />
+            <select class="am-input-sm" type="text" id="product_name" data-am-selected="{maxHeight: 500, searchBox: 1,btnWidth:'226px'}">
+                <c:forEach items="${products}" var="product">
+                  <option value="${product.id}" data_name="${product.name}" data_code ="${product.code}">${product.name}|${product.code}</option>
+                </c:forEach>
+            </select>
           </div>
         </div>
       </div>
@@ -117,13 +121,18 @@
 <script>
 $(function(){
   $("input[type='radio']").uCheck();
-  //绑定详细数据添加
+  $("select").selected();
+
+//绑定详细数据添加
   $('#addProductDetail').on('click',function(){
       if($('#quantity').val().trim().length==0){
         app.msg("请输入用量", 1);
         return false;
       }
-      var code = $('#product_name').val();
+      var productSelect = $('#product_name option:selected');
+      var code = productSelect.attr("data_code");
+      var name = productSelect.attr("data_name");
+      var productId = productSelect.val();
       var flag = false;
       $('#productDetail tr').each(function(){
               if($(this).children('td').eq(1).text()==code){
@@ -137,10 +146,10 @@ $(function(){
       if(flag){
          return false;
       }
-      $('#productDetail tbody').append('<tr>'+
+      $('#productDetail tbody').append('<tr product-id="'+productId+'">'+
               '<td style="width: 8%;">'+($('#productDetail tr').length+1)+'</td>'+
-              '<td style="width: 20%;">'+$('#product_name').val()+'</td>'+
-              '<td style="width: 20%;">'+$('#product_name').val()+'</td>'+
+              '<td style="width: 20%;">'+code+'</td>'+
+              '<td style="width: 20%;">'+name+'</td>'+
               '<td style="width: 13%;">'+$('#quantity').val()+'</td>'+
               '<td style="width: 15%;">'+$('#ahead').val()+'</td>'+
               '<td style="width: 12%;">'+$('#level').val()+'</td>'+

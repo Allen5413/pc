@@ -6,6 +6,7 @@ import com.allen.entity.basic.ProductSelfUse;
 import com.allen.entity.basic.WorkCore;
 import com.allen.service.basic.product.EditProductService;
 import com.allen.service.basic.product.FindProductByIdService;
+import com.allen.service.basic.product.FindProductSelectService;
 import com.allen.service.basic.producttype.FindProductTypeSelectService;
 import com.allen.service.basic.workcore.EditWorkCoreService;
 import com.allen.service.basic.workcore.FindWorkCoreByIdService;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 修改工作中心
@@ -35,6 +38,8 @@ public class EditProductController extends BaseController {
     private FindProductByIdService findProductByIdService;
     @Resource
     private FindProductTypeSelectService findProductTypeSelectService;
+    @Resource
+    private FindProductSelectService findProductSelectService;
     /**
      * 打开
      * @return
@@ -43,6 +48,10 @@ public class EditProductController extends BaseController {
     public String open(@RequestParam("id") long id, HttpServletRequest request) throws Exception {
         request.setAttribute("productInfo", findProductByIdService.find(id));
         request.setAttribute("productTypes", findProductTypeSelectService.find());
+        //获取包含产品信息
+        Map<String,Object> paramsMap = new HashMap<String, Object>();
+        paramsMap.put("p.id",new Object[]{id,"<>"});
+        request.setAttribute("products",findProductSelectService.find(paramsMap));
         return "basic/product/edit";
     }
 

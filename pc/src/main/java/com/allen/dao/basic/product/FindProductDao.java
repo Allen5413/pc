@@ -2,8 +2,11 @@ package com.allen.dao.basic.product;
 
 import com.allen.dao.BaseQueryDao;
 import com.allen.dao.PageInfo;
+import com.allen.entity.basic.Product;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,5 +27,19 @@ public class FindProductDao extends BaseQueryDao {
         String[] tableNames = {"product p, product_type pt"};
         String defaultWhere = "p.type = pt.id";
         return super.findPageByNativeSqlToMap(pageInfo, fields,defaultWhere,tableNames, paramsMap, sortMap);
+    }
+
+    /**
+     * 功能:查询下拉列表中的产品信息
+     * @param paramsMap
+     * @return
+     * @throws Exception
+     */
+    public List<Product> find(Map<String,Object> paramsMap) throws Exception{
+        String fields = "p";
+        String[] tableNames = {"Product p"};
+        Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
+        sortMap.put("p.code",false);
+        return super.findListByHql(tableNames,fields,paramsMap,sortMap,Product.class);
     }
 }
