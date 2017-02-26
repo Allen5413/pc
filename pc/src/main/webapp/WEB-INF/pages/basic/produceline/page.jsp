@@ -28,13 +28,16 @@
 <p /><p />
 
 <table class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
-  <c:if test="${isShowAddBtn}">
-    <tr>
-      <td colspan="999" style="background-color:#FFF">
+  <tr>
+    <td colspan="999" style="background-color:#FFF">
+      <c:if test="${isShowAddBtn}">
         <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="add()"><span class="am-icon-plus"></span> 新增</button>
-      </td>
-    </tr>
-  </c:if>
+      </c:if>
+      <c:if test="${isShowSetWorkCoreBtn}">
+        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="setProduceLineCore()"><span class="am-icon-cog"></span> 关联工作中心</button>
+      </c:if>
+    </td>
+  </tr>
   <tr class="am-primary">
     <th style="width: 5%;">序号</th>
     <th style="width: 15%;">编号</th>
@@ -56,9 +59,6 @@
       <td>${produceLine.operator}</td>
       <td><fmt:formatDate value="${produceLine.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
-        <c:if test="${isShowSetWorkCoreBtn}">
-          <a class="am-badge am-badge-success am-radius am-text-lg" onClick="setProduceLineCore(${produceLine.id})"><span class="am-icon-cog"></span> 关联工作中心</a>
-        </c:if>
         <c:if test="${isShowEditBtn}">
           <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${produceLine.id})"><span class="am-icon-edit"></span> 修改</a>
         </c:if>
