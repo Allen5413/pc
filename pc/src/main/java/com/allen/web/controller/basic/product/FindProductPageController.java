@@ -27,14 +27,12 @@ public class FindProductPageController extends BaseController {
     @RequestMapping(value = "find")
     public String find(@RequestParam(value="name", required=false) String name,
                        @RequestParam(value="code", required=false) String code,
-                       @RequestParam(value="type",required =false,defaultValue ="-1") int type,
+                       @RequestParam(value="type",required =false) Integer type,
                        HttpServletRequest request) throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("p.code", code);
         params.put("p.name", new Object[]{StringUtil.isEmpty(name) ? "" : "%"+name+"%", "like"});
-        if(type!=-1){
-            params.put("p.type", type);
-        }
+        params.put("p.type", type);
         PageInfo pageInfo = super.getPageInfo(request);
         Map<String, Boolean> sortMap = new HashMap<String, Boolean>();
         sortMap.put("p.id", true);
