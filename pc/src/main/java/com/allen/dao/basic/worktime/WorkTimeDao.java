@@ -23,4 +23,11 @@ public interface WorkTimeDao extends CrudRepository<WorkTime, Long> {
      * @return
      */
     public List<WorkTime> findByName(String name);
+
+    /**
+     * 功能:通过序号查询班次信息
+     * @param sno
+     * @return
+     */
+    public List<WorkTime> findBySno(int sno);
 }

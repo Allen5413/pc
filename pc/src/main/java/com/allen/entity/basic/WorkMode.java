@@ -4,35 +4,28 @@ import com.allen.util.DateUtil;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
- * 班次
+ * 工作模式
  * Created by Allen on 2017/2/16 0016.
  */
 @Entity
-@Table(name = "work_time")
-public class WorkTime {
+@Table(name = "work_mode")
+public class WorkMode {
     @Id
     @GeneratedValue
     private long id;
     private String code;
     private String name;
-    private Timestamp beginTime; //开始时间 到分
-    private Timestamp endTime;   //结束时间 到分
     private String creator;
     private Date createTime = new Date();
     private String operator;
     private Date operateTime = new Date();
-    private int sno;//班次顺序号
     @Transient
-    private String beginTimeStr;
-    @Transient
-    private String endTimeStr;
-    @Transient
-    private long timeSub;   //结束时间-开始时间，得到毫秒值
-    @Transient
-    private String timeSubStr;  //结束时间-开始时间，算出单班时间用于页面显示
+    private List<WorkModeTime> workModeTimeList = new ArrayList<WorkModeTime>();
 
     public long getId() {
         return id;
@@ -56,22 +49,6 @@ public class WorkTime {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Timestamp getBeginTime() {
-        return beginTime;
-    }
-
-    public void setBeginTime(Timestamp beginTime) {
-        this.beginTime = beginTime;
-    }
-
-    public Timestamp getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Timestamp endTime) {
-        this.endTime = endTime;
     }
 
     public String getCreator() {
@@ -106,27 +83,11 @@ public class WorkTime {
         this.operateTime = operateTime;
     }
 
-    public int getSno() {
-        return sno;
+    public List<WorkModeTime> getWorkModeTimeList() {
+        return workModeTimeList;
     }
 
-    public void setSno(int sno) {
-        this.sno = sno;
-    }
-
-    public String getBeginTimeStr() {
-        return DateUtil.getFormattedString(this.getBeginTime(), "HH:mm");
-    }
-
-    public String getEndTimeStr() {
-        return DateUtil.getFormattedString(this.getEndTime(), "HH:mm");
-    }
-
-    public long getTimeSub() {
-        return this.getEndTime().getTime() - this.getBeginTime().getTime();
-    }
-
-    public String getTimeSubStr() {
-        return DateUtil.subtractDateTime(this.getEndTime(), this.getBeginTime(), "hour");
+    public void setWorkModeTimeList(List<WorkModeTime> workModeTimeList) {
+        this.workModeTimeList = workModeTimeList;
     }
 }

@@ -29,6 +29,10 @@ public class EditWorkTimeServiceImpl implements EditWorkTimeService {
         if(null != list && 0 < list.size() && !oldWorkTime.getName().equals(workTime.getName())){
             throw new BusinessException("名称已存在！");
         }
+        list = workTimeDao.findBySno(workTime.getSno());
+        if(null != list && 0 < list.size() && oldWorkTime.getSno()!=workTime.getSno()){
+            throw new BusinessException("顺序号已存在！");
+        }
 
         oldWorkTime.setCode(workTime.getCode());
         oldWorkTime.setName(workTime.getName());

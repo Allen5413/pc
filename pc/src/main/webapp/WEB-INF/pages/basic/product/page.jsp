@@ -45,6 +45,7 @@
     <th style="width: 15%;">编号</th>
     <th style="width: 20%;">名称</th>
     <th style="width: 10%;">类型</th>
+    <th style="width: 10%;">自制件</th>
     <th style="width: 10%;">操作人</th>
     <th style="width: 15%;">操作时间</th>
     <th>操作</th>
@@ -60,6 +61,7 @@
       <td>${product['code']}</td>
       <td>${product['name']}</td>
       <td>${product['tName']}</td>
+      <td>${product['self_made']==1?'是':'否'}</td>
       <td>${product['creator']}</td>
       <td><fmt:formatDate value="${product['operate_time']}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>

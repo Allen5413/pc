@@ -4,7 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="my" uri="/WEB-INF/permission.tld" %>
 <p />
-<form id="pageForm" name="pageForm" action="${pageContext.request.contextPath}/findWorkTimePage/find.html" method="post">
+<form id="pageForm" name="pageForm" action="${pageContext.request.contextPath}/findWorkModePage/find.html" method="post">
   <input type="hidden" id="rows" name="rows" />
   <input type="hidden" id="currentPage" name="page" value="${pageInfo.currentPage}"/>
   <input type="hidden" name="resourceId" value="${requestScope.resourceId}" />
@@ -30,7 +30,7 @@
   <c:if test="${isShowAddBtn}">
     <tr>
       <td colspan="999" style="background-color:#FFF">
-        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="add()"><span class="am-icon-plus"></span> 新增</button>
+        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="addWorkMode()"><span class="am-icon-plus"></span> 新增</button>
       </td>
     </tr>
   </c:if>
@@ -38,10 +38,6 @@
     <th style="width: 5%;">序号</th>
     <th style="width: 8%;">编号</th>
     <th style="width: 10%;">名称</th>
-    <th style="width: 10%;">开始时间</th>
-    <th style="width: 10%;">结束时间</th>
-    <th style="width: 8%;">顺序号</th>
-    <th style="width: 10%;">单班时间</th>
     <th style="width: 8%;">操作人</th>
     <th style="width: 15%;">操作时间</th>
     <th>操作</th>
@@ -51,23 +47,19 @@
       <td colspan="999" align="center" style="color: red;">没有找到相关数据</td>
     </tr>
   </c:if>
-  <c:forEach var="workTime" items="${pageInfo.pageResults}" varStatus="status">
+  <c:forEach var="workMode" items="${pageInfo.pageResults}" varStatus="status">
     <tr>
       <td align="center">${status.index+1}</td>
-      <td>${workTime.code}</td>
-      <td>${workTime.name}</td>
-      <td>${workTime.beginTimeStr}</td>
-      <td>${workTime.endTimeStr}</td>
-      <td>${workTime.sno}</td>
-      <td>${workTime.timeSub}</td>
-      <td>${workTime.operator}</td>
-      <td><fmt:formatDate value="${workTime.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+      <td>${workMode.code}</td>
+      <td>${workMode.name}</td>
+      <td>${workMode.operator}</td>
+      <td><fmt:formatDate value="${workMode.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
         <c:if test="${isShowEditBtn}">
-          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${workTime.id})"><span class="am-icon-edit"></span> 修改</a>
+          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="editWorkMode(${workMode.id})"><span class="am-icon-edit"></span> 修改</a>
         </c:if>
         <c:if test="${isShowDelBtn}">
-          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${workTime.id})"><span class="am-icon-trash-o"></span> 删除</a>
+          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="delWorkMode(${workMode.id})"><span class="am-icon-trash-o"></span> 删除</a>
         </c:if>
       </td>
     </tr>
@@ -76,13 +68,11 @@
 <%@ include file="../../common/page.jsp"%>
 <script>
 
-  function edit(id){
-    var url = '${pageContext.request.contextPath}/editWorkTime/open.html?id='+id;
+  function editWorkMode(id){
+    var url = '${pageContext.request.contextPath}/editWorkMode/open.html?id='+id;
     app.openDialog(url, '编辑班次信息', 600, 360, function(index){
       var code = $("#edit_code").val().trim();
       var name = $("#edit_name").val().trim();
-      var beginTime = $("#edit_beginTime").val().trim();
-      var endTime = $("#edit_endTime").val().trim();
       if(code == ""){
         app.msg("请输入编号", 1);
         return;
@@ -91,31 +81,14 @@
         app.msg("请输入名称", 1);
         return;
       }
-      if(beginTime == ""){
-        app.msg("请选择开始时间", 1);
-        return;
-      }
-      if(endTime == ""){
-        app.msg("请选择结束时间", 1);
-        return;
-      }
-
-      $("#edit_beginTime").val("1999-01-01 "+beginTime+":00");
-      if(beginTime >= endTime){
-        $("#edit_endTime").val("1999-01-02 "+endTime+":00");
-      }else{
-        $("#edit_endTime").val("1999-01-01 "+endTime+":00");
-      }
-      app.edit("${pageContext.request.contextPath}/editWorkTime/editor.json", $('#editForm').serialize(), index);
+      app.edit("${pageContext.request.contextPath}/editWorkMode/editor.json", $('#editForm').serialize(), index);
     });
   }
 
-  function add(){
-    app.openDialog("${pageContext.request.contextPath}/addWorkTime/open.html", "新增班次信息", 600, 360, function(index){
+  function addWorkMode(){
+    app.openDialog("${pageContext.request.contextPath}/addWorkMode/open.html", "新增工作模式", 600, 360, function(index){
       var code = $("#add_code").val().trim();
       var name = $("#add_name").val().trim();
-      var beginTime = $("#add_beginTime").val().trim();
-      var endTime = $("#add_endTime").val().trim();
       if(code == ""){
         app.msg("请输入编号", 1);
         return;
@@ -124,25 +97,12 @@
         app.msg("请输入名称", 1);
         return;
       }
-      if(beginTime == ""){
-        app.msg("请选择开始时间", 1);
-        return;
-      }
-      if(endTime == ""){
-        app.msg("请选择结束时间", 1);
-        return;
-      }
-      $("#add_beginTime").val("1999-01-01 "+beginTime+":00");
-      if(beginTime >= endTime){
-        $("#add_endTime").val("1999-01-02 "+endTime+":00");
-      }else{
-        $("#add_endTime").val("1999-01-01 "+endTime+":00");
-      }
-      app.add("${pageContext.request.contextPath}/addWorkTime/add.json", $('#addForm').serialize(), index);
+
+      app.add("${pageContext.request.contextPath}/addWorkMode/add.json", $('#addForm').serialize(), index);
     });
   }
 
-  function del(id){
-    app.del("您确定要删除该班次信息？", "${pageContext.request.contextPath}/delWorkTime/del.json", {"id":id});
+  function delWorkMode(id){
+    app.del("您确定要删除该班次信息？", "${pageContext.request.contextPath}/delWorkMode/del.json", {"id":id});
   }
 </script>

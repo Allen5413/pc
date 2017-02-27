@@ -28,6 +28,10 @@ public class AddWorkTimeServiceImpl implements AddWorkTimeService {
         if(null != list && 0 < list.size()){
             throw new BusinessException("名称已存在！");
         }
+        list = workTimeDao.findBySno(workTime.getSno());
+        if(null != list && 0 < list.size()){
+            throw new BusinessException("顺序号已存在！");
+        }
         workTimeDao.save(workTime);
     }
 }

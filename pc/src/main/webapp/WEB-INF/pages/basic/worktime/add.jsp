@@ -33,4 +33,11 @@
     </div>
     <div class="am-u-sm-5">*必填</div>
   </div>
+  <div class="am-g am-margin-top">
+    <div class="am-u-sm-3 am-text-right"><label >顺序号：</label></div>
+    <div class="am-u-sm-4">
+      <input type="number" id="add_sno" name="sno" min="1" placeholder="输入序号" style="width: 175px; height: 28px;"/>
+    </div>
+    <div class="am-u-sm-5">*必填，不可重复</div>
+  </div>
 </form>
