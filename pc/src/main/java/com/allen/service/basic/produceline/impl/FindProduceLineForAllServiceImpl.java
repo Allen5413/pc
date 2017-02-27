@@ -19,6 +19,6 @@ public class FindProduceLineForAllServiceImpl implements FindProduceLineForAllSe
 
     @Override
     public List<ProduceLine> find() throws Exception {
-        return (List<ProduceLine>) produceLineDao.findAll();
+        return produceLineDao.findAll();
     }
 }

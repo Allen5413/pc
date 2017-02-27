@@ -36,4 +36,7 @@ public interface ProduceLineDao extends CrudRepository<ProduceLine, Long> {
      * @return
      */
     public List<ProduceLine> findByName(String name);
+
+    @Query("from ProduceLine order by id")
+    public List<ProduceLine> findAll();
 }

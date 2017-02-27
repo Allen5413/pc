@@ -7,17 +7,18 @@ import javax.persistence.Table;
 import java.util.Date;
 
 /**
- * 生产线关联工作中心
+ * 生产线关联工作中心，再关联产品
  * Created by Allen on 2017/2/16.
  */
 @Entity
-@Table(name = "produce_line_core")
-public class ProduceLineCore {
+@Table(name = "produce_line_core_product")
+public class ProduceLineCoreProduct {
     @Id
     @GeneratedValue
     private long id;
-    private long produceLineId;
-    private long workCoreId;
+    private long produceLineCoreId;
+    private long productId;
+    private long workModelId;
     private String operator;
     private Date operateTime = new Date();
 
@@ -29,21 +30,7 @@ public class ProduceLineCore {
         this.id = id;
     }
 
-    public long getProduceLineId() {
-        return produceLineId;
-    }
 
-    public void setProduceLineId(long produceLineId) {
-        this.produceLineId = produceLineId;
-    }
-
-    public long getWorkCoreId() {
-        return workCoreId;
-    }
-
-    public void setWorkCoreId(long workCoreId) {
-        this.workCoreId = workCoreId;
-    }
 
     public String getOperator() {
         return operator;

@@ -34,7 +34,7 @@
         <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="add()"><span class="am-icon-plus"></span> 新增</button>
       </c:if>
       <c:if test="${isShowSetWorkCoreBtn}">
-        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="setProduceLineCore()"><span class="am-icon-cog"></span> 关联工作中心</button>
+        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="setProduceLine()"><span class="am-icon-cog"></span> 配置生产线关联</button>
       </c:if>
     </td>
   </tr>
@@ -109,8 +109,8 @@
     app.del("您确定要删除该生产线？", "${pageContext.request.contextPath}/delProduceLine/del.json", {"id":id});
   }
 
-  function setProduceLineCore(id){
-    app.openDialog('${pageContext.request.contextPath}/setProduceLineCoreForPlId/open.html?plId='+id, '关联工作中心', 800, 700, function(index){
+  function setProduceLine(){
+    app.openDialog('${pageContext.request.contextPath}/setProduceLineRelation/open.html', '配置生产线关联', 0.9, 0.85, function(index){
       app.add("${pageContext.request.contextPath}/setProduceLineCoreForPlId/set.json", $('#setForm').serialize(), index);
     });
   }
