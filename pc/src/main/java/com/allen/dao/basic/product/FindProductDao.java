@@ -3,6 +3,7 @@ package com.allen.dao.basic.product;
 import com.allen.dao.BaseQueryDao;
 import com.allen.dao.PageInfo;
 import com.allen.entity.basic.Product;
+import com.allen.entity.pojo.product.ProductBean;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -41,5 +42,20 @@ public class FindProductDao extends BaseQueryDao {
         Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
         sortMap.put("p.code",false);
         return super.findListByHql(tableNames,fields,paramsMap,sortMap,Product.class);
+    }
+
+    /**
+     * 功能:查询生产线关联中心下的产品
+     * @param paramsMap
+     * @return
+     * @throws Exception
+     */
+    public List<ProductBean> findByPlIdAndWcId(Map<String,Object> paramsMap) throws Exception{
+        String fields = "p.id, p.code, p.name, pt.name tName, p.self_made, plcp.work_model_id";
+        String[] tableNames = {"product p, produce_line_core_product plcp, produce_line_core plc, product_type pt"};
+        String defaultWhere = "p.type = pt.id and p.id = plcp.product_id and plcp.produce_line_core_id = plc.id";
+        Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
+        sortMap.put("p.code",false);
+        return super.findListBySql(tableNames, fields, defaultWhere, paramsMap, sortMap, ProductBean.class);
     }
 }

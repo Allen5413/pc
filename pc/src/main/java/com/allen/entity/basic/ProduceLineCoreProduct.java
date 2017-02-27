@@ -30,7 +30,29 @@ public class ProduceLineCoreProduct {
         this.id = id;
     }
 
+    public long getProduceLineCoreId() {
+        return produceLineCoreId;
+    }
 
+    public void setProduceLineCoreId(long produceLineCoreId) {
+        this.produceLineCoreId = produceLineCoreId;
+    }
+
+    public long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(long productId) {
+        this.productId = productId;
+    }
+
+    public long getWorkModelId() {
+        return workModelId;
+    }
+
+    public void setWorkModelId(long workModelId) {
+        this.workModelId = workModelId;
+    }
 
     public String getOperator() {
         return operator;

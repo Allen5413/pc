@@ -27,4 +27,13 @@ public interface ProduceLineCoreDao extends CrudRepository<ProduceLineCore, Long
     @Modifying
     @Query(nativeQuery = true, value = "delete from produce_line_core where produce_line_id = ?1")
     public void delByProduceLineId(long produceLineId)throws Exception;
+
+    /**
+     * 通过生产线id和中心id查询关联信息
+     * @param plId
+     * @param wcId
+     * @return
+     * @throws Exception
+     */
+    public ProduceLineCore findByProduceLineIdAndWorkCoreId(long plId, long wcId)throws Exception;
 }
