@@ -18,7 +18,7 @@ public class ProduceLineCoreProduct {
     private long id;
     private long produceLineCoreId;
     private long productId;
-    private long workModelId;
+    private long workModeId;
     private String operator;
     private Date operateTime = new Date();
 
@@ -46,12 +46,12 @@ public class ProduceLineCoreProduct {
         this.productId = productId;
     }
 
-    public long getWorkModelId() {
-        return workModelId;
+    public long getWorkModeId() {
+        return workModeId;
     }
 
-    public void setWorkModelId(long workModelId) {
-        this.workModelId = workModelId;
+    public void setWorkModeId(long workModeId) {
+        this.workModeId = workModeId;
     }
 
     public String getOperator() {

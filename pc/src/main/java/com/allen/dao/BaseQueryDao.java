@@ -56,20 +56,35 @@ public class BaseQueryDao extends JapDynamicQueryDao {
     }
 
     /**
-     * Sql 集合查询 可以设置查询字段 带有默认条件的，如：多个表关联  返回指定class对象
+     * Sql 集合查询 可以设置查询字段 带有默认条件的，如：多个表关联
      * @param tableNames
      * @param fields
      * @param defaultWhere
      * @param paramsMap
      * @param sortMap
-     * @param returnClass
      * @return
      */
-    public List findListBySql(String[] tableNames, String fields, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap, Class returnClass){
+    public List findListBySql(String[] tableNames, String fields, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap){
         List paramsList = new ArrayList();
         String sql = new String("select "+fields+" from ");
         sql = this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
-        return this.sqlQueryByNativeSql(sql, returnClass, paramsList.toArray());
+        return this.sqlQueryByNativeSql(sql, paramsList.toArray());
+    }
+
+    /**
+     * Sql 集合查询 可以设置查询字段 带有默认条件的，如：多个表关联 返回Map对象
+     * @param tableNames
+     * @param fields
+     * @param defaultWhere
+     * @param paramsMap
+     * @param sortMap
+     * @return
+     */
+    public List<Map> findListBySqlToMap(String[] tableNames, String fields, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap){
+        List paramsList = new ArrayList();
+        String sql = new String("select "+fields+" from ");
+        sql = this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
+        return this.sqlQueryByNativeSqlToMap(sql, paramsList.toArray());
     }
 
     /**
@@ -270,10 +285,29 @@ public class BaseQueryDao extends JapDynamicQueryDao {
         Session session = super.entityManager.unwrap(Session.class);
         SQLQuery sqlQuery = session.createSQLQuery(sql);
         if(args != null && args.length != 0) {
-            for(int i = 0; i < args.length; i++) {
+            for(int i = 0; i < args.length; ++i) {
                 sqlQuery.setParameter(i, args[i]);
             }
         }
+        System.out.print(sqlQuery.list());
+        return sqlQuery.list();
+    }
+
+    /**
+     * 执行sql原生方法，可以返回任何字段，不受entity的影响, 返回map对象的
+     * @param sql
+     * @param args
+     * @return
+     */
+    protected List<Map> sqlQueryByNativeSqlToMap(String sql, Object... args) {
+        Session session = super.entityManager.unwrap(Session.class);
+        SQLQuery sqlQuery = session.createSQLQuery(sql);
+        if(args != null && args.length != 0) {
+            for(int i = 0; i < args.length; ++i) {
+                sqlQuery.setParameter(i, args[i]);
+            }
+        }
+        System.out.print(sqlQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list());
         return sqlQuery.list();
     }
 

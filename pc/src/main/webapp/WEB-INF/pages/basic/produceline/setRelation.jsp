@@ -80,9 +80,9 @@
 <script>
   $("select").selected();
 
-  $('#setRelationDiv .table-body').height( $('.am-tabs-bd').height()-290);
-  $('#setRelationDiv .table-body2').height( $('.am-tabs-bd').height()-202);
-  $('#zTreeDiv').height( $('.am-tabs-bd').height()-208);
+  $('#setRelationDiv .table-body').height(433);
+  $('#setRelationDiv .table-body2').height(521);
+  $('#zTreeDiv').height(515);
 
   var setting = {
     data: {
@@ -119,6 +119,7 @@
         async: false,
         success: function(data) {
           if(data.state == 0){
+
             var table = $("#withProductTable");
             $(table).html("");
 
@@ -126,14 +127,30 @@
             if(0 < productList.length) {
               for(var i=0; i<productList.length; i++) {
                 var product = productList[i];
-                var tr = $("<tr onclick='delWithProduct(this, " + data.plcpId + ")'></tr>");
-                var td = $("<td style='width: 25%;'>[" + product.code + "]"+product.name+"</td>");
-                var td2 = $("<td style='width: 15%;'>" + product.tName + "</td>");
-                var td3 = $("<td style='width: 15%;'>" + (product.selfMade == 0 ? "否":"是") + "</td>");
-                var td4 = $("<td>wewewe</td>");
+                var tr = $("<tr></tr>");
+                var td = $("<td style='width: 25%;' onclick='delWithProduct(this, " + product.plcpId + ")'>[" + product.code + "]"+product.name+"</td>");
+                var td2 = $("<td style='width: 15%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + product.tName + "</td>");
+                var td3 = $("<td style='width: 15%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + (product.selfMade == 0 ? "否":"是") + "</td>");
+                var td4 = $("<td></td>");
+                var td4Html = "<select id='wmId"+i+"' onchange='app.changeSelect(this); changeWM(this, "+product.plcpId+");'>";
+                td4Html += "<option value=''></option>";
+                td4Html += "<option value='null'>全部</option>";
+                <c:forEach items="${workModeList}" var="workMode">
+                  td4Html += "<option value='${workMode.id}'>${workMode.name}</option>";
+                </c:forEach>
+                td4Html += "</select>";
+                $(td4).append(td4Html);
                 $(tr).append(td).append(td2).append(td3).append(td4);
                 table.append(tr);
+                $("select").selected();
+                var op = $("#wmId"+i).find("option[value='"+product.wmId+"']");
+                $(op).attr('selected', true);
               }
+            }else{
+              var tr = $("<tr></tr>");
+              var td = $("<td style='color: #ff0000;' align='center'>没有关联产品信息</td>");
+              $(tr).append(td);
+              table.append(tr);
             }
           }else{
             app.msg(data.msg, 1);
@@ -178,9 +195,7 @@
           if(data.state == 0){
             var productList = data.productList;
             var table = $("#findProductTable");
-            var th = table.find("tr:first");
             table.find("tr").remove();
-            table.append(th);
             if(0 < productList.length){
               for(var i=0; i<productList.length; i++){
                 var product =  productList[i];
@@ -229,19 +244,31 @@
       success: function(data) {
         if(data.state == 0){
           var table = $("#withProductTable");
+          if($(table).find("tr:first").html().indexOf("没有关联产品信息") > -1){
+            $(table).find("tr:first").remove();
+          }
 
           var nameTd = $(trObj).find("td:first");
           var typeTd = $(nameTd).next();
           var selfTd = $(typeTd).next();
 
-          var tr = $("<tr onclick='delWithProduct(this, "+data.plcpId+")'></tr>");
-          var td = $("<td style='width: 25%;'>" + $(nameTd).html() + "</td>");
-          var td2 = $("<td style='width: 15%;'>" + $(typeTd).html() + "</td>");
-          var td3 = $("<td style='width: 15%;'>" + $(selfTd).html() + "</td>");
-          var td4 = $("<td>wewewe</td>");
+          var tr = $("<tr></tr>");
+          var td = $("<td style='width: 25%;' onclick='delWithProduct(this, "+data.plcpId+")'>" + $(nameTd).html() + "</td>");
+          var td2 = $("<td style='width: 15%;' onclick='delWithProduct(this, "+data.plcpId+")'>" + $(typeTd).html() + "</td>");
+          var td3 = $("<td style='width: 15%;' onclick='delWithProduct(this, "+data.plcpId+")'>" + $(selfTd).html() + "</td>");
+          var td4 = $("<td></td>");
+          var td4Html = "<select id='wmId"+($(table).find("tr").length)+"' name='wmId' onchange='app.changeSelect(this); changeWM(this, "+data.plcpId+");'>";
+          td4Html += "<option value=''></option>";
+          td4Html += "<option value='null'>全部</option>";
+          <c:forEach items="${workModeList}" var="workMode">
+          td4Html += "<option value='${workMode.id}''>${workMode.name}</option>";
+          </c:forEach>
+          td4Html += "</select>";
+          $(td4).append(td4Html);
+
           $(tr).append(td).append(td2).append(td3).append(td4);
           table.append(tr);
-
+          $("select").selected();
         }else{
           app.msg(data.msg, 1);
         }
@@ -258,7 +285,24 @@
       async: false,
       success: function(data) {
         if(data.state == 0){
-          $(trObj).remove();
+          $(trObj).parent().remove();
+        }else{
+          app.msg(data.msg, 1);
+        }
+      }
+    });
+  }
+
+  function changeWM(obj, plcpId){
+    var wmId = $(obj).val();
+    $.ajax({
+      cache: true,
+      type: "POST",
+      url:"${pageContext.request.contextPath}/editProduceLineCoreProductForWmIdById/editor.json",
+      data:{"id":plcpId, "wmId":wmId},
+      async: false,
+      success: function(data) {
+        if(data.state == 0){
         }else{
           app.msg(data.msg, 1);
         }

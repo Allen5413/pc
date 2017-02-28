@@ -1,7 +1,6 @@
 package com.allen.web.controller.basic.product;
 
 import com.alibaba.fastjson.JSONObject;
-import com.allen.entity.pojo.product.ProductBean;
 import com.allen.service.basic.product.FindProductByPlIdAndWcIdService;
 import com.allen.web.controller.BaseController;
 import org.springframework.stereotype.Controller;
@@ -31,7 +30,7 @@ public class FindProductByPlIdAndWcIdController extends BaseController {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("plc.produce_line_id", plId);
         params.put("plc.work_core_id", wcId);
-        List<ProductBean> productList = findProductByPlIdAndWcIdService.find(params);
+        List<Map> productList = findProductByPlIdAndWcIdService.find(params);
         jsonObject.put("state", 0);
         jsonObject.put("productList", productList);
         return jsonObject;

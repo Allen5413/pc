@@ -2,6 +2,7 @@
          pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="my" uri="/WEB-INF/permission.tld" %>
 <p />
 <form id="pageForm" name="pageForm" action="${pageContext.request.contextPath}/findProduceLinePage/find.html" method="post">
@@ -39,11 +40,12 @@
     </td>
   </tr>
   <tr class="am-primary">
-    <th style="width: 5%;">序号</th>
-    <th style="width: 15%;">编号</th>
-    <th style="width: 20%;">名称</th>
-    <th style="width: 10%;">操作人</th>
-    <th style="width: 15%;">操作时间</th>
+    <th style="width: 4%;">序号</th>
+    <th style="width: 8%;">编号</th>
+    <th style="width: 12%;">名称</th>
+    <th style="width: 40%;">关联产品</th>
+    <th style="width: 8%;">操作人</th>
+    <th style="width: 12%;">操作时间</th>
     <th>操作</th>
   </tr>
   <c:if test="${empty pageInfo || empty pageInfo.pageResults}">
@@ -56,6 +58,7 @@
       <td align="center">${status.index+1}</td>
       <td>${produceLine.code}</td>
       <td>${produceLine.name}</td>
+      <td>${fn:replace(produceLine.productNames, "_", "，")}</td>
       <td>${produceLine.operator}</td>
       <td><fmt:formatDate value="${produceLine.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>

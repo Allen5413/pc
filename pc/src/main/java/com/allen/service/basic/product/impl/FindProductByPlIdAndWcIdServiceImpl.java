@@ -1,7 +1,6 @@
 package com.allen.service.basic.product.impl;
 
 import com.allen.dao.basic.product.FindProductDao;
-import com.allen.entity.pojo.product.ProductBean;
 import com.allen.service.basic.product.FindProductByPlIdAndWcIdService;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,7 @@ public class FindProductByPlIdAndWcIdServiceImpl implements FindProductByPlIdAnd
     private FindProductDao findProductDao;
 
     @Override
-    public List<ProductBean> find(Map<String, Object> queryParams) throws Exception {
+    public List<Map> find(Map<String, Object> queryParams) throws Exception {
         return findProductDao.findByPlIdAndWcId(queryParams);
     }
 }
