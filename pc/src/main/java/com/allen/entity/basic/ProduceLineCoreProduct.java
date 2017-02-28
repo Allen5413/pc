@@ -19,6 +19,9 @@ public class ProduceLineCoreProduct {
     private long produceLineCoreId;
     private long productId;
     private long workModeId;
+    private long unitTimeCapacity;      //单位时间产能
+    private int qualifiedRate;          //合格率
+    private int minBatch;               //最小批量
     private String operator;
     private Date operateTime = new Date();
 
@@ -68,5 +71,29 @@ public class ProduceLineCoreProduct {
 
     public void setOperateTime(Date operateTime) {
         this.operateTime = operateTime;
+    }
+
+    public long getUnitTimeCapacity() {
+        return unitTimeCapacity;
+    }
+
+    public void setUnitTimeCapacity(long unitTimeCapacity) {
+        this.unitTimeCapacity = unitTimeCapacity;
+    }
+
+    public int getQualifiedRate() {
+        return qualifiedRate;
+    }
+
+    public void setQualifiedRate(int qualifiedRate) {
+        this.qualifiedRate = qualifiedRate;
+    }
+
+    public int getMinBatch() {
+        return minBatch;
+    }
+
+    public void setMinBatch(int minBatch) {
+        this.minBatch = minBatch;
     }
 }

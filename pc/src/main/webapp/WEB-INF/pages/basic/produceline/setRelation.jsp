@@ -8,7 +8,7 @@
   .table-head table,.table-body, .table-body2 table{width:100%;}
 </style>
 <div id="setRelationDiv">
-  <div class="am-panel am-panel-primary no-margin-bottom" style="width:19%; float: left; margin-left: 5px;">
+  <div class="am-panel am-panel-primary no-margin-bottom" style="width:15%; float: left; margin-left: 5px;">
     <div class="am-panel-hd am-cf">生产线信息</div>
     <div id="notWith" class="am-in">
         <div style="background-color: #fFF;width: 100%;padding: 0.7rem;border-bottom: solid 1px #ddd;">
@@ -20,16 +20,19 @@
     </div>
   </div>
 
-  <div class="am-panel am-panel-primary no-margin-bottom" style="width:44%;float: left; margin-left: 5px;">
+  <div class="am-panel am-panel-primary no-margin-bottom" style="width:53%;float: left; margin-left: 5px;">
     <div class="am-panel-hd am-cf">关联的产品信息</div>
     <div class="am-in">
       <div class="table-head">
         <table class="am-table am-table-bordered am-table-striped am-table-hover no-margin-bottom" style="width:100%;">
           <tr class="am-primary" style="border-right: 0px;">
-            <th style="width: 25%;">名称</th>
-            <th style="width: 15%;">产品类型</th>
-            <th style="width: 15%;">是否自制件</th>
-            <th>工作模式</th>
+            <th style="width: 20%;">名称</th>
+            <th style="width: 10%;">产品类型</th>
+            <th style="width: 10%;">自制件</th>
+            <th style="width: 15%;">工作模式</th>
+            <th style="width: 15%;">单位时间产能</th>
+            <th style="width: 10%;">合格率</th>
+            <th>最小批量</th>
           </tr>
         </table>
       </div>
@@ -39,15 +42,15 @@
       </div>
     </div>
   </div>
-  <div class="am-panel am-panel-primary no-margin-bottom" style="width:35%;float: left; margin-left: 5px;">
+  <div class="am-panel am-panel-primary no-margin-bottom" style="width:30%;float: left; margin-left: 5px;">
     <div class="am-panel-hd am-cf">产品信息查询</div>
     <div class="am-in">
       <div style="background-color: #fFF;width: 100%;padding: 0.7rem;">
         <form id="findProductForm" name="findProductForm">
           <label>编码：</label>
-          <input type="text" name="code" />&nbsp;&nbsp;&nbsp;&nbsp;
+          <input type="text" name="code" style="width: 100px;" />&nbsp;&nbsp;&nbsp;&nbsp;
           <label >名称：</label>
-          <input type="text" name="name" /><br /><br />
+          <input type="text" name="name" style="width: 100px;" /><br /><br />
           <label >类别：</label>
           <select id="type" name="type" onchange="app.changeSelect(this)">
             <option value=""></option>
@@ -67,7 +70,7 @@
         <tr class="am-primary" style="border-right: 0px;">
           <th>名称</th>
           <th style="width: 17%;">产品类型</th>
-          <th style="width: 20%;">是否自制件</th>
+          <th style="width: 20%;">自制件</th>
         </tr>
       </table>
     </div>
@@ -127,12 +130,12 @@
             if(0 < productList.length) {
               for(var i=0; i<productList.length; i++) {
                 var product = productList[i];
-                var tr = $("<tr></tr>");
-                var td = $("<td style='width: 25%;' onclick='delWithProduct(this, " + product.plcpId + ")'>[" + product.code + "]"+product.name+"</td>");
-                var td2 = $("<td style='width: 15%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + product.tName + "</td>");
-                var td3 = $("<td style='width: 15%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + (product.selfMade == 0 ? "否":"是") + "</td>");
-                var td4 = $("<td></td>");
-                var td4Html = "<select id='wmId"+i+"' onchange='app.changeSelect(this); changeWM(this, "+product.plcpId+");'>";
+                var tr = $("<tr><input type='hidden' name='' </tr>");
+                var td = $("<td style='width: 20%;' onclick='delWithProduct(this, " + product.plcpId + ")'>[" + product.code + "]"+product.name+"</td>");
+                var td2 = $("<td style='width: 10%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + product.tName + "</td>");
+                var td3 = $("<td style='width: 10%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + (product.selfMade == 0 ? "否":"是") + "</td>");
+                var td4 = $("<td style='width: 15%;'></td>");
+                var td4Html = "<select id=\"wmId"+i+"\" data-am-selected=\"{btnWidth:'70px'}\" onchange=\"app.changeSelect(this); changeWM(this, "+product.plcpId+");\">";
                 td4Html += "<option value=''></option>";
                 td4Html += "<option value='null'>全部</option>";
                 <c:forEach items="${workModeList}" var="workMode">
@@ -140,7 +143,10 @@
                 </c:forEach>
                 td4Html += "</select>";
                 $(td4).append(td4Html);
-                $(tr).append(td).append(td2).append(td3).append(td4);
+                var td5 = $("<td style='width: 15%;'><input name='unitTimeCapacitys' style='width: 60px;' /></td>");
+                var td6 = $("<td style='width: 10%;'><input name='qualifiedRates' style='width: 60px;' /></td>");
+                var td7 = $("<td><input name='minBatchs' style='width: 60px;' /></td>");
+                $(tr).append(td).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7);
                 table.append(tr);
                 $("select").selected();
                 var op = $("#wmId"+i).find("option[value='"+product.wmId+"']");
@@ -253,11 +259,11 @@
           var selfTd = $(typeTd).next();
 
           var tr = $("<tr></tr>");
-          var td = $("<td style='width: 25%;' onclick='delWithProduct(this, "+data.plcpId+")'>" + $(nameTd).html() + "</td>");
-          var td2 = $("<td style='width: 15%;' onclick='delWithProduct(this, "+data.plcpId+")'>" + $(typeTd).html() + "</td>");
-          var td3 = $("<td style='width: 15%;' onclick='delWithProduct(this, "+data.plcpId+")'>" + $(selfTd).html() + "</td>");
-          var td4 = $("<td></td>");
-          var td4Html = "<select id='wmId"+($(table).find("tr").length)+"' name='wmId' onchange='app.changeSelect(this); changeWM(this, "+data.plcpId+");'>";
+          var td = $("<td style='width: 20%;' onclick='delWithProduct(this, "+data.plcpId+")'>" + $(nameTd).html() + "</td>");
+          var td2 = $("<td style='width: 10%;' onclick='delWithProduct(this, "+data.plcpId+")'>" + $(typeTd).html() + "</td>");
+          var td3 = $("<td style='width: 10%;' onclick='delWithProduct(this, "+data.plcpId+")'>" + $(selfTd).html() + "</td>");
+          var td4 = $("<td style='width: 15%;'></td>");
+          var td4Html = "<select id=\"wmId"+($(table).find("tr").length)+"\" name=\"wmId\" data-am-selected=\"{btnWidth:'70px'}\" onchange=\"app.changeSelect(this); changeWM(this, "+data.plcpId+");\">";
           td4Html += "<option value=''></option>";
           td4Html += "<option value='null'>全部</option>";
           <c:forEach items="${workModeList}" var="workMode">
@@ -265,8 +271,10 @@
           </c:forEach>
           td4Html += "</select>";
           $(td4).append(td4Html);
-
-          $(tr).append(td).append(td2).append(td3).append(td4);
+          var td5 = $("<td style='width: 15%;'><input name='unitTimeCapacitys' style='width: 60px;' /></td>");
+          var td6 = $("<td style='width: 10%;'><input name='qualifiedRates' style='width: 60px;' /></td>");
+          var td7 = $("<td><input name='minBatchs' style='width: 60px;' /></td>");
+          $(tr).append(td).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7);
           table.append(tr);
           $("select").selected();
         }else{
