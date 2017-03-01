@@ -193,6 +193,22 @@ public class BaseQueryDao extends JapDynamicQueryDao {
     }
 
     /**
+     * Hql 分页查询 可以设置查询字段 带有默认条件的，如：多个表关联  返回指定class对象
+     * @param tableNames
+     * @param fields
+     * @param defaultWhere
+     * @param paramsMap
+     * @param sortMap
+     * @return
+     */
+    public List findListByHql(String[] tableNames, String fields, String defaultWhere, Map<String, Object> paramsMap, Map<String, Boolean> sortMap){
+        List paramsList = new ArrayList();
+        String sql = new String("select "+fields+" from ");
+        sql = this.queryTableWhereConfigure(paramsList, sql, defaultWhere, tableNames, paramsMap, sortMap);
+        return this.sqlQueryByHql(sql, paramsList.toArray());
+    }
+
+    /**
      * 查询某一个对象，返回指定class对象
      * @param tableNames
      * @param fields
@@ -313,6 +329,16 @@ public class BaseQueryDao extends JapDynamicQueryDao {
 
     protected List sqlQueryByHql(String hql, Class returnClass, Object... args) {
         Query query = this.entityManager.createQuery(hql, returnClass);
+        if(args != null && args.length != 0) {
+            for(int i = 0; i < args.length; ++i) {
+                query.setParameter((i+1), args[i]);
+            }
+        }
+        return query.getResultList();
+    }
+
+    protected List sqlQueryByHql(String hql, Object... args) {
+        Query query = this.entityManager.createQuery(hql);
         if(args != null && args.length != 0) {
             for(int i = 0; i < args.length; ++i) {
                 query.setParameter((i+1), args[i]);

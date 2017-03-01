@@ -28,17 +28,20 @@
           <tr class="am-primary" style="border-right: 0px;">
             <th style="width: 20%;">名称</th>
             <th style="width: 10%;">产品类型</th>
-            <th style="width: 10%;">自制件</th>
             <th style="width: 15%;">工作模式</th>
-            <th style="width: 15%;">单位时间产能</th>
-            <th style="width: 10%;">合格率</th>
-            <th>最小批量</th>
+            <th style="width: 18%;">单位时间产能(小时)</th>
+            <th style="width: 15%;">合格率(%)</th>
+            <th>最小批量(个)</th>
           </tr>
         </table>
       </div>
       <div class="table-body2">
-        <table id="withProductTable" class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
-        </table>
+        <form id="changeProductForm" name="changeProductForm" method="post">
+          <input type="hidden" id="plId" name="plId" />
+          <input type="hidden" id="wcId" name="wcId" />
+          <table id="withProductTable" class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
+          </table>
+        </form>
       </div>
     </div>
   </div>
@@ -122,20 +125,17 @@
         async: false,
         success: function(data) {
           if(data.state == 0){
-
             var table = $("#withProductTable");
             $(table).html("");
-
             var productList = data.productList;
             if(0 < productList.length) {
               for(var i=0; i<productList.length; i++) {
                 var product = productList[i];
-                var tr = $("<tr><input type='hidden' name='' </tr>");
+                var tr = $("<tr><input type='hidden' name='pIds' value='"+product.id+"'></tr>");
                 var td = $("<td style='width: 20%;' onclick='delWithProduct(this, " + product.plcpId + ")'>[" + product.code + "]"+product.name+"</td>");
                 var td2 = $("<td style='width: 10%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + product.tName + "</td>");
-                var td3 = $("<td style='width: 10%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + (product.selfMade == 0 ? "否":"是") + "</td>");
                 var td4 = $("<td style='width: 15%;'></td>");
-                var td4Html = "<select id=\"wmId"+i+"\" data-am-selected=\"{btnWidth:'70px'}\" onchange=\"app.changeSelect(this); changeWM(this, "+product.plcpId+");\">";
+                var td4Html = "<select id=\"wmId"+i+"\" name=\"wmIds\" data-am-selected=\"{btnWidth:'70px'}\" onchange=\"app.changeSelect(this)\">";
                 td4Html += "<option value=''></option>";
                 td4Html += "<option value='null'>全部</option>";
                 <c:forEach items="${workModeList}" var="workMode">
@@ -143,10 +143,10 @@
                 </c:forEach>
                 td4Html += "</select>";
                 $(td4).append(td4Html);
-                var td5 = $("<td style='width: 15%;'><input name='unitTimeCapacitys' style='width: 60px;' /></td>");
-                var td6 = $("<td style='width: 10%;'><input name='qualifiedRates' style='width: 60px;' /></td>");
-                var td7 = $("<td><input name='minBatchs' style='width: 60px;' /></td>");
-                $(tr).append(td).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7);
+                var td5 = $("<td style='width: 18%;'><input type='number' name='unitTimeCapacitys' style='width: 60px;' value='"+product.unitTimeCapacity+"' /></td>");
+                var td6 = $("<td style='width: 15%;'><input type='number' name='qualifiedRates' style='width: 60px;' value='"+product.qualifiedRate+"' /></td>");
+                var td7 = $("<td><input type='number' name='minBatchs' style='width: 60px;' value='"+product.minBatch+"' /></td>");
+                $(tr).append(td).append(td2).append(td4).append(td5).append(td6).append(td7);
                 table.append(tr);
                 $("select").selected();
                 var op = $("#wmId"+i).find("option[value='"+product.wmId+"']");
@@ -238,83 +238,36 @@
       return;
     }
 
-    var wcId = selectedNodes[0].id;
-    var plId = selectedNodes[0].pId;
+    var table = $("#withProductTable");
+    if($(table).find("tr:first").html().indexOf("没有关联产品信息") > -1){
+      $(table).find("tr:first").remove();
+    }
 
-    $.ajax({
-      cache: true,
-      type: "POST",
-      url:"${pageContext.request.contextPath}/addProduceLineCoreProduct/add.json",
-      data:{"plId":plId, "wcId":wcId, "pId":pId},
-      async: false,
-      success: function(data) {
-        if(data.state == 0){
-          var table = $("#withProductTable");
-          if($(table).find("tr:first").html().indexOf("没有关联产品信息") > -1){
-            $(table).find("tr:first").remove();
-          }
+    var nameTd = $(trObj).find("td:first");
+    var typeTd = $(nameTd).next();
 
-          var nameTd = $(trObj).find("td:first");
-          var typeTd = $(nameTd).next();
-          var selfTd = $(typeTd).next();
+    var tr = $("<tr><input type='hidden' name='pIds' value='"+pId+"'></tr>");
+    var td = $("<td style='width: 20%;' onclick='delWithProduct(this)'>" + $(nameTd).html() + "</td>");
+    var td2 = $("<td style='width: 10%;' onclick='delWithProduct(this)'>" + $(typeTd).html() + "</td>");
+    var td4 = $("<td style='width: 15%;'></td>");
+    var td4Html = "<select id=\"wmId"+($(table).find("tr").length)+"\" name=\"wmIds\" data-am-selected=\"{btnWidth:'70px'}\" onchange=\"app.changeSelect(this);\">";
+    td4Html += "<option value=''></option>";
+    td4Html += "<option value='null'>全部</option>";
+    <c:forEach items="${workModeList}" var="workMode">
+    td4Html += "<option value='${workMode.id}''>${workMode.name}</option>";
+    </c:forEach>
+    td4Html += "</select>";
+    $(td4).append(td4Html);
+    var td5 = $("<td style='width: 18%;'><input type='number' name='unitTimeCapacitys' style='width: 60px;' /></td>");
+    var td6 = $("<td style='width: 15%;'><input type='number' name='qualifiedRates' style='width: 60px;' /></td>");
+    var td7 = $("<td><input type='number' name='minBatchs' style='width: 60px;' /></td>");
+    $(tr).append(td).append(td2).append(td4).append(td5).append(td6).append(td7);
+    table.append(tr);
+    $("select").selected();
 
-          var tr = $("<tr></tr>");
-          var td = $("<td style='width: 20%;' onclick='delWithProduct(this, "+data.plcpId+")'>" + $(nameTd).html() + "</td>");
-          var td2 = $("<td style='width: 10%;' onclick='delWithProduct(this, "+data.plcpId+")'>" + $(typeTd).html() + "</td>");
-          var td3 = $("<td style='width: 10%;' onclick='delWithProduct(this, "+data.plcpId+")'>" + $(selfTd).html() + "</td>");
-          var td4 = $("<td style='width: 15%;'></td>");
-          var td4Html = "<select id=\"wmId"+($(table).find("tr").length)+"\" name=\"wmId\" data-am-selected=\"{btnWidth:'70px'}\" onchange=\"app.changeSelect(this); changeWM(this, "+data.plcpId+");\">";
-          td4Html += "<option value=''></option>";
-          td4Html += "<option value='null'>全部</option>";
-          <c:forEach items="${workModeList}" var="workMode">
-          td4Html += "<option value='${workMode.id}''>${workMode.name}</option>";
-          </c:forEach>
-          td4Html += "</select>";
-          $(td4).append(td4Html);
-          var td5 = $("<td style='width: 15%;'><input name='unitTimeCapacitys' style='width: 60px;' /></td>");
-          var td6 = $("<td style='width: 10%;'><input name='qualifiedRates' style='width: 60px;' /></td>");
-          var td7 = $("<td><input name='minBatchs' style='width: 60px;' /></td>");
-          $(tr).append(td).append(td2).append(td3).append(td4).append(td5).append(td6).append(td7);
-          table.append(tr);
-          $("select").selected();
-        }else{
-          app.msg(data.msg, 1);
-        }
-      }
-    });
   }
 
-  function delWithProduct(trObj, plcpId){
-    $.ajax({
-      cache: true,
-      type: "POST",
-      url:"${pageContext.request.contextPath}/delProduceLineCoreProduct/del.json",
-      data:{"id":plcpId},
-      async: false,
-      success: function(data) {
-        if(data.state == 0){
-          $(trObj).parent().remove();
-        }else{
-          app.msg(data.msg, 1);
-        }
-      }
-    });
-  }
-
-  function changeWM(obj, plcpId){
-    var wmId = $(obj).val();
-    $.ajax({
-      cache: true,
-      type: "POST",
-      url:"${pageContext.request.contextPath}/editProduceLineCoreProductForWmIdById/editor.json",
-      data:{"id":plcpId, "wmId":wmId},
-      async: false,
-      success: function(data) {
-        if(data.state == 0){
-        }else{
-          app.msg(data.msg, 1);
-        }
-      }
-    });
+  function delWithProduct(trObj){
+    $(trObj).parent().remove();
   }
 </script>

@@ -1,6 +1,8 @@
 package com.allen.dao.basic.producelinecoreproduct;
 
 import com.allen.entity.basic.ProduceLineCoreProduct;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -16,4 +18,8 @@ public interface ProduceLineCoreProductDao extends CrudRepository<ProduceLineCor
      * @throws Exception
      */
     public ProduceLineCoreProduct findByProduceLineCoreIdAndProductId(long produceLineCoreId, long productId)throws Exception;
+
+    @Modifying
+    @Query("delete from ProduceLineCoreProduct where produceLineCoreId = ?1")
+    public void delByProduceLineCoreId(long produceLineCoreId)throws Exception;
 }

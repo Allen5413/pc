@@ -50,11 +50,28 @@ public class FindProductDao extends BaseQueryDao {
      * @throws Exception
      */
     public List<Map> findByPlIdAndWcId(Map<String,Object> paramsMap) throws Exception{
-        String fields = "p.id, p.code, p.name, pt.name tName, p.self_made selfMade, plcp.work_mode_id wmId, plcp.id plcpId";
+        String fields = "p.id, p.code, p.name, pt.name tName, p.self_made selfMade, " +
+                "plcp.work_mode_id wmId, plcp.id plcpId, round(plcp.unit_time_capacity/3600, 2) unitTimeCapacity, " +
+                "plcp.qualified_rate qualifiedRate, plcp.min_batch minBatch";
         String[] tableNames = {"product p, produce_line_core_product plcp, produce_line_core plc, product_type pt"};
         String defaultWhere = "p.type = pt.id and p.id = plcp.product_id and plcp.produce_line_core_id = plc.id";
         Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
         sortMap.put("p.code",false);
         return super.findListBySqlToMap(tableNames, fields, defaultWhere, paramsMap, sortMap);
+    }
+
+    /**
+     * 功能:查询生产线关联的产品信息
+     * @param paramsMap
+     * @return
+     * @throws Exception
+     */
+    public List<Product> findByPlId(Map<String,Object> paramsMap) throws Exception{
+        String fields = "DISTINCT p";
+        String[] tableNames = {"Product p, ProduceLineCoreProduct plcp, ProduceLineCore plc"};
+        String defaultWhere = "p.id = plcp.productId and plcp.produceLineCoreId = plc.id";
+        Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
+        sortMap.put("p.code",false);
+        return super.findListByHql(tableNames, fields, defaultWhere, paramsMap, sortMap);
     }
 }

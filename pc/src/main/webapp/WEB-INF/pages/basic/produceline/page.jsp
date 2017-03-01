@@ -113,6 +113,22 @@
   }
 
   function setProduceLine(){
-    app.openOneBtnDialog('${pageContext.request.contextPath}/setProduceLineRelation/open.html', '配置生产线关联', 0.9, 700);
+    app.openDialog('${pageContext.request.contextPath}/setProduceLineRelation/open.html', '配置生产线关联', 0.9, 700, function(index){
+      var selectedNodes = zTreeObj.getSelectedNodes();
+      if(1 > selectedNodes.length){
+        app.msg("请先选择一个生产线下的工作中心", 1);
+        return;
+      }
+      var isParent = selectedNodes[0].isParent;
+      if (isParent) {
+        app.msg("请选择一个工作中心", 1);
+        return;
+      }
+      var wcId = selectedNodes[0].id;
+      var plId = selectedNodes[0].pId;
+      $("#plId").val(plId);
+      $("#wcId").val(wcId);
+      app.add("${pageContext.request.contextPath}/setProduceLineCoreProduct/set.json", $('#changeProductForm').serialize(), index);
+    });
   }
 </script>
