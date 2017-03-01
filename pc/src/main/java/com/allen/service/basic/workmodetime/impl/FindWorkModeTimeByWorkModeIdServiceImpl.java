@@ -1,7 +1,7 @@
 package com.allen.service.basic.workmodetime.impl;
 
-import com.allen.dao.basic.workmodetime.WorkModeTimeDao;
-import com.allen.entity.basic.WorkModeTime;
+import com.allen.dao.basic.workmodetime.FindWorkModeTimeDao;
+import com.allen.entity.basic.WorkTime;
 import com.allen.service.basic.workmodetime.FindWorkModeTimeByWorkModeIdService;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +17,9 @@ import java.util.List;
 @Service
 public class FindWorkModeTimeByWorkModeIdServiceImpl implements FindWorkModeTimeByWorkModeIdService {
     @Resource
-    private WorkModeTimeDao workModeTimeDao;
+    private FindWorkModeTimeDao findWorkModeTimeDao;
     @Override
-    public List<WorkModeTime> findWorkModeTimeByWorkModeId(long workModeId) {
-        return workModeTimeDao.findByWorkModeId(workModeId);
+    public List<WorkTime> findWorkModeTimeByWorkModeId(long workModeId) {
+        return findWorkModeTimeDao.findByWorkModeId(workModeId);
     }
 }

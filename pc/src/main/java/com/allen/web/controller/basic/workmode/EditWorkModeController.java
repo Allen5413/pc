@@ -47,14 +47,7 @@ public class EditWorkModeController extends BaseController {
         WorkMode workMode = findWorkModeByIdService.find(id);
         request.setAttribute("workMode", workMode);
         request.setAttribute("workTimes",findWorkTimeAllService.findAll());
-        Map<Long,Boolean> workModeTimeMap = new HashMap<Long, Boolean>();
-        List<WorkModeTime> workModeTimes = findWorkModeTimeByWorkModeIdService.findWorkModeTimeByWorkModeId(id);
-        if(workModeTimes!=null&&workModeTimes.size()>0){
-            for(WorkModeTime workModeTime:workModeTimes){
-                workModeTimeMap.put(workModeTime.getWorkTimeId(),true);
-            }
-        }
-        request.setAttribute("workModeTimes",workModeTimeMap);
+        request.setAttribute("workModeTimes",findWorkModeTimeByWorkModeIdService.findWorkModeTimeByWorkModeId(id));
         return "basic/workmode/edit";
     }
 

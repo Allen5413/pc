@@ -51,6 +51,7 @@ public class EditProductController extends BaseController {
         //获取包含产品信息
         Map<String,Object> paramsMap = new HashMap<String, Object>();
         paramsMap.put("p.id",new Object[]{id,"<>"});
+        paramsMap.put("p.selfMade",1);
         request.setAttribute("products",findProductSelectService.find(paramsMap));
         return "basic/product/edit";
     }

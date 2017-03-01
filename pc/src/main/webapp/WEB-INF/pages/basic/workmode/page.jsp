@@ -81,6 +81,16 @@
         app.msg("请输入名称", 1);
         return;
       }
+      var workTimeArr = [];
+      $('#editWorkTimeDetail tr').each(function(){
+          workTimeArr.push($(this).attr('work-time-id'));
+      });
+      $('#edit_workTime').val(workTimeArr.join(","));
+      var workTimeIds = $('#edit_workTime').val();
+      if(workTimeIds == ""){
+          app.msg("请选择班次信息", 1);
+          return;
+      }
       app.edit("${pageContext.request.contextPath}/editWorkMode/editor.json", $('#editForm').serialize(), index);
     });
   }
@@ -97,7 +107,16 @@
         app.msg("请输入名称", 1);
         return;
       }
-
+      var workTimeArr = [];
+      $('#workTimeDetail tr').each(function(){
+          workTimeArr.push($(this).attr('work-time-id'));
+      });
+      $('#add_workTime').val(workTimeArr.join(","));
+      var workTimeIds = $('#add_workTime').val();
+      if(workTimeIds == ""){
+          app.msg("请选择班次信息", 1);
+          return;
+      }
       app.add("${pageContext.request.contextPath}/addWorkMode/add.json", $('#addForm').serialize(), index);
     });
   }

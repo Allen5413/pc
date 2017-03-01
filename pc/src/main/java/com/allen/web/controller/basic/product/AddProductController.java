@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Allen on 2016/12/22 0022.
@@ -38,7 +40,9 @@ public class AddProductController extends BaseController {
         //查找产品类别信息
         request.setAttribute("productTypes",findProductTypeSelectService.find());
         //获取包含产品信息
-        request.setAttribute("products",findProductSelectService.find(null));
+        Map<String,Object> params = new HashMap<String, Object>();
+        params.put("p.selfMade",1);
+        request.setAttribute("products",findProductSelectService.find(params));
         return "basic/product/add";
     }
 
