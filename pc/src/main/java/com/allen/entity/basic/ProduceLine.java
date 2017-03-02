@@ -1,9 +1,6 @@
 package com.allen.entity.basic;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -13,17 +10,29 @@ import java.util.Date;
 @Entity
 @Table(name = "produce_line")
 public class ProduceLine {
+
+    /**
+     * 是否公用
+     * 0：否
+     * 1：是
+     */
+    private final static int ISPUBLIC_NOT = 0;
+    private final static int ISPUBLIC_YES = 1;
+
     @Id
     @GeneratedValue
     private long id;
     private String code;
     private String name;
+    private int isPublic;
     private String productIds;
     private String productNames;
     private String creator;
     private Date createTime = new Date();
     private String operator;
     private Date operateTime = new Date();
+    @Transient
+    private String isPublicStr;
 
     public long getId() {
         return id;
@@ -95,5 +104,28 @@ public class ProduceLine {
 
     public void setProductNames(String productNames) {
         this.productNames = productNames;
+    }
+
+    public int getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(int isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    public String getIsPublicStr() {
+        switch (this.getIsPublic()){
+            case 1:
+                this.isPublicStr = "是";
+                break;
+            case 0:
+                this.isPublicStr = "否";
+                break;
+            default:
+                this.isPublicStr = "未知";
+                break;
+        }
+        return isPublicStr;
     }
 }

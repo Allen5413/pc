@@ -34,6 +34,6 @@ public class EditProduceLineServiceImpl implements EditProduceLineService {
         oldProduceLine.setName(produceLine.getName());
         oldProduceLine.setOperator(produceLine.getOperator());
         oldProduceLine.setOperateTime(produceLine.getOperateTime());
-        produceLineDao.save(produceLine);
+        produceLineDao.save(oldProduceLine);
     }
 }

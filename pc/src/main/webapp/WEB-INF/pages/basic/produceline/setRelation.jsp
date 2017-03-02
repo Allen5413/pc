@@ -8,7 +8,7 @@
   .table-head table,.table-body, .table-body2 table{width:100%;}
 </style>
 <div id="setRelationDiv">
-  <div class="am-panel am-panel-primary no-margin-bottom" style="width:15%; float: left; margin-left: 5px;">
+  <div class="am-panel am-panel-primary no-margin-bottom" style="width:15%; height: 480px; float: left; margin-left: 5px;">
     <div class="am-panel-hd am-cf">生产线信息</div>
     <div id="notWith" class="am-in">
         <div style="background-color: #fFF;width: 100%;padding: 0.7rem;border-bottom: solid 1px #ddd;">
@@ -20,16 +20,16 @@
     </div>
   </div>
 
-  <div class="am-panel am-panel-primary no-margin-bottom" style="width:53%;float: left; margin-left: 5px;">
+  <div class="am-panel am-panel-primary no-margin-bottom" style="width:53%; height: 480px; float: left; margin-left: 5px;">
     <div class="am-panel-hd am-cf">关联的产品信息</div>
     <div class="am-in">
       <div class="table-head">
         <table class="am-table am-table-bordered am-table-striped am-table-hover no-margin-bottom" style="width:100%;">
           <tr class="am-primary" style="border-right: 0px;">
             <th style="width: 20%;">名称</th>
-            <th style="width: 10%;">产品类型</th>
+            <th style="width: 10%;">类型</th>
             <th style="width: 15%;">工作模式</th>
-            <th style="width: 18%;">单位时间产能(小时)</th>
+            <th style="width: 18%;">产能(小时)</th>
             <th style="width: 15%;">合格率(%)</th>
             <th>最小批量(个)</th>
           </tr>
@@ -45,7 +45,7 @@
       </div>
     </div>
   </div>
-  <div class="am-panel am-panel-primary no-margin-bottom" style="width:30%;float: left; margin-left: 5px;">
+  <div class="am-panel am-panel-primary no-margin-bottom" style="width:30%; height: 480px; float: left; margin-left: 5px;">
     <div class="am-panel-hd am-cf">产品信息查询</div>
     <div class="am-in">
       <div style="background-color: #fFF;width: 100%;padding: 0.7rem;">
@@ -72,7 +72,7 @@
       <table class="am-table am-table-bordered am-table-striped am-table-hover no-margin-bottom" style="width:100%;">
         <tr class="am-primary" style="border-right: 0px;">
           <th>名称</th>
-          <th style="width: 17%;">产品类型</th>
+          <th style="width: 17%;">类型</th>
           <th style="width: 20%;">自制件</th>
         </tr>
       </table>
@@ -85,10 +85,6 @@
 </div>
 <script>
   $("select").selected();
-
-  $('#setRelationDiv .table-body').height(433);
-  $('#setRelationDiv .table-body2').height(521);
-  $('#zTreeDiv').height(515);
 
   var setting = {
     data: {

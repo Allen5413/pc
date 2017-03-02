@@ -41,10 +41,11 @@
   </tr>
   <tr class="am-primary">
     <th style="width: 4%;">序号</th>
-    <th style="width: 8%;">编号</th>
+    <th style="width: 7%;">编号</th>
     <th style="width: 12%;">名称</th>
+    <th style="width: 5%;">是否公用</th>
     <th style="width: 40%;">关联产品</th>
-    <th style="width: 8%;">操作人</th>
+    <th style="width: 6%;">操作人</th>
     <th style="width: 12%;">操作时间</th>
     <th>操作</th>
   </tr>
@@ -58,6 +59,7 @@
       <td align="center">${status.index+1}</td>
       <td>${produceLine.code}</td>
       <td>${produceLine.name}</td>
+      <td>${produceLine.isPublicStr}</td>
       <td>${fn:replace(produceLine.productNames, "_", "，")}</td>
       <td>${produceLine.operator}</td>
       <td><fmt:formatDate value="${produceLine.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
@@ -77,7 +79,7 @@
 
   function edit(id){
     var url = '${pageContext.request.contextPath}/editProduceLine/open.html?id='+id;
-    app.openDialog(url, '编辑生产线', 600, 260, function(index){
+    app.openDialog(url, '编辑生产线', 600, 300, function(index){
       var code = $("#edit_code").val().trim();
       var name = $("#edit_name").val().trim();
       if(code == ""){
@@ -93,7 +95,7 @@
   }
 
   function add(){
-    app.openDialog("${pageContext.request.contextPath}/addProduceLine/open.html", "新增生产线", 600, 260, function(index){
+    app.openDialog("${pageContext.request.contextPath}/addProduceLine/open.html", "新增生产线", 600, 300, function(index){
       var code = $("#add_code").val().trim();
       var name = $("#add_name").val().trim();
       if(code == ""){
@@ -113,7 +115,7 @@
   }
 
   function setProduceLine(){
-    app.openDialog('${pageContext.request.contextPath}/setProduceLineRelation/open.html', '配置生产线关联', 0.9, 700, function(index){
+    app.openDialog('${pageContext.request.contextPath}/setProduceLineRelation/open.html', '配置生产线关联', 0.9, 600, function(index){
       var selectedNodes = zTreeObj.getSelectedNodes();
       if(1 > selectedNodes.length){
         app.msg("请先选择一个生产线下的工作中心", 1);

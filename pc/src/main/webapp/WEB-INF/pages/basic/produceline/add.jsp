@@ -17,4 +17,19 @@
     </div>
     <div class="am-u-sm-5">*必填，不可重复</div>
   </div>
+
+  <div class="am-g am-margin-top">
+    <div class="am-u-sm-3 am-text-right"><label >是否公用：</label></div>
+    <div class="am-u-sm-4">
+      <div class="am-form-group">
+        <label class="am-radio-inline">
+          <input type="radio" name="isPublic" value="0" checked> 否
+        </label>
+        <label class="am-radio-inline">
+          <input type="radio" name="isPublic" value="1" > 是
+        </label>
+      </div>
+    </div>
+    <div class="am-u-sm-5"></div>
+  </div>
 </form>
