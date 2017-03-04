@@ -17,13 +17,13 @@
     <option value=""></option>
     <option value="null">全部</option>
     <c:forEach items="${productTypes}" var="productType">
-      <option value="${productType.id}" <c:if test="${param.type==productType.id}"> selected </c:if>>${productType.name}</option>
+      <option value="${productType.FCATEGORYID}" <c:if test="${param.type==productType.FCATEGORYID}"> selected </c:if>>${productType.FNAME}</option>
     </c:forEach>
   </select>&nbsp;&nbsp;&nbsp;&nbsp;
   <label>编码：</label>
-  <input type="text" id="code" name="code" value="${param.code}" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="text" id="code" name="code" value="${param.FNUMBER}" />&nbsp;&nbsp;&nbsp;&nbsp;
   <label >名称：</label>
-  <input type="text" id="name" name="name" value="${param.name}" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="text" id="name" name="name" value="${param.FNAME}" />&nbsp;&nbsp;&nbsp;&nbsp;
   <c:if test="${isShowFindBtn}">
     <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
           data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
@@ -33,7 +33,7 @@
 <p /><p />
 
 <table class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
-  <c:if test="${isShowAddBtn}">
+  <c:if test="${false&&isShowAddBtn}">
     <tr>
       <td colspan="999" style="background-color:#FFF">
         <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="addProduct()"><span class="am-icon-plus"></span> 新增</button>
@@ -42,12 +42,10 @@
   </c:if>
   <tr class="am-primary">
     <th style="width: 5%;">序号</th>
-    <th style="width: 15%;">编号</th>
-    <th style="width: 20%;">名称</th>
+    <th style="width: 25%;">编号</th>
+    <th style="width: 40%;">名称</th>
     <th style="width: 10%;">类型</th>
     <th style="width: 10%;">自制件</th>
-    <th style="width: 10%;">操作人</th>
-    <th style="width: 15%;">操作时间</th>
     <th>操作</th>
   </tr>
   <c:if test="${empty pageInfo || empty pageInfo.pageResults}">
@@ -58,18 +56,17 @@
   <c:forEach var="product" items="${pageInfo.pageResults}" varStatus="status">
     <tr>
       <td align="center">${status.index+1}</td>
-      <td>${product['code']}</td>
-      <td>${product['name']}</td>
-      <td>${product['tName']}</td>
-      <td>${product['self_made']==1?'是':'否'}</td>
-      <td>${product['creator']}</td>
-      <td><fmt:formatDate value="${product['operate_time']}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+      <td>${product['FNUMBER']}</td>
+      <td>${product['FNAME']}</td>
+      <td>${product['cateGoryName']}</td>
+      <td>${product['FERPCLSID']==1?'是':'否'}</td>
       <td>
-        <c:if test="${isShowEditBtn}">
-          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="editProduct(${product['id']})"><span class="am-icon-edit"></span> 修改</a>
+        <a class="am-badge am-badge-primary am-radius am-text-lg" onClick="detailProduct(${product['FMATERIALID']})"><span class="am-icon-dashboard"></span> 详细</a>
+        <c:if test="${false&&isShowEditBtn}">
+          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="editProduct(${product['FMATERIALID']})"><span class="am-icon-edit"></span> 修改</a>
         </c:if>
-        <c:if test="${isShowDelBtn}">
-          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${product['id']})"><span class="am-icon-trash-o"></span> 删除</a>
+        <c:if test="${false&&isShowDelBtn}">
+          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${product['FMATERIALID']})"><span class="am-icon-trash-o"></span> 删除</a>
         </c:if>
       </td>
     </tr>
@@ -103,7 +100,6 @@
               productDetail['selfProductId'] = $(this).attr('product-id');
               productDetails.push(productDetail);
               });
-            console.log(productDetails);
       app.edit("${pageContext.request.contextPath}/editProduct/editor.json", {'code':code,'name':name,'type':$('#edit_type').val(),
               'selfMade':$("#editProductForm input[type='radio']:checked").val(),'id':$('#edit_id').val(),
               'productSelfUseList':JSON.stringify(productDetails)}, index);
@@ -138,7 +134,10 @@
               'selfMade':$("#addProductForm input[type='radio']:checked").val(),'productSelfUseList':JSON.stringify(productDetails)}, index);
     });
   }
-
+  function detailProduct(id){
+          var url = '${pageContext.request.contextPath}/detailProduct/open.html?id='+id;
+          app.openOneBtnDialog(url, '产品详细信息', 700, 560);
+  }
   function del(id){
     app.del("您确定要删除该产品类别信息？", "${pageContext.request.contextPath}/delProductType/del.json", {"id":id});
   }

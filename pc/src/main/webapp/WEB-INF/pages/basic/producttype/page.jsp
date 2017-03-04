@@ -14,10 +14,10 @@
   <c:set var="isShowDelBtn" value="${my:isPermission(requestScope.resourceId,'del',sessionScope.menuMap)}" />
   <c:set var="isShowFindBtn" value="${my:isPermission(requestScope.resourceId,'find',sessionScope.menuMap)}" />
 
-  <label >编码：</label>
-  <input type="text" id="code" name="code" value="${param.code}" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <label style="display: none;">编码：</label>
+  <input type="text" id="code" name="code" value="${param.code}" style="display: none;"/>
   <label >名称：</label>
-  <input type="text" id="name" name="name" value="${param.name}" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="text" id="name" name="name" value="${param.FNAME}" />&nbsp;&nbsp;&nbsp;&nbsp;
   <c:if test="${isShowFindBtn}">
     <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
           data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
@@ -27,7 +27,7 @@
 <p /><p />
 
 <table class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
-  <c:if test="${isShowAddBtn}">
+  <c:if test="${false&&isShowAddBtn}">
     <tr>
       <td colspan="999" style="background-color:#FFF">
         <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="add()"><span class="am-icon-plus"></span> 新增</button>
@@ -36,11 +36,9 @@
   </c:if>
   <tr class="am-primary">
     <th style="width: 5%;">序号</th>
-    <th style="width: 15%;">编号</th>
     <th style="width: 20%;">名称</th>
-    <th style="width: 10%;">操作人</th>
-    <th style="width: 15%;">操作时间</th>
-    <th>操作</th>
+    <th style="width: 40%;">说明</th>
+    <th style="display: none;">操作</th>
   </tr>
   <c:if test="${empty pageInfo || empty pageInfo.pageResults}">
     <tr>
@@ -50,16 +48,14 @@
   <c:forEach var="productType" items="${pageInfo.pageResults}" varStatus="status">
     <tr>
       <td align="center">${status.index+1}</td>
-      <td>${productType.code}</td>
-      <td>${productType.name}</td>
-      <td>${productType.operator}</td>
-      <td><fmt:formatDate value="${productType.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
-      <td>
+      <td>${productType.FNAME}</td>
+      <td>${productType.FDESCRIPTION}</td>
+      <td style="display: none;">
         <c:if test="${isShowEditBtn}">
-          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${productType.id})"><span class="am-icon-edit"></span> 修改</a>
+          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${productType.FPKID})"><span class="am-icon-edit"></span> 修改</a>
         </c:if>
         <c:if test="${isShowDelBtn}">
-          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${productType.id})"><span class="am-icon-trash-o"></span> 删除</a>
+          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${productType.FPKID})"><span class="am-icon-trash-o"></span> 删除</a>
         </c:if>
       </td>
     </tr>

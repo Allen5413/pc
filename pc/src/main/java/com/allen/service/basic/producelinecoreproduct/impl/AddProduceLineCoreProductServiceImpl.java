@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 /**
  * Created by Allen on 2017/2/27 0027.
@@ -64,7 +65,7 @@ public class AddProduceLineCoreProductServiceImpl implements AddProduceLineCoreP
      */
     private void editProduceLineForProductInfo(long plId, long pId)throws Exception{
         ProduceLine produceLine = findProduceLineByIdService.find(plId);
-        Product product = findProductByIdService.find(pId);
+        Map product = findProductByIdService.find(pId);
         if(null == produceLine){
             throw new BusinessException("没有找到生产线信息");
         }
@@ -80,10 +81,10 @@ public class AddProduceLineCoreProductServiceImpl implements AddProduceLineCoreP
             }
         }
         if(StringUtil.isEmpty(produceLine.getProductNames())){
-            produceLine.setProductNames("" + product.getName());
+            produceLine.setProductNames("" + product.get("FNAME").toString());
         }else{
-            if(produceLine.getProductNames().indexOf(product.getName()) < 0) {
-                produceLine.setProductNames(produceLine.getProductNames() + "_" + product.getName());
+            if(produceLine.getProductNames().indexOf(product.get("FNAME").toString()) < 0) {
+                produceLine.setProductNames(produceLine.getProductNames() + "_" + product.get("FNAME").toString());
             }
         }
         editProduceLineService.edit(produceLine);

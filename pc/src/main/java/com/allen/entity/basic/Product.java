@@ -6,114 +6,81 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 产品信息
+ * 产品信息基本信息
  * Created by Allen on 2017/2/15 0015.
  */
 @Entity
-@Table(name = "product")
+@Table(name = "t_bd_materialbase")
 public class Product {
     @Id
     @GeneratedValue
-    private long id;
-    private String code;
-    private String name;
-    private int selfMade = 0;
-    private long type;
-    private String creator;
-    private Date createTime = new Date();
-    private long creatorId;
-    private String operator;
-    private Date operateTime = new Date();
-    private long operatorId = 0;
+    private long FENTRYID;
+    private long FMATERIALID;//产品id
+    private String FERPCLSID;//产品属性
+    private long FCATEGORYID;//产品类别id
+    @Transient
+    private String FNUMBER;//产品编码
+    @Transient
+    private String FNAME;//产品名称
+    @Transient
+    private String cateGoryName;//产品类别名称
     @Transient
     private List<ProductSelfUse> productSelfUses = new ArrayList<ProductSelfUse>();
 
-    public long getId() {
-        return id;
+    public long getFENTRYID() {
+        return FENTRYID;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setFENTRYID(long FENTRYID) {
+        this.FENTRYID = FENTRYID;
     }
 
-    public String getCode() {
-        return code;
+    public long getFMATERIALID() {
+        return FMATERIALID;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setFMATERIALID(long FMATERIALID) {
+        this.FMATERIALID = FMATERIALID;
     }
 
-    public String getName() {
-        return name;
+    public String getFERPCLSID() {
+        return FERPCLSID;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFERPCLSID(String FERPCLSID) {
+        this.FERPCLSID = FERPCLSID;
     }
 
-    public String getCreator() {
-        return creator;
+    public long getFCATEGORYID() {
+        return FCATEGORYID;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setFCATEGORYID(long FCATEGORYID) {
+        this.FCATEGORYID = FCATEGORYID;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public String getFNUMBER() {
+        return FNUMBER;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setFNUMBER(String FNUMBER) {
+        this.FNUMBER = FNUMBER;
     }
 
-    public String getOperator() {
-        return operator;
+    public String getFNAME() {
+        return FNAME;
     }
 
-    public void setOperator(String operator) {
-        this.operator = operator;
+    public void setFNAME(String FNAME) {
+        this.FNAME = FNAME;
     }
 
-    public Date getOperateTime() {
-        return operateTime;
+    public String getCateGoryName() {
+        return cateGoryName;
     }
 
-    public void setOperateTime(Date operateTime) {
-        this.operateTime = operateTime;
-    }
-
-    public int getSelfMade() {
-        return selfMade;
-    }
-
-    public void setSelfMade(int selfMade) {
-        this.selfMade = selfMade;
-    }
-
-    public long getType() {
-        return type;
-    }
-
-    public void setType(long type) {
-        this.type = type;
-    }
-
-    public long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(long creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    public long getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(long operatorId) {
-        this.operatorId = operatorId;
+    public void setCateGoryName(String cateGoryName) {
+        this.cateGoryName = cateGoryName;
     }
 
     public List<ProductSelfUse> getProductSelfUses() {

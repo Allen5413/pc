@@ -1,9 +1,6 @@
 package com.allen.entity.basic;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -12,134 +9,75 @@ import java.util.Date;
  * Created by Allen on 2017/2/15 0015.
  */
 @Entity
-@Table(name = "product_self_use")
+@Table(name = "t_eng_bom")
 public class ProductSelfUse {
     @Id
-    @GeneratedValue
-    private long id;
-    private String code;
-    private String name;
-    private long productId;
-    private long selfProductId;
-    private BigDecimal quantity;
-    private String creator;
-    private BigDecimal ahead = new BigDecimal(0);
-    private int level;
-    private Date createTime = new Date();
-    private long creatorId;
-    private String operator;
-    private Date operateTime = new Date();
-    private long operatorId = 0;
+    private long FID;
+    private long FMATERIALID;//产品id
+    @Transient
+    private String FNUMBER;//产品编码
+    @Transient
+    private String FNAME;//产品名称
+    @Transient
+    private BigDecimal useQty ;//产品实际用量
+    @Transient
+    private BigDecimal FOFFSETTIME;//产品偏执时间
+    @Transient
+    private long FSEQ;//工序
 
-    public long getId() {
-        return id;
+    public long getFID() {
+        return FID;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setFID(long FID) {
+        this.FID = FID;
     }
 
-    public String getCode() {
-        return code;
+    public long getFMATERIALID() {
+        return FMATERIALID;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setFMATERIALID(long FMATERIALID) {
+        this.FMATERIALID = FMATERIALID;
     }
 
-    public String getName() {
-        return name;
+    public String getFNUMBER() {
+        return FNUMBER;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFNUMBER(String FNUMBER) {
+        this.FNUMBER = FNUMBER;
     }
 
-    public String getCreator() {
-        return creator;
+    public String getFNAME() {
+        return FNAME;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setFNAME(String FNAME) {
+        this.FNAME = FNAME;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public BigDecimal getUseQty() {
+        return useQty;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setUseQty(BigDecimal useQty) {
+        this.useQty = useQty;
     }
 
-    public String getOperator() {
-        return operator;
+    public BigDecimal getFOFFSETTIME() {
+        return FOFFSETTIME;
     }
 
-    public void setOperator(String operator) {
-        this.operator = operator;
+    public void setFOFFSETTIME(BigDecimal FOFFSETTIME) {
+        this.FOFFSETTIME = FOFFSETTIME;
     }
 
-    public Date getOperateTime() {
-        return operateTime;
+    public long getFSEQ() {
+        return FSEQ;
     }
 
-    public void setOperateTime(Date operateTime) {
-        this.operateTime = operateTime;
-    }
-
-    public long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(long productId) {
-        this.productId = productId;
-    }
-
-    public long getSelfProductId() {
-        return selfProductId;
-    }
-
-    public void setSelfProductId(long selfProductId) {
-        this.selfProductId = selfProductId;
-    }
-
-    public BigDecimal getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(BigDecimal quantity) {
-        this.quantity = quantity;
-    }
-
-    public long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(long creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    public long getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(long operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public BigDecimal getAhead() {
-        return ahead;
-    }
-
-    public void setAhead(BigDecimal ahead) {
-        this.ahead = ahead;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
+    public void setFSEQ(long FSEQ) {
+        this.FSEQ = FSEQ;
     }
 }

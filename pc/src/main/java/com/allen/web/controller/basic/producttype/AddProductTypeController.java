@@ -39,8 +39,6 @@ public class AddProductTypeController extends BaseController {
     public JSONObject add(HttpServletRequest request, ProductType productType) throws Exception {
         JSONObject jsonObject = new JSONObject();
         if(null != productType) {
-            productType.setCreator(UserUtil.getLoginUserForName(request));
-            productType.setOperator(UserUtil.getLoginUserForName(request));
             addProductTypeService.add(productType);
         }
         jsonObject.put("state", 0);

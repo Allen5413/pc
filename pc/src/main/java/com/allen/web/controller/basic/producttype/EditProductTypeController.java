@@ -48,8 +48,6 @@ public class EditProductTypeController extends BaseController {
     public JSONObject editor(HttpServletRequest request, ProductType productType)throws Exception{
         JSONObject jsonObject = new JSONObject();
         if(null != productType) {
-            productType.setOperator(UserUtil.getLoginUserForName(request));
-            productType.setOperateTime(DateUtil.getLongNowTime());
             editProductTypeService.edit(productType);
         }
         jsonObject.put("state", 0);

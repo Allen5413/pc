@@ -20,14 +20,6 @@ public class AddProductTypeServiceImpl implements AddProductTypeService {
 
     @Override
     public void add(ProductType productType) throws Exception {
-        List list = productTypeDao.findByCode(productType.getCode());
-        if(null != list && 0 < list.size()){
-            throw new BusinessException("编号已存在！");
-        }
-        list = productTypeDao.findByName(productType.getName());
-        if(null != list && 0 < list.size()){
-            throw new BusinessException("名称已存在！");
-        }
         productTypeDao.save(productType);
     }
 }

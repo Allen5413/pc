@@ -44,7 +44,7 @@
     <th style="width: 7%;">编号</th>
     <th style="width: 12%;">名称</th>
     <th style="width: 5%;">是否公用</th>
-    <th style="width: 40%;">关联产品</th>
+    <th style="width: 40%;">加工产品</th>
     <th style="width: 6%;">操作人</th>
     <th style="width: 12%;">操作时间</th>
     <th>操作</th>

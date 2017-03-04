@@ -55,10 +55,6 @@ public class AddProductController extends BaseController {
     public JSONObject add(HttpServletRequest request, Product product,String productSelfUseList) throws Exception {
         JSONObject jsonObject = new JSONObject();
         if(null != product) {
-            product.setCreator(UserUtil.getLoginUserForName(request));
-            product.setOperator(UserUtil.getLoginUserForName(request));
-            product.setOperatorId(UserUtil.getLoginUserForLoginId(request));
-            product.setCreatorId(UserUtil.getLoginUserForLoginId(request));
             if(!StringUtil.isEmpty(productSelfUseList)){
                product.setProductSelfUses(JSONObject.parseArray(productSelfUseList, ProductSelfUse.class));
             }

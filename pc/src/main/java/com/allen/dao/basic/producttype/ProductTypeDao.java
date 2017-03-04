@@ -10,17 +10,5 @@ import java.util.List;
  */
 public interface ProductTypeDao extends CrudRepository<ProductType, Long> {
 
-    /**
-     * 通过code查询
-     * @param code
-     * @return
-     */
-    public List<ProductType> findByCode(String code);
 
-    /**
-     * 通过name查询
-     * @param name
-     * @return
-     */
-    public List<ProductType> findByName(String name);
 }

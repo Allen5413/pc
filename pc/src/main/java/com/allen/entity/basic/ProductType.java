@@ -7,75 +7,57 @@ import javax.persistence.Table;
 import java.util.Date;
 
 /**
- * 产品类别
+ * 产品类别 FLOCALEID 值为2052
  * Created by Allen on 2017/2/15 0015.
  */
 @Entity
-@Table(name = "product_type")
+@Table(name = "t_bd_materialcategory_l")
 public class ProductType {
     @Id
     @GeneratedValue
-    private long id;
-    private String code;
-    private String name;
-    private String creator;
-    private Date createTime = new Date();
-    private String operator;
-    private Date operateTime = new Date();
+    private long FPKID;
+    private long FCATEGORYID;
+    private long FLOCALEID;
+    private String FNAME;
+    private String FDESCRIPTION;
 
-    public long getId() {
-        return id;
+    public long getFPKID() {
+        return FPKID;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setFPKID(long FPKID) {
+        this.FPKID = FPKID;
     }
 
-    public String getCode() {
-        return code;
+    public long getFCATEGORYID() {
+        return FCATEGORYID;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setFCATEGORYID(long FCATEGORYID) {
+        this.FCATEGORYID = FCATEGORYID;
     }
 
-    public String getName() {
-        return name;
+    public long getFLOCALEID() {
+        return FLOCALEID;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFLOCALEID(long FLOCALEID) {
+        this.FLOCALEID = FLOCALEID;
     }
 
-    public String getCreator() {
-        return creator;
+    public String getFNAME() {
+        return FNAME;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setFNAME(String FNAME) {
+        this.FNAME = FNAME;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public String getFDESCRIPTION() {
+        return FDESCRIPTION;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public Date getOperateTime() {
-        return operateTime;
-    }
-
-    public void setOperateTime(Date operateTime) {
-        this.operateTime = operateTime;
+    public void setFDESCRIPTION(String FDESCRIPTION) {
+        this.FDESCRIPTION = FDESCRIPTION;
     }
 }

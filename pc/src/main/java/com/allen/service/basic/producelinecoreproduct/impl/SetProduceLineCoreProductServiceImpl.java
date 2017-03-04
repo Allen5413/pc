@@ -78,14 +78,14 @@ public class SetProduceLineCoreProductServiceImpl implements SetProduceLineCoreP
      */
     private void setProduceLineForProduct(long plId)throws Exception{
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("plc.produceLineId", plId);
-        List<Product> productList = findProductDao.findByPlId(params);
+        params.put("plc.produce_line_id", plId);
+        List<Map> productList = findProductDao.findByPlId(params);
         if(null != productList && 0 < productList.size()){
             ProduceLine produceLine = produceLineDao.findOne(plId);
             String ids = "", names = "";
-            for(Product product : productList){
-                ids += product.getId()+"_";
-                names += product.getName()+"_";
+            for(Map product : productList){
+                ids += product.get("FMATERIALID")+"_";
+                names += product.get("FNAME")+"_";
             }
             ids = ids.substring(0, ids.length()-1);
             names = names.substring(0, names.length()-1);

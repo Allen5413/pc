@@ -35,7 +35,7 @@
           </tr>
         </table>
       </div>
-      <div class="table-body2">
+      <div class="table-body2" style="height: 402px; ">
         <form id="changeProductForm" name="changeProductForm" method="post">
           <input type="hidden" id="plId" name="plId" />
           <input type="hidden" id="wcId" name="wcId" />
@@ -55,11 +55,11 @@
           <label >名称：</label>
           <input type="text" name="name" style="width: 100px;" /><br /><br />
           <label >类别：</label>
-          <select id="type" name="type" onchange="app.changeSelect(this)">
+          <select id="type" name="type" data-am-selected="{btnWidth:'126px'}" onchange="app.changeSelect(this)">
             <option value=""></option>
             <option value="null">全部</option>
             <c:forEach items="${productTypeList}" var="productType">
-              <option value="${productType.id}">${productType.name}</option>
+              <option value="${productType.FCATEGORYID}">${productType.FNAME}</option>
             </c:forEach>
           </select>&nbsp;&nbsp;&nbsp;&nbsp;
           <button type="button" id="searchProductBtn" class="am-btn am-btn-primary btn-loading-example"
@@ -71,13 +71,13 @@
     <div class="table-head">
       <table class="am-table am-table-bordered am-table-striped am-table-hover no-margin-bottom" style="width:100%;">
         <tr class="am-primary" style="border-right: 0px;">
-          <th>名称</th>
+          <th style="width:66%; ">名称</th>
           <th style="width: 17%;">类型</th>
-          <th style="width: 20%;">自制件</th>
+          <th style="width: 17%;">自制件</th>
         </tr>
       </table>
     </div>
-    <div class="table-body">
+    <div class="table-body" STYLE="height: 312px;">
       <table id="findProductTable" class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
       </table>
     </div>
@@ -128,8 +128,8 @@
               for(var i=0; i<productList.length; i++) {
                 var product = productList[i];
                 var tr = $("<tr><input type='hidden' name='pIds' value='"+product.id+"'></tr>");
-                var td = $("<td style='width: 20%;' onclick='delWithProduct(this, " + product.plcpId + ")'>[" + product.code + "]"+product.name+"</td>");
-                var td2 = $("<td style='width: 10%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + product.tName + "</td>");
+                var td = $("<td style='width: 20%;' onclick='delWithProduct(this, " + product.plcpId + ")'>[" + product.FNUMBER + "]"+product.FNAME+"</td>");
+                var td2 = $("<td style='width: 10%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + product.cateGoryName + "</td>");
                 var td4 = $("<td style='width: 15%;'></td>");
                 var td4Html = "<select id=\"wmId"+i+"\" name=\"wmIds\" data-am-selected=\"{btnWidth:'70px'}\" onchange=\"app.changeSelect(this)\">";
                 td4Html += "<option value=''></option>";
@@ -201,10 +201,10 @@
             if(0 < productList.length){
               for(var i=0; i<productList.length; i++){
                 var product =  productList[i];
-                var tr = $("<tr onclick='changeProduct(this, "+product.id+")'></tr>");
-                var td = $("<td>["+product.code+"]"+product.name+"</td>");
-                var td2 = $("<td style='width: 17%;'>"+product.tName+"</td>");
-                var td3 = $("<td style='width: 20%;'>"+(product.self_made == 0 ? "否" : "是")+"</td>");
+                var tr = $("<tr onclick='changeProduct(this, "+product.FMATERIALID+")'></tr>");
+                var td = $("<td style='width: 66%;'>["+product.FNUMBER+"]"+product.FNAME+"</td>");
+                var td2 = $("<td style='width: 17%;'>"+product.cateGoryName+"</td>");
+                var td3 = $("<td style='width: 17%;'>"+(product.FERPCLSID == 1 ? "是" : "否")+"</td>");
                 tr.append(td).append(td2).append(td3);
                 table.append(tr);
               }

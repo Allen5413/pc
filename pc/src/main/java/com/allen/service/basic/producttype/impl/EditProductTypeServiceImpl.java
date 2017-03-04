@@ -20,20 +20,9 @@ public class EditProductTypeServiceImpl implements EditProductTypeService {
 
     @Override
     public void edit(ProductType productType) throws Exception {
-        ProductType oldProductType = productTypeDao.findOne(productType.getId());
-        List list = productTypeDao.findByCode(productType.getCode());
-        if(null != list && 0 < list.size() && !oldProductType.getCode().equals(productType.getCode())){
-            throw new BusinessException("编号已存在！");
-        }
-        list = productTypeDao.findByName(productType.getName());
-        if(null != list && 0 < list.size() && !oldProductType.getName().equals(productType.getName())){
-            throw new BusinessException("名称已存在！");
-        }
-
-        oldProductType.setCode(productType.getCode());
-        oldProductType.setName(productType.getName());
-        oldProductType.setOperator(productType.getOperator());
-        oldProductType.setOperateTime(productType.getOperateTime());
+        ProductType oldProductType = productTypeDao.findOne(productType.getFPKID());
+        oldProductType.setFNAME(productType.getFNAME());
+        oldProductType.setFDESCRIPTION(productType.getFDESCRIPTION());
         productTypeDao.save(oldProductType);
     }
 }

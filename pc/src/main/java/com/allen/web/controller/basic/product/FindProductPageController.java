@@ -30,12 +30,12 @@ public class FindProductPageController extends BaseController {
                        @RequestParam(value="type",required =false) Integer type,
                        HttpServletRequest request) throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("p.code", code);
-        params.put("p.name", new Object[]{StringUtil.isEmpty(name) ? "" : "%"+name+"%", "like"});
-        params.put("p.type", type);
+        params.put("a.FNUMBER", code);
+        params.put("c.FNAME", new Object[]{StringUtil.isEmpty(name) ? "" : "%"+name+"%", "like"});
+        params.put("b.FCATEGORYID", type);
         PageInfo pageInfo = super.getPageInfo(request);
         Map<String, Boolean> sortMap = new HashMap<String, Boolean>();
-        sortMap.put("p.id", true);
+        sortMap.put("b.FENTRYID", true);
         pageInfo = findProductPageService.find(pageInfo, params, sortMap);
         request.setAttribute("pageInfo", pageInfo);
         request.setAttribute("productTypes",findProductTypeSelectService.find());

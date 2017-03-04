@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
-         pageEncoding="utf-8"%>
+                  pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <style type="text/css">
   .table-head{padding-right:17px;}
@@ -66,34 +66,34 @@
 </form>
 <script type="text/javascript">
   $(function(){
-      $("select").selected();
-      $('#add_workTimes').on('change',function(){
-              if($(this).val()=='-1'){
-                  return false;
-              }
-              var option = $(this).find(":selected");
-              var flag = false;
-              $('#workTimeDetail tr').each(function(){
-                      if($(this).attr('work-time-id')==$(option).val()){
-                          flag = true;
+          $("select").selected();
+          $('#add_workTimes').on('change',function(){
+                  if($(this).val()=='-1'){
                           return false;
-                      }
-              });
-              if(flag){
-                  return false;
-              }
-              $('#workTimeDetail tbody').append('<tr work-time-id="'+$(this).val()+'">'+
-                      '<td style="width: 8%;">'+($('#workTimeDetail tr').length+1)+'</td>'+
-                      '<td style="width: 19%;">'+$(option).attr("data-code")+'</td>'+
-                      '<td style="width: 19%;">'+$(option).text()+'</td>'+
-                      '<td style="width: 13%;">'+$(option).attr("data-start")+'</td>'+
-                      '<td style="width: 13%;">'+$(option).attr("data-end")+'</td>'+
-                      '<td style="width: 13%;">'+$(option).attr("data-sub")+'</td>'+
-                      '<td style="width: 15%;"><a class="am-badge am-badge-danger am-radius am-text-lg" onclick="removeProductDetail(this)" >' +
-                      '   <span class="am-icon-trash-o"></span>&nbsp;删除</a></td></tr>');
-      });
-  });
-  function removeProductDetail(obj){
-      $(obj).parent().parent().remove();
-  }
+                          }
+                  var option = $(this).find(":selected");
+                  var flag = false;
+                  $('#workTimeDetail tr').each(function(){
+                          if($(this).attr('work-time-id')==$(option).val()){
+                                  flag = true;
+                                  return false;
+                                  }
+                          });
+                  if(flag){
+                          return false;
+                          }
+                  $('#workTimeDetail tbody').append('<tr work-time-id="'+$(this).val()+'">'+
+                          '<td style="width: 8%;">'+($('#workTimeDetail tr').length+1)+'</td>'+
+                          '<td style="width: 19%;">'+$(option).attr("data-code")+'</td>'+
+                          '<td style="width: 19%;">'+$(option).text()+'</td>'+
+                          '<td style="width: 13%;">'+$(option).attr("data-start")+'</td>'+
+                          '<td style="width: 13%;">'+$(option).attr("data-end")+'</td>'+
+                          '<td style="width: 13%;">'+$(option).attr("data-sub")+'</td>'+
+                          '<td style="width: 15%;"><a class="am-badge am-badge-danger am-radius am-text-lg" onclick="removeProductDetail(this)" >' +
+                          '   <span class="am-icon-trash-o"></span>&nbsp;删除</a></td></tr>');
+                  });
+          });
+          function removeProductDetail(obj){
+                  $(obj).parent().parent().remove();
+                  }
 </script>

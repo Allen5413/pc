@@ -10,6 +10,5 @@ import java.util.List;
  */
 @Service
 public interface ProductSelfUseDao  extends CrudRepository<ProductSelfUse, Long> {
-    //根据产品id查询组成信息
-    public List<ProductSelfUse> findByProductId(long productId);
+
 }

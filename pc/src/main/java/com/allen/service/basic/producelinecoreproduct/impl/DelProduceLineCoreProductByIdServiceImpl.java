@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Allen on 2017/2/27 0027.
@@ -61,7 +62,7 @@ public class DelProduceLineCoreProductByIdServiceImpl implements DelProduceLineC
      */
     private void editProduceLineForProductInfo(long plId, long pId)throws Exception{
         ProduceLine produceLine = findProduceLineByIdService.find(plId);
-        Product product = findProductByIdService.find(pId);
+        Map product = findProductByIdService.find(pId);
         if(null == produceLine){
             throw new BusinessException("没有找到生产线信息");
         }
@@ -82,14 +83,14 @@ public class DelProduceLineCoreProductByIdServiceImpl implements DelProduceLineC
                 produceLine.setProductIds(produceLine.getProductIds().replace("_" + pId, ""));
             }
 
-            if (produceLine.getProductNames().indexOf(product.getName()) == 0) {
+            if (produceLine.getProductNames().indexOf(product.get("FNAME").toString()) == 0) {
                 if (produceLine.getProductNames().indexOf("_") < 0) {
-                    produceLine.setProductNames(produceLine.getProductNames().replace(product.getName(), ""));
+                    produceLine.setProductNames(produceLine.getProductNames().replace(product.get("FNAME").toString(), ""));
                 } else {
-                    produceLine.setProductNames(produceLine.getProductNames().replace(product.getName() + "_", ""));
+                    produceLine.setProductNames(produceLine.getProductNames().replace(product.get("FNAME").toString() + "_", ""));
                 }
             } else {
-                produceLine.setProductNames(produceLine.getProductNames().replace("_" + product.getName(), ""));
+                produceLine.setProductNames(produceLine.getProductNames().replace("_" + product.get("FNAME").toString(), ""));
             }
             editProduceLineService.edit(produceLine);
         }

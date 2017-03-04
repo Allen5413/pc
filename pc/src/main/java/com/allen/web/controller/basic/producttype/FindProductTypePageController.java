@@ -27,11 +27,12 @@ public class FindProductTypePageController extends BaseController {
                        @RequestParam(value="code", required=false) String code,
                                   HttpServletRequest request) throws Exception {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("code", code);
-        params.put("name", new Object[]{StringUtil.isEmpty(name) ? "" : "%"+name+"%", "like"});
+        //params.put("code", code);
+        params.put("FLOCALEID", Long.valueOf(2052));
+        params.put("FNAME", new Object[]{StringUtil.isEmpty(name) ? "" : "%"+name+"%", "like"});
         PageInfo pageInfo = super.getPageInfo(request);
         Map<String, Boolean> sortMap = new HashMap<String, Boolean>();
-        sortMap.put("id", true);
+        sortMap.put("FPKID", true);
         pageInfo = findProductTypePageService.find(pageInfo, params, sortMap);
         request.setAttribute("pageInfo", pageInfo);
         return "/basic/producttype/page";

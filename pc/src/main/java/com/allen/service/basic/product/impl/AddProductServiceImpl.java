@@ -24,26 +24,6 @@ public class AddProductServiceImpl implements AddProductService {
     @Override
     @Transactional
     public void add(Product product) throws Exception {
-        //查询是否存在编码
-        List list = productDao.findByCode(product.getCode());
-        if(null != list && 0 < list.size()){
-            throw new BusinessException("编号已存在！");
-        }
-        list = productDao.findByName(product.getName());
-        if(null != list && 0 < list.size()){
-            throw new BusinessException("名称已存在！");
-        }
-        //保存产品信息
-        Product newProduct = productDao.save(product);
-        if(product.getProductSelfUses()!=null&&product.getProductSelfUses().size()>0){
-            for (ProductSelfUse productSelfUse:product.getProductSelfUses()){
-                productSelfUse.setProductId(newProduct.getId());
-                productSelfUse.setCreator(newProduct.getCreator());
-                productSelfUse.setCreatorId(newProduct.getCreatorId());
-                productSelfUse.setOperatorId(newProduct.getOperatorId());
-                productSelfUse.setOperator(newProduct.getOperator());
-                productSelfUseDao.save(productSelfUse);
-            }
-        }
+
     }
 }

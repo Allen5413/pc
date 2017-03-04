@@ -3,6 +3,7 @@ package com.allen.dao.basic.product;
 import com.allen.dao.BaseQueryDao;
 import com.allen.dao.PageInfo;
 import com.allen.entity.basic.Product;
+import com.allen.entity.basic.ProductType;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -23,10 +24,27 @@ public class FindProductDao extends BaseQueryDao {
      * @throws Exception
      */
     public PageInfo findPage(PageInfo pageInfo, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
-        String fields = "p.*,pt.name as tName";
-        String[] tableNames = {"product p, product_type pt"};
-        String defaultWhere = "p.type = pt.id";
+        if(paramsMap==null){
+            paramsMap = new HashMap<String, Object>();
+        }
+        paramsMap.put("a.FDOCUMENTSTATUS","C");
+        paramsMap.put("a.FFORBIDSTATUS","A");
+        String fields = "b.FENTRYID,a.FMATERIALID,a.FNUMBER,d.FNAME as cateGoryName,b.FERPCLSID,c.FNAME";
+        String[] tableNames = {"t_bd_material a,t_bd_materialbase b,t_bd_material_l c,t_bd_materialcategory_l d"};
+        String defaultWhere = "a.FMATERIALID = b.FMATERIALID and  c.FMATERIALID = a.FMATERIALID and b.FCATEGORYID = d.FCATEGORYID";
         return super.findPageByNativeSqlToMap(pageInfo, fields,defaultWhere,tableNames, paramsMap, sortMap);
+    }
+
+    public  List<Map> findByMap(Map<String,Object> paramsMap, Map<String, Boolean> sortMap){
+        if(paramsMap==null){
+            paramsMap = new HashMap<String, Object>();
+        }
+        paramsMap.put("a.FDOCUMENTSTATUS","C");
+        paramsMap.put("a.FFORBIDSTATUS","A");
+        String fields = "b.FENTRYID,a.FNUMBER,d.FNAME as cateGoryName,b.FERPCLSID,c.FNAME,b.FCATEGORYID,b.FMATERIALID";
+        String[] tableNames = {"t_bd_material a,t_bd_materialbase b,t_bd_material_l c,t_bd_materialcategory_l d"};
+        String defaultWhere = "a.FMATERIALID = b.FMATERIALID and  c.FMATERIALID = a.FMATERIALID and b.FCATEGORYID = d.FCATEGORYID";
+        return super.findListBySqlToMap(tableNames,fields,defaultWhere,paramsMap,sortMap);
     }
 
     /**
@@ -50,13 +68,16 @@ public class FindProductDao extends BaseQueryDao {
      * @throws Exception
      */
     public List<Map> findByPlIdAndWcId(Map<String,Object> paramsMap) throws Exception{
-        String fields = "p.id, p.code, p.name, pt.name tName, p.self_made selfMade, " +
+        String fields = "p.FMATERIALID, p.FNUMBER, pn.FNAME, pt.FNAME cateGoryName, pbase.FERPCLSID, " +
                 "plcp.work_mode_id wmId, plcp.id plcpId, round(plcp.unit_time_capacity/3600, 2) unitTimeCapacity, " +
                 "plcp.qualified_rate qualifiedRate, plcp.min_batch minBatch";
-        String[] tableNames = {"product p, produce_line_core_product plcp, produce_line_core plc, product_type pt"};
-        String defaultWhere = "p.type = pt.id and p.id = plcp.product_id and plcp.produce_line_core_id = plc.id";
+        String[] tableNames = {"produce_line_core_product plcp, produce_line_core plc,t_bd_material p," +
+                "t_bd_materialbase pbase,t_bd_materialcategory_l pt,t_bd_material_l pn"};
+        String defaultWhere = "plcp.produce_line_core_id = plc.id and p.FMATERIALID = plcp.product_id " +
+                "and pbase.FMATERIALID = p.FMATERIALID and pbase.FCATEGORYID = pt.FCATEGORYID and " +
+                "pn.FMATERIALID = p.FMATERIALID";
         Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
-        sortMap.put("p.code",false);
+        sortMap.put("p.FNUMBER",false);
         return super.findListBySqlToMap(tableNames, fields, defaultWhere, paramsMap, sortMap);
     }
 
@@ -66,12 +87,12 @@ public class FindProductDao extends BaseQueryDao {
      * @return
      * @throws Exception
      */
-    public List<Product> findByPlId(Map<String,Object> paramsMap) throws Exception{
-        String fields = "DISTINCT p";
-        String[] tableNames = {"Product p, ProduceLineCoreProduct plcp, ProduceLineCore plc"};
-        String defaultWhere = "p.id = plcp.productId and plcp.produceLineCoreId = plc.id";
+    public List<Map> findByPlId(Map<String,Object> paramsMap) throws Exception{
+        String fields = "DISTINCT p.FMATERIALID,p.FNUMBER,pn.FNAME";
+        String[] tableNames = {"produce_line_core_product plcp, produce_line_core plc,t_bd_material p,t_bd_material_l pn"};
+        String defaultWhere = "plcp.produce_line_core_id = plc.id and p.FMATERIALID =  plcp.product_id and p.FMATERIALID = pn.FMATERIALID";
         Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
-        sortMap.put("p.code",false);
-        return super.findListByHql(tableNames, fields, defaultWhere, paramsMap, sortMap);
+        sortMap.put("p.FNUMBER",false);
+        return super.findListBySqlToMap(tableNames, fields, defaultWhere, paramsMap, sortMap);
     }
 }
