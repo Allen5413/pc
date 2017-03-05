@@ -19,21 +19,13 @@ public class ProduceLine {
     private final static int ISPUBLIC_NOT = 0;
     private final static int ISPUBLIC_YES = 1;
 
-    /**
-     * 是否被使用
-     * 0：否
-     * 1：是
-     */
-    private final static int ISUSE_NOT = 0;
-    private final static int ISUSE_YES = 1;
-
     @Id
     @GeneratedValue
     private long id;
     private String code;
     private String name;
     private int isPublic;
-    private int isUse;
+    private long useProductId;          //正在被使用得产品id
     private String productIds;
     private String productNames;
     private String creator;
@@ -125,12 +117,12 @@ public class ProduceLine {
         this.isPublic = isPublic;
     }
 
-    public int getIsUse() {
-        return isUse;
+    public long getUseProductId() {
+        return useProductId;
     }
 
-    public void setIsUse(int isUse) {
-        this.isUse = isUse;
+    public void setUseProductId(long useProductId) {
+        this.useProductId = useProductId;
     }
 
     public String getIsPublicStr() {
@@ -149,16 +141,10 @@ public class ProduceLine {
     }
 
     public String getIsUseStr() {
-        switch (this.getIsUse()){
-            case 1:
-                this.isUseStr = "是";
-                break;
-            case 0:
-                this.isUseStr = "否";
-                break;
-            default:
-                this.isUseStr = "未知";
-                break;
+        if(0 < this.getUseProductId()){
+            this.isUseStr = "是";
+        }else{
+            this.isUseStr = "否";
         }
         return isUseStr;
     }
