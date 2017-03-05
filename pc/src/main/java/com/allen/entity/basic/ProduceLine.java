@@ -42,6 +42,8 @@ public class ProduceLine {
     private Date operateTime = new Date();
     @Transient
     private String isPublicStr;
+    @Transient
+    private String isUseStr;
 
     public long getId() {
         return id;
@@ -123,6 +125,14 @@ public class ProduceLine {
         this.isPublic = isPublic;
     }
 
+    public int getIsUse() {
+        return isUse;
+    }
+
+    public void setIsUse(int isUse) {
+        this.isUse = isUse;
+    }
+
     public String getIsPublicStr() {
         switch (this.getIsPublic()){
             case 1:
@@ -138,11 +148,18 @@ public class ProduceLine {
         return isPublicStr;
     }
 
-    public int getIsUse() {
-        return isUse;
-    }
-
-    public void setIsUse(int isUse) {
-        this.isUse = isUse;
+    public String getIsUseStr() {
+        switch (this.getIsUse()){
+            case 1:
+                this.isUseStr = "是";
+                break;
+            case 0:
+                this.isUseStr = "否";
+                break;
+            default:
+                this.isUseStr = "未知";
+                break;
+        }
+        return isUseStr;
     }
 }
