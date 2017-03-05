@@ -19,12 +19,21 @@ public class ProduceLine {
     private final static int ISPUBLIC_NOT = 0;
     private final static int ISPUBLIC_YES = 1;
 
+    /**
+     * 是否被使用
+     * 0：否
+     * 1：是
+     */
+    private final static int ISUSE_NOT = 0;
+    private final static int ISUSE_YES = 1;
+
     @Id
     @GeneratedValue
     private long id;
     private String code;
     private String name;
     private int isPublic;
+    private int isUse;
     private String productIds;
     private String productNames;
     private String creator;
@@ -127,5 +136,13 @@ public class ProduceLine {
                 break;
         }
         return isPublicStr;
+    }
+
+    public int getIsUse() {
+        return isUse;
+    }
+
+    public void setIsUse(int isUse) {
+        this.isUse = isUse;
     }
 }
