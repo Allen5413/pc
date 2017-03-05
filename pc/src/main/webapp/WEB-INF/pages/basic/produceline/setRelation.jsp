@@ -29,9 +29,7 @@
             <th style="width: 20%;">名称</th>
             <th style="width: 10%;">类型</th>
             <th style="width: 15%;">工作模式</th>
-            <th style="width: 18%;">产能(小时)</th>
-            <th style="width: 15%;">合格率(%)</th>
-            <th>最小批量(个)</th>
+            <th>合格率(%)</th>
           </tr>
         </table>
       </div>
