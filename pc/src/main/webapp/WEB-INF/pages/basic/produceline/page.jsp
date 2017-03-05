@@ -44,7 +44,8 @@
     <th style="width: 7%;">编号</th>
     <th style="width: 12%;">名称</th>
     <th style="width: 5%;">是否公用</th>
-    <th style="width: 40%;">加工产品</th>
+    <th style="width: 5%;">正在使用</th>
+    <th style="width: 35%;">加工产品</th>
     <th style="width: 6%;">操作人</th>
     <th style="width: 12%;">操作时间</th>
     <th>操作</th>
@@ -60,6 +61,7 @@
       <td>${produceLine.code}</td>
       <td>${produceLine.name}</td>
       <td>${produceLine.isPublicStr}</td>
+      <td>${produceLine.isUseStr}</td>
       <td>${fn:replace(produceLine.productNames, "_", "，")}</td>
       <td>${produceLine.operator}</td>
       <td><fmt:formatDate value="${produceLine.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
