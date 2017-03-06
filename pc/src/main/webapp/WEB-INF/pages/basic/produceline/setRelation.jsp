@@ -11,24 +11,29 @@
   <div class="am-panel am-panel-primary no-margin-bottom" style="width:15%; height: 480px; float: left; margin-left: 5px;">
     <div class="am-panel-hd am-cf">生产线信息</div>
     <div id="notWith" class="am-in">
-        <div style="background-color: #fFF;width: 100%;padding: 0.7rem;border-bottom: solid 1px #ddd;">
-          <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="setProduceLineCore()"><span class="am-icon-cog"></span> 关联生产中心</button>
-        </div>
+      <div style="background-color: #fFF;width: 100%;padding: 0.7rem;border-bottom: solid 1px #ddd;">
+        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="setProduceLineCore()"><span class="am-icon-cog"></span> 关联生产中心</button>
+      </div>
       <div id="zTreeDiv" style="overflow: auto;">
         <ul id="plTree" class="ztree"></ul>
       </div>
     </div>
   </div>
 
-  <div class="am-panel am-panel-primary no-margin-bottom" style="width:53%; height: 480px; float: left; margin-left: 5px;">
+  <div class="am-panel am-panel-primary no-margin-bottom" style="width:45%; height: 480px; float: left; margin-left: 5px;">
     <div class="am-panel-hd am-cf">关联的产品信息</div>
     <div class="am-in">
       <div class="table-head">
         <table class="am-table am-table-bordered am-table-striped am-table-hover no-margin-bottom" style="width:100%;">
+          <tr>
+            <td colspan="99">
+              <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="setCoreProduct()"><span class="am-icon-cog"></span> 关联产品</button>
+            </td>
+          </tr>
           <tr class="am-primary" style="border-right: 0px;">
-            <th style="width: 20%;">名称</th>
+            <th style="width: 40%;">名称</th>
             <th style="width: 10%;">类型</th>
-            <th style="width: 15%;">工作模式</th>
+            <th style="width: 25%;">工作模式</th>
             <th>合格率(%)</th>
           </tr>
         </table>
@@ -43,7 +48,7 @@
       </div>
     </div>
   </div>
-  <div class="am-panel am-panel-primary no-margin-bottom" style="width:30%; height: 480px; float: left; margin-left: 5px;">
+  <div class="am-panel am-panel-primary no-margin-bottom" style="width:38%; height: 480px; float: left; margin-left: 5px;">
     <div class="am-panel-hd am-cf">产品信息查询</div>
     <div class="am-in">
       <div style="background-color: #fFF;width: 100%;padding: 0.7rem;">
@@ -83,6 +88,8 @@
 </div>
 <script>
   $("select").selected();
+
+  var pcId = 0;
 
   var setting = {
     data: {
@@ -126,21 +133,19 @@
               for(var i=0; i<productList.length; i++) {
                 var product = productList[i];
                 var tr = $("<tr><input type='hidden' name='pIds' value='"+product.id+"'></tr>");
-                var td = $("<td style='width: 20%;' onclick='delWithProduct(this, " + product.plcpId + ")'>[" + product.FNUMBER + "]"+product.FNAME+"</td>");
+                var td = $("<td style='width: 40%;' onclick='delWithProduct(this, " + product.plcpId + ")'>[" + product.FNUMBER + "]"+product.FNAME+"</td>");
                 var td2 = $("<td style='width: 10%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + product.cateGoryName + "</td>");
-                var td4 = $("<td style='width: 15%;'></td>");
-                var td4Html = "<select id=\"wmId"+i+"\" name=\"wmIds\" data-am-selected=\"{btnWidth:'70px'}\" onchange=\"app.changeSelect(this)\">";
-                td4Html += "<option value=''></option>";
-                td4Html += "<option value='null'>全部</option>";
+                var td3 = $("<td style='width: 25%;'></td>");
+                var td3Html = "<select id=\"wmId"+i+"\" name=\"wmIds\" data-am-selected=\"{btnWidth:'120px'}\" onchange=\"app.changeSelect(this)\">";
+                td3Html += "<option value=''></option>";
+                td3Html += "<option value='null'>全部</option>";
                 <c:forEach items="${workModeList}" var="workMode">
-                  td4Html += "<option value='${workMode.id}'>${workMode.name}</option>";
+                  td3Html += "<option value='${workMode.id}'>${workMode.name}</option>";
                 </c:forEach>
-                td4Html += "</select>";
-                $(td4).append(td4Html);
-                var td5 = $("<td style='width: 18%;'><input type='number' name='unitTimeCapacitys' style='width: 60px;' value='"+product.unitTimeCapacity+"' /></td>");
-                var td6 = $("<td style='width: 15%;'><input type='number' name='qualifiedRates' style='width: 60px;' value='"+product.qualifiedRate+"' /></td>");
-                var td7 = $("<td><input type='number' name='minBatchs' style='width: 60px;' value='"+product.minBatch+"' /></td>");
-                $(tr).append(td).append(td2).append(td4).append(td5).append(td6).append(td7);
+                td3Html += "</select>";
+                $(td3).append(td3Html);
+                var td4 = $("<td><input type='number' name='qualifiedRates' style='width: 60px;' value='"+product.qualifiedRate+"' /></td>");
+                $(tr).append(td).append(td2).append(td3).append(td4);
                 table.append(tr);
                 $("select").selected();
                 var op = $("#wmId"+i).find("option[value='"+product.wmId+"']");
@@ -179,6 +184,14 @@
         return;
       }
     }
+  }
+
+  function setCoreProduct(){
+    app.openDialog('${pageContext.request.contextPath}/setProduceLineCoreForPlId/open.html?plId='+plId, '关联工作中心', 800, 700, function(index){
+      app.add("${pageContext.request.contextPath}/setProduceLineCoreForPlId/set.json", $('#setForm').serialize(), index, function(){
+        zTreeObj.reAsyncChildNodes(selectedNodes[0], "refresh");
+      });
+    });
   }
 
   function searchProduct(){
