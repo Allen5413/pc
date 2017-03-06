@@ -60,9 +60,7 @@ public class SetProduceLineCoreProductServiceImpl implements SetProduceLineCoreP
                 produceLineCoreProduct.setProduceLineCoreId(produceLineCoreId);
                 produceLineCoreProduct.setProductId(pId);
                 produceLineCoreProduct.setWorkModeId(wmId);
-                produceLineCoreProduct.setUnitTimeCapacity(unitTimeCapacity*60*60);
                 produceLineCoreProduct.setQualifiedRate(qualifiedRate);
-                produceLineCoreProduct.setMinBatch(minBatch);
                 produceLineCoreProduct.setOperator(loginName);
                 list.add(produceLineCoreProduct);
             }

@@ -1,7 +1,6 @@
 package com.allen.entity.basic;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -17,9 +16,7 @@ public class ProduceLineCoreProduct {
     private long produceLineCoreId;
     private long productId;
     private long workModeId;
-    private long unitTimeCapacity;      //单位时间产能  数据库保存为 秒
     private int qualifiedRate;          //合格率
-    private int minBatch;               //最小批量 个
     private String operator;
     private Date operateTime = new Date();
     @Transient
@@ -73,31 +70,11 @@ public class ProduceLineCoreProduct {
         this.operateTime = operateTime;
     }
 
-    public long getUnitTimeCapacity() {
-        return unitTimeCapacity;
-    }
-
-    public void setUnitTimeCapacity(long unitTimeCapacity) {
-        this.unitTimeCapacity = unitTimeCapacity;
-    }
-
     public int getQualifiedRate() {
         return qualifiedRate;
     }
 
     public void setQualifiedRate(int qualifiedRate) {
         this.qualifiedRate = qualifiedRate;
-    }
-
-    public int getMinBatch() {
-        return minBatch;
-    }
-
-    public void setMinBatch(int minBatch) {
-        this.minBatch = minBatch;
-    }
-
-    public int getUnitTimeCapacityToHour() {
-        return new BigDecimal(this.getUnitTimeCapacity()).divide(new BigDecimal(3600).setScale(2, BigDecimal.ROUND_UP)).intValue();
     }
 }
