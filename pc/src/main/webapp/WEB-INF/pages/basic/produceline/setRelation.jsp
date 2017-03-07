@@ -187,7 +187,19 @@
   }
 
   function setCoreProduct(){
-    app.openDialog('${pageContext.request.contextPath}/setProduceLineCoreForPlId/open.html?plId='+plId, '关联工作中心', 800, 700, function(index){
+    var selectedNodes = zTreeObj.getSelectedNodes();
+    if(1 > selectedNodes.length){
+      app.msg("请先选择一个生产线下的工作中心", 1);
+      return;
+    }
+    var isParent = selectedNodes[0].isParent;
+    if (isParent) {
+      app.msg("请选择一个工作中心", 1);
+      return;
+    }
+    var plId = selectedNodes[0].plId;
+    var wcId = selectedNodes[0].id;
+    app.openDialog('${pageContext.request.contextPath}/addProduceLineCoreProduct/open.html?plId='+plId+'&wcId='+wcId, '关联产品', 800, 500, function(index){
       app.add("${pageContext.request.contextPath}/setProduceLineCoreForPlId/set.json", $('#setForm').serialize(), index, function(){
         zTreeObj.reAsyncChildNodes(selectedNodes[0], "refresh");
       });
