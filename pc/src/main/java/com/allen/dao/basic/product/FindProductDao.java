@@ -69,8 +69,7 @@ public class FindProductDao extends BaseQueryDao {
      */
     public List<Map> findByPlIdAndWcId(Map<String,Object> paramsMap) throws Exception{
         String fields = "p.FMATERIALID, p.FNUMBER, pn.FNAME, pt.FNAME cateGoryName, pbase.FERPCLSID, " +
-                "plcp.work_mode_id wmId, plcp.id plcpId, round(plcp.unit_time_capacity/3600, 2) unitTimeCapacity, " +
-                "plcp.qualified_rate qualifiedRate, plcp.min_batch minBatch";
+                "plcp.work_mode_id wmId, plcp.id plcpId, plcp.qualified_rate qualifiedRate";
         String[] tableNames = {"produce_line_core_product plcp, produce_line_core plc,t_bd_material p," +
                 "t_bd_materialbase pbase,t_bd_materialcategory_l pt,t_bd_material_l pn"};
         String defaultWhere = "plcp.produce_line_core_id = plc.id and p.FMATERIALID = plcp.product_id " +

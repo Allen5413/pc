@@ -18,8 +18,6 @@ public class ProduceLineCoreProduct {
     private int qualifiedRate;          //合格率
     private String operator;
     private Date operateTime = new Date();
-    @Transient
-    private int unitTimeCapacityToHour;     //单位时间 小时
 
     public long getId() {
         return id;
