@@ -15,7 +15,6 @@ public class ProduceLineCoreProduct {
     private long id;
     private long produceLineCoreId;
     private long productId;
-    private long workModeId;
     private int qualifiedRate;          //合格率
     private String operator;
     private Date operateTime = new Date();
@@ -44,14 +43,6 @@ public class ProduceLineCoreProduct {
 
     public void setProductId(long productId) {
         this.productId = productId;
-    }
-
-    public long getWorkModeId() {
-        return workModeId;
-    }
-
-    public void setWorkModeId(long workModeId) {
-        this.workModeId = workModeId;
     }
 
     public String getOperator() {

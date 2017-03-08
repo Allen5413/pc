@@ -31,9 +31,8 @@
             </td>
           </tr>
           <tr class="am-primary" style="border-right: 0px;">
-            <th style="width: 40%;">名称</th>
-            <th style="width: 10%;">类型</th>
-            <th style="width: 25%;">工作模式</th>
+            <th style="width: 50%;">名称</th>
+            <th style="width: 15%;">类型</th>
             <th>合格率(%)</th>
           </tr>
         </table>
@@ -133,19 +132,10 @@
               for(var i=0; i<productList.length; i++) {
                 var product = productList[i];
                 var tr = $("<tr><input type='hidden' name='pIds' value='"+product.id+"'></tr>");
-                var td = $("<td style='width: 40%;' onclick='delWithProduct(this, " + product.plcpId + ")'>[" + product.FNUMBER + "]"+product.FNAME+"</td>");
-                var td2 = $("<td style='width: 10%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + product.cateGoryName + "</td>");
-                var td3 = $("<td style='width: 25%;'></td>");
-                var td3Html = "<select id=\"wmId"+i+"\" name=\"wmIds\" data-am-selected=\"{btnWidth:'120px'}\" onchange=\"app.changeSelect(this)\">";
-                td3Html += "<option value=''></option>";
-                td3Html += "<option value='null'>全部</option>";
-                <c:forEach items="${workModeList}" var="workMode">
-                  td3Html += "<option value='${workMode.id}'>${workMode.name}</option>";
-                </c:forEach>
-                td3Html += "</select>";
-                $(td3).append(td3Html);
-                var td4 = $("<td><input type='number' name='qualifiedRates' style='width: 60px;' value='"+product.qualifiedRate+"' /></td>");
-                $(tr).append(td).append(td2).append(td3).append(td4);
+                var td = $("<td style='width: 50%;' onclick='delWithProduct(this, " + product.plcpId + ")'>[" + product.FNUMBER + "]"+product.FNAME+"</td>");
+                var td2 = $("<td style='width: 15%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + product.cateGoryName + "</td>");
+                var td3 = $("<td><input type='number' name='qualifiedRates' style='width: 60px;' value='"+product.qualifiedRate+"' /></td>");
+                $(tr).append(td).append(td2).append(td3);
                 table.append(tr);
                 $("select").selected();
                 var op = $("#wmId"+i).find("option[value='"+product.wmId+"']");

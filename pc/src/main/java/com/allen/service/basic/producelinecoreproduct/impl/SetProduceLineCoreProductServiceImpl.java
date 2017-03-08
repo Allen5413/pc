@@ -59,7 +59,6 @@ public class SetProduceLineCoreProductServiceImpl implements SetProduceLineCoreP
                 ProduceLineCoreProduct produceLineCoreProduct = new ProduceLineCoreProduct();
                 produceLineCoreProduct.setProduceLineCoreId(produceLineCoreId);
                 produceLineCoreProduct.setProductId(pId);
-                produceLineCoreProduct.setWorkModeId(wmId);
                 produceLineCoreProduct.setQualifiedRate(qualifiedRate);
                 produceLineCoreProduct.setOperator(loginName);
                 list.add(produceLineCoreProduct);

@@ -39,7 +39,6 @@ public class EditProduceLineCoreProductForWmIdByIdController extends BaseControl
         JSONObject jsonObject = new JSONObject();
         ProduceLineCoreProduct produceLineCoreProduct = findProduceLineCoreProductByIdService.find(id);
         if(null != produceLineCoreProduct){
-            produceLineCoreProduct.setWorkModeId(StringUtil.isEmpty(wmId) ? 0 : Long.parseLong(wmId));
             editProduceLineCoreProductService.edit(produceLineCoreProduct, UserUtil.getLoginUserForName(request));
         }
         jsonObject.put("state", 0);

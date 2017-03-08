@@ -46,6 +46,7 @@ public class AddProduceLineCoreProductController extends BaseController {
         PageInfo pageInfo = super.getPageInfo(request);
         Map<String, Boolean> sortMap = new HashMap<String, Boolean>();
         sortMap.put("b.FENTRYID", true);
+        pageInfo.setCountOfCurrentPage(99999);
         pageInfo = findProductPageService.find(pageInfo, null, sortMap);
         List productList = pageInfo.getPageResults();
 
