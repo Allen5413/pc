@@ -25,7 +25,7 @@ public class FindProductTypeDao extends BaseQueryDao {
      */
     public PageInfo findPage(PageInfo pageInfo, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
         String[] tableNames = {"ProductType"};
-        return super.findPageByJpal(pageInfo, tableNames, paramsMap, sortMap);
+        return super.findPageByJpal(pageInfo, tableNames,paramsMap, sortMap);
     }
 
     /**
@@ -38,7 +38,8 @@ public class FindProductTypeDao extends BaseQueryDao {
         String fields = "p";
         String[] tableNames = {"ProductType p"};
         Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
+        String defaultWhere = " p.FCATEGORYID in (239,241) ";
         sortMap.put("p.FNAME",false);
-        return super.findListByHql(tableNames,fields,paramsMap,sortMap,ProductType.class);
+        return super.findListByHql(tableNames,fields,defaultWhere,paramsMap,sortMap,ProductType.class);
     }
 }

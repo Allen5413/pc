@@ -31,7 +31,7 @@ public class FindProductDao extends BaseQueryDao {
         paramsMap.put("a.FFORBIDSTATUS","A");
         String fields = "b.FENTRYID,a.FMATERIALID,a.FNUMBER,d.FNAME as cateGoryName,b.FERPCLSID,c.FNAME";
         String[] tableNames = {"t_bd_material a,t_bd_materialbase b,t_bd_material_l c,t_bd_materialcategory_l d"};
-        String defaultWhere = "a.FMATERIALID = b.FMATERIALID and  c.FMATERIALID = a.FMATERIALID and b.FCATEGORYID = d.FCATEGORYID";
+        String defaultWhere = "a.FMATERIALID = b.FMATERIALID and  c.FMATERIALID = a.FMATERIALID and b.FCATEGORYID = d.FCATEGORYID and d.FCATEGORYID in (239,241) ";
         return super.findPageByNativeSqlToMap(pageInfo, fields,defaultWhere,tableNames, paramsMap, sortMap);
     }
 

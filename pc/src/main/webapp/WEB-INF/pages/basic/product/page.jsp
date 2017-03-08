@@ -61,7 +61,7 @@
       <td>${product['cateGoryName']}</td>
       <td>${product['FERPCLSID']==1?'是':'否'}</td>
       <td>
-        <a class="am-badge am-badge-primary am-radius am-text-lg" onClick="detailProduct(${product['FMATERIALID']})"><span class="am-icon-dashboard"></span> 详细</a>
+        <a class="am-badge am-badge-primary am-radius am-text-lg" onClick="detailProduct(${product['FMATERIALID']})"><span class="am-icon-th-list"></span> 详细</a>
         <c:if test="${false&&isShowEditBtn}">
           <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="editProduct(${product['FMATERIALID']})"><span class="am-icon-edit"></span> 修改</a>
         </c:if>
