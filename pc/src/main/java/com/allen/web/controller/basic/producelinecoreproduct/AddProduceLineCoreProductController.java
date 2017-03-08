@@ -70,11 +70,13 @@ public class AddProduceLineCoreProductController extends BaseController {
     public JSONObject add(HttpServletRequest request,
                           @RequestParam("plId")long plId,
                           @RequestParam("wcId")long wcId,
-                          @RequestParam("pId")long pId) throws Exception {
+                          @RequestParam(value = "delPlcpIds", required = false, defaultValue = "")String delPlcpIds,
+                          @RequestParam(value = "plcpIds", required = false)Long[] plcpIds,
+                          @RequestParam(value = "pIds", required = false)Long[] pIds,
+                          @RequestParam(value = "qualifiedRates", required = false)Integer[] qualifiedRates) throws Exception {
         JSONObject jsonObject = new JSONObject();
-        ProduceLineCoreProduct produceLineCoreProduct = addProduceLineCoreProductService.add(plId, wcId, pId, UserUtil.getLoginUserForName(request));
+        addProduceLineCoreProductService.add(plId, wcId, delPlcpIds, plcpIds, pIds, qualifiedRates, UserUtil.getLoginUserForName(request));
         jsonObject.put("state", 0);
-        jsonObject.put("plcpId", produceLineCoreProduct.getId());
         return jsonObject;
     }
 }

@@ -33,7 +33,8 @@
           <tr class="am-primary" style="border-right: 0px;">
             <th style="width: 50%;">名称</th>
             <th style="width: 15%;">类型</th>
-            <th>合格率(%)</th>
+            <th style="width: 15%;">合格率(%)</th>
+            <th>操作</th>
           </tr>
         </table>
       </div>
@@ -117,43 +118,48 @@
 
   function zTreeOnClick(event, treeId, treeNode) {
     if(null != treeNode.pId){
-      $.ajax({
-        cache: true,
-        type: "POST",
-        url:"${pageContext.request.contextPath}/findProductByPlIdAndWcId/find.json",
-        data:{"plId":treeNode.pId, "wcId":treeNode.id},
-        async: false,
-        success: function(data) {
-          if(data.state == 0){
-            var table = $("#withProductTable");
-            $(table).html("");
-            var productList = data.productList;
-            if(0 < productList.length) {
-              for(var i=0; i<productList.length; i++) {
-                var product = productList[i];
-                var tr = $("<tr><input type='hidden' name='pIds' value='"+product.id+"'></tr>");
-                var td = $("<td style='width: 50%;' onclick='delWithProduct(this, " + product.plcpId + ")'>[" + product.FNUMBER + "]"+product.FNAME+"</td>");
-                var td2 = $("<td style='width: 15%;' onclick='delWithProduct(this, " + product.plcpId + ")'>" + product.cateGoryName + "</td>");
-                var td3 = $("<td><input type='number' name='qualifiedRates' style='width: 60px;' value='"+product.qualifiedRate+"' /></td>");
-                $(tr).append(td).append(td2).append(td3);
-                table.append(tr);
-                $("select").selected();
-                var op = $("#wmId"+i).find("option[value='"+product.wmId+"']");
-                $(op).attr('selected', true);
-              }
-            }else{
-              var tr = $("<tr></tr>");
-              var td = $("<td style='color: #ff0000;' align='center'>没有关联产品信息</td>");
-              $(tr).append(td);
+      findProduct(treeNode.pId, treeNode.id);
+    }
+  }
+
+  function findProduct(plId, wcId){
+    $.ajax({
+      cache: true,
+      type: "POST",
+      url:"${pageContext.request.contextPath}/findProductByPlIdAndWcId/find.json",
+      data:{"plId":plId, "wcId":wcId},
+      async: false,
+      success: function(data) {
+        if(data.state == 0){
+          var table = $("#withProductTable");
+          $(table).html("");
+          var productList = data.productList;
+          if(0 < productList.length) {
+            for(var i=0; i<productList.length; i++) {
+              var product = productList[i];
+              var tr = $("<tr><input type='hidden' name='pIds' value='"+product.id+"'></tr>");
+              var td = $("<td style='width: 50%;'>[" + product.FNUMBER + "]"+product.FNAME+"</td>");
+              var td2 = $("<td style='width: 15%;'>" + product.cateGoryName + "</td>");
+              var td3 = $("<td style='width: 15%;'><input type='number' name='qualifiedRates' style='width: 60px;' value='"+product.qualifiedRate+"' /></td>");
+              var td4 = $("<td><a class=\"am-badge am-badge-danger am-radius am-text-lg\" onclick=\"delWithProduct(this, "+product.plcpId+")\"><span class=\"am-icon-trash-o\"></span> 删除</a></td>");
+              $(tr).append(td).append(td2).append(td3).append(td4);
               table.append(tr);
+              $("select").selected();
+              var op = $("#wmId"+i).find("option[value='"+product.wmId+"']");
+              $(op).attr('selected', true);
             }
           }else{
-            app.msg(data.msg, 1);
+            var tr = $("<tr></tr>");
+            var td = $("<td style='color: #ff0000;' align='center'>没有关联产品信息</td>");
+            $(tr).append(td);
+            table.append(tr);
           }
+        }else{
+          app.msg(data.msg, 1);
         }
-      });
-    }
-  };
+      }
+    });
+  }
 
   function setProduceLineCore(){
     var selectedNodes = zTreeObj.getSelectedNodes();
@@ -190,8 +196,11 @@
     var plId = selectedNodes[0].plId;
     var wcId = selectedNodes[0].id;
     app.openDialog('${pageContext.request.contextPath}/addProduceLineCoreProduct/open.html?plId='+plId+'&wcId='+wcId, '关联产品', 800, 500, function(index){
-      app.add("${pageContext.request.contextPath}/setProduceLineCoreForPlId/set.json", $('#setForm').serialize(), index, function(){
-        zTreeObj.reAsyncChildNodes(selectedNodes[0], "refresh");
+      if(0 < $("#delPlcpIds").val().length) {
+        $("#delPlcpIds").val($("#delPlcpIds").val().substring(0, $("#delPlcpIds").val().length - 1));
+      }
+      app.add("${pageContext.request.contextPath}/addProduceLineCoreProduct/add.json", $('#setCoreProductForm').serialize(), index, function(){
+        findProduct(plId, wcId);
       });
     });
   }
@@ -276,7 +285,18 @@
 
   }
 
-  function delWithProduct(trObj){
-    $(trObj).parent().remove();
+  function delWithProduct(trObj, plcpId){
+    $.ajax({
+      cache: true,
+      type: "POST",
+      url:"${pageContext.request.contextPath}/delProduceLineCoreProduct/del.json",
+      data:{"id":plcpId},
+      async: false,
+      success: function(data) {
+        app.msg("删除成功", 0);
+        $(trObj).parent().parent().remove();
+      }
+    });
+
   }
 </script>

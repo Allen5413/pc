@@ -1,10 +1,8 @@
 package com.allen.service.basic.producelinecoreproduct;
 
-import com.allen.entity.basic.ProduceLineCoreProduct;
-
 /**
  * Created by Allen on 2016/12/22 0022.
  */
 public interface AddProduceLineCoreProductService {
-    public ProduceLineCoreProduct add(long plId, long wcId, long pId, String loginName)throws Exception;
+    public void add(long plId, long wcId, String delPlcpIds, Long[] plcpIds, Long[] pIds, Integer[] qualifiedRates, String loginName)throws Exception;
 }
