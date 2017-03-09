@@ -23,7 +23,7 @@
         <td>
           <select id="pId${status.index}" name="pIds" data-am-selected="{btnWidth: '370px', maxHeight: '180px', searchBox: 1}">
             <c:forEach var="product2" items="${productList}">
-              <option value="${product2['FMATERIALID']}" <c:if test="${product.FMATERIALID eq product2['FMATERIALID']}">selected</c:if> >${product.FMATERIALID}-${product2['FMATERIALID']}[${product2['FNUMBER']}]${product2['FNAME']}</option>
+              <option value="${product2['FMATERIALID']}" <c:if test="${product.FMATERIALID eq product2['FMATERIALID']}">selected</c:if> >[${product2['FNUMBER']}]${product2['FNAME']}</option>
             </c:forEach>
           </select>
         </td>

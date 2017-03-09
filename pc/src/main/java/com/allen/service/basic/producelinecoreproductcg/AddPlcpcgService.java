@@ -5,5 +5,5 @@ package com.allen.service.basic.producelinecoreproductcg;
  */
 public interface AddPlcpcgService {
     public void add(long plcpId, String delPlcpcgIds, Long[] plcpcgIds, Integer[] snos, Long[] cgIds, Long[] wmIds,
-                    Integer[] unitTimeCapacitys, Integer[] minBatchs, String loginName)throws Exception;
+                    Float[] unitTimeCapacitys, Integer[] minBatchs, String loginName)throws Exception;
 }

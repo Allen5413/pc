@@ -23,7 +23,7 @@ import java.util.Map;
  * Created by Allen on 2016/12/22 0022.
  */
 @Controller
-@RequestMapping("/addProduceLineCoreProduct")
+@RequestMapping("/addPlcpcg")
 public class AddPlcpcgController extends BaseController {
 
     @Resource
@@ -68,7 +68,7 @@ public class AddPlcpcgController extends BaseController {
                           @RequestParam(value = "snos", required = false)Integer[] snos,
                           @RequestParam(value = "cgIds", required = false)Long[] cgIds,
                           @RequestParam(value = "wmIds", required = false)Long[] wmIds,
-                          @RequestParam(value = "unitTimeCapacitys", required = false)Integer[] unitTimeCapacitys,
+                          @RequestParam(value = "unitTimeCapacitys", required = false)Float[] unitTimeCapacitys,
                           @RequestParam(value = "minBatchs", required = false)Integer[] minBatchs) throws Exception {
         JSONObject jsonObject = new JSONObject();
         addPlcpcgService.add(plcpId, delPlcpcgIds, plcpcgIds, snos, cgIds, wmIds,

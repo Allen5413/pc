@@ -4,6 +4,7 @@ import com.allen.base.exception.BusinessException;
 import com.allen.dao.basic.producelinecore.ProduceLineCoreDao;
 import com.allen.dao.basic.producelinecoreproduct.FindProduceLineCoreProductDao;
 import com.allen.dao.basic.producelinecoreproduct.ProduceLineCoreProductDao;
+import com.allen.dao.basic.producelinecoreproductcg.ProduceLineCoreProductCgDao;
 import com.allen.entity.basic.ProduceLine;
 import com.allen.entity.basic.ProduceLineCore;
 import com.allen.entity.basic.ProduceLineCoreProduct;
@@ -38,6 +39,8 @@ public class DelProduceLineCoreProductByIdServiceImpl implements DelProduceLineC
     private ProduceLineCoreDao produceLineCoreDao;
     @Resource
     private FindProduceLineCoreProductDao findProduceLineCoreProductDao;
+    @Resource
+    private ProduceLineCoreProductCgDao produceLineCoreProductCgDao;
 
     @Override
     @Transactional
@@ -51,6 +54,9 @@ public class DelProduceLineCoreProductByIdServiceImpl implements DelProduceLineC
             throw new BusinessException("没有找到关联工作中心信息");
         }
         this.editProduceLineForProductInfo(produceLineCore.getProduceLineId(), produceLineCoreProduct.getProductId());
+        //删除关联的班组
+        produceLineCoreProductCgDao.delByPlcpId(id);
+        //删除自身数据
         produceLineCoreProductDao.delete(id);
     }
 

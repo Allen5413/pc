@@ -24,7 +24,7 @@ public class AddPlcpcgServiceImpl implements AddPlcpcgService{
     @Override
     @Transactional
     public void add(long plcpId, String delPlcpcgIds, Long[] plcpcgIds, Integer[] snos, Long[] cgIds,
-                    Long[] wmIds, Integer[] unitTimeCapacitys, Integer[] minBatchs, String loginName) throws Exception {
+                    Long[] wmIds, Float[] unitTimeCapacitys, Integer[] minBatchs, String loginName) throws Exception {
         //删掉的关联班组
         if(!StringUtil.isEmpty(delPlcpcgIds)){
             for(String delPlcpcgId : delPlcpcgIds.split(",")){
@@ -38,7 +38,7 @@ public class AddPlcpcgServiceImpl implements AddPlcpcgService{
                 int sno = snos[i];
                 long cgId = cgIds[i];
                 long wmId = wmIds[i];
-                int unitTimeCapacity = unitTimeCapacitys[i];
+                int unitTimeCapacity = (int)(unitTimeCapacitys[i]*3600);
                 int minBatch = minBatchs[i];
 
                 //==0说明是新增的班组信息，否则就是之前关联的班组

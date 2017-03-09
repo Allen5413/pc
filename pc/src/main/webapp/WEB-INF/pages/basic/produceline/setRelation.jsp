@@ -55,7 +55,7 @@
         <table class="am-table am-table-bordered am-table-striped am-table-hover no-margin-bottom" style="width:100%;">
           <tr>
             <td colspan="99">
-              <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="setProductCG()"><span class="am-icon-cog"></span> 关联班组</button>
+              <button class="am-btn am-btn-primary am-btn-sm" type="button" onclick="setProductCg()"><span class="am-icon-cog"></span> 关联班组</button>
             </td>
           </tr>
           <tr class="am-primary" style="border-right: 0px;">
@@ -208,8 +208,10 @@
 
   function findCG(plcpId, obj){
     this.plcpIdForAddCg = plcpId;
-    $('#withProductTable tr').removeClass('am-active');
-    $(obj).parent().addClass('am-active');
+    if(typeof (obj) != "undefined") {
+      $('#withProductTable tr').removeClass('am-active');
+      $(obj).parent().addClass('am-active');
+    }
     $.ajax({
       cache: true,
       type: "POST",
@@ -225,12 +227,12 @@
             for(var i=0; i<cgList.length; i++) {
               var cg = cgList[i];
               var tr = $("<tr><input type='hidden' name='plcpcgIds' value='"+cg.id+"'></tr>");
-              var td = $("<td style='width: 5%;'>"+cg.sno+"</td>");
-              var td2 = $("<td style='width: 15%;'>"+cg.cgName+"</td>");
-              var td3 = $("<td style='width: 15%;'>"+cg.wmName+"</td>");
-              var td4 = $("<td style='width: 10%;'>"+cg.unit_time_capacity/3600+"</td>");
-              var td5 = $("<td style='width: 10%;'>"+cg.min_batch/3600+"</td>");
-              var td6 = $("<td><a class=\"am-badge am-badge-danger am-radius am-text-lg\" onclick=\"delWithProduct(this, "+product.plcpId+")\"><span class=\"am-icon-trash-o\"></span> 删除</a></td>");
+              var td = $("<td style='width: 8%;'>"+cg.sno+"</td>");
+              var td2 = $("<td style='width: 20%;'>"+cg.cgName+"</td>");
+              var td3 = $("<td style='width: 20%;'>"+cg.wmName+"</td>");
+              var td4 = $("<td style='width: 20%;'>"+(cg.unit_time_capacity/3600).toFixed(2)+"</td>");
+              var td5 = $("<td style='width: 15%;'>"+cg.min_batch+"</td>");
+              var td6 = $("<td><a class=\"am-badge am-badge-danger am-radius am-text-lg\" onclick=\"delWithProductCg(this, "+cg.id+")\"><span class=\"am-icon-trash-o\"></span> 删除</a></td>");
               $(tr).append(td).append(td2).append(td3).append(td4).append(td5).append(td6);
               table.append(tr);
             }
@@ -253,13 +255,27 @@
       app.msg("请先选择一个生产线下的工作中心下的一个产品", 1);
       return;
     }
-    app.openDialog('${pageContext.request.contextPath}/addProduceLineCoreProduct/open.html?plId='+plId+'&wcId='+wcId, '关联产品', 800, 500, function(index){
-      if(0 < $("#delPlcpIds").val().length) {
-        $("#delPlcpIds").val($("#delPlcpIds").val().substring(0, $("#delPlcpIds").val().length - 1));
+    app.openDialog('${pageContext.request.contextPath}/addPlcpcg/open.html?plcpId='+this.plcpIdForAddCg, '关联班组', 800, 500, function(index){
+      if(0 < $("#delPlcpcgIds").val().length) {
+        $("#delPlcpcgIds").val($("#delPlcpcgIds").val().substring(0, $("#delPlcpcgIds").val().length - 1));
       }
-      app.add("${pageContext.request.contextPath}/addProduceLineCoreProduct/add.json", $('#setCoreProductForm').serialize(), index, function(){
-        findProduct(plId, wcId);
+      app.add("${pageContext.request.contextPath}/addPlcpcg/add.json", $('#setProductCgForm').serialize(), index, function(){
+        findCG(this.plcpIdForAddCg);
       });
+    });
+  }
+
+  function delWithProductCg(trObj, plcpcgId){
+    $.ajax({
+      cache: true,
+      type: "POST",
+      url:"${pageContext.request.contextPath}/delPlcpcg/del.json",
+      data:{"id":plcpcgId},
+      async: false,
+      success: function(data) {
+        app.msg("删除成功", 0);
+        $(trObj).parent().parent().remove();
+      }
     });
   }
 </script>
