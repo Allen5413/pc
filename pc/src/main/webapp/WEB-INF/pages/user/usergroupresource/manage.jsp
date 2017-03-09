@@ -129,8 +129,8 @@
            userGroupResourceManager.addUserGroupResource();
      });
      $('#userGroupTable').on('click','tr',function(){
-        $('#userGroupTable tr').removeClass('am-primary');
-        $(this).addClass('am-primary');
+        $('#userGroupTable tr').removeClass('am-active');
+        $(this).addClass('am-active');
         var userGroupId = $(this).attr('data-id');
         if(userGroupId){
             if(userGroupResourceManager.userGroupId!=userGroupId){

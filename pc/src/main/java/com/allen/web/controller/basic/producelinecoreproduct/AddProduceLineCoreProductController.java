@@ -35,7 +35,7 @@ public class AddProduceLineCoreProductController extends BaseController {
     private FindProductByPlIdAndWcIdService findProductByPlIdAndWcIdService;
 
     /**
-     * 打开新增菜单页面
+     * 打开新增页面
      * @return
      */
     @RequestMapping(value = "open")

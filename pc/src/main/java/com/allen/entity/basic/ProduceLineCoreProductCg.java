@@ -19,6 +19,7 @@ public class ProduceLineCoreProductCg {
     private long workModeId;
     private long unitTimeCapacity;      //单位时间产能  数据库保存为 秒
     private int minBatch;               //最小批量 个
+    private int sno;                    //优先级序号
     private String operator;
     private Date operateTime = new Date();
     @Transient
@@ -90,5 +91,13 @@ public class ProduceLineCoreProductCg {
 
     public int getUnitTimeCapacityToHour() {
         return new BigDecimal(this.getUnitTimeCapacity()).divide(new BigDecimal(3600).setScale(2, BigDecimal.ROUND_UP)).intValue();
+    }
+
+    public int getSno() {
+        return sno;
+    }
+
+    public void setSno(int sno) {
+        this.sno = sno;
     }
 }

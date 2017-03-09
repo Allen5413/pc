@@ -117,6 +117,6 @@
   }
 
   function setProduceLine(){
-    app.openOneBtnDialog('${pageContext.request.contextPath}/setProduceLineRelation/open.html', '配置生产线关联', 0.9, 600);
+    app.openOneBtnDialog('${pageContext.request.contextPath}/setProduceLineRelation/open.html', '配置生产线关联', 0.95, 600);
   }
 </script>

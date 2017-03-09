@@ -63,7 +63,6 @@ public class AddProduceLineCoreProductServiceImpl implements AddProduceLineCoreP
 
                 //==0说明是新增的产品信息，否则就是之前关联的产品
                 if(0 == plcpId){
-                    //先查询产品是否已经关联
                     ProduceLineCoreProduct produceLineCoreProduct = new ProduceLineCoreProduct();
                     produceLineCoreProduct.setProduceLineCoreId(plcId);
                     produceLineCoreProduct.setProductId(pId);
