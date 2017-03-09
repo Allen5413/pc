@@ -15,6 +15,28 @@ Vaildate.prototype.vaildMoney = function(money){
     }
 }
 
+/**
+ * 验证数字
+ * @param number
+ * @min
+ * @max
+ */
+Vaildate.prototype.vaildNumber = function(number, min, max){
+    alert(111);
+    if(!isNaN(number)){
+        if(null != min && min > number){
+            return false;
+        }
+        if(null != max && max < number){
+            return false;
+        }
+        return true;
+    }else{
+        return false;
+    }
+}
+
+
 
 //Luhm校验规则：16位银行卡号（19位通用）:
 

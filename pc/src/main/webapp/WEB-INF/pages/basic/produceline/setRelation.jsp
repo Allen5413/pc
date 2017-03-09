@@ -259,6 +259,39 @@
       if(0 < $("#delPlcpcgIds").val().length) {
         $("#delPlcpcgIds").val($("#delPlcpcgIds").val().substring(0, $("#delPlcpcgIds").val().length - 1));
       }
+
+      var flag = true;
+      var msg = "";
+      var cgIdsObj = {};
+      var snoObj = {};
+      $("[name=cgIds]").each(function(){
+        var cgId = $(this).val();
+        if(cgIdsObj[cgId]){
+          msg += "班组不能重复选择！<br />";
+          flag = false;
+        }else{
+          cgIdsObj[cgId] = true;
+        }
+      });
+      $("[name=snos]").each(function(){
+        var sno = $(this).val();
+        if(!vaild.vaildNumber(sno, 0, null)){
+          msg += "请输入一个大于0的正确的序号！<br />";
+          flag = false;
+        }
+        if(snoObj[sno]){
+          msg += "序号不能重复选择！<br />";
+          flag = false;
+        }else{
+          snoObj[sno] = true;
+        }
+      });
+
+
+      if(!flag){
+        app.msg(msg, 1);
+        return;
+      }
       app.add("${pageContext.request.contextPath}/addPlcpcg/add.json", $('#setProductCgForm').serialize(), index, function(){
         findCG(this.plcpIdForAddCg);
       });
