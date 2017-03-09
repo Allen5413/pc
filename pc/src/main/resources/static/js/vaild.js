@@ -21,13 +21,13 @@ Vaildate.prototype.vaildMoney = function(money){
  * @min
  * @max
  */
-Vaildate.prototype.vaildNumber = function(number, min, max){
+Vaildate.prototype.vaildNum = function(number, min, max){
     alert(111);
-    if(!isNaN(number)){
-        if(null != min && min > number){
+    if(!isNaN(number) && "" != number){
+        if("undefined" != typeof (min) && min > number){
             return false;
         }
-        if(null != max && max < number){
+        if("undefined" != typeof (max) && max < number){
             return false;
         }
         return true;

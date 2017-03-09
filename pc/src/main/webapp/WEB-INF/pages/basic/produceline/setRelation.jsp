@@ -275,7 +275,7 @@
       });
       $("[name=snos]").each(function(){
         var sno = $(this).val();
-        if(!vaild.vaildNumber(sno, 0, null)){
+        if(!vaild.vaildNum(sno, 0)){
           msg += "请输入一个大于0的正确的序号！<br />";
           flag = false;
         }
