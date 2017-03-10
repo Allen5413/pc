@@ -2,11 +2,9 @@ package com.allen.web.controller.basic.producelinecoreproduct;
 
 import com.alibaba.fastjson.JSONObject;
 import com.allen.dao.PageInfo;
-import com.allen.entity.basic.ProduceLineCoreProduct;
 import com.allen.service.basic.producelinecoreproduct.AddProduceLineCoreProductService;
 import com.allen.service.basic.product.FindProductByPlIdAndWcIdService;
 import com.allen.service.basic.product.FindProductPageService;
-import com.allen.util.StringUtil;
 import com.allen.util.UserUtil;
 import com.allen.web.controller.BaseController;
 import org.springframework.stereotype.Controller;
@@ -73,7 +71,7 @@ public class AddProduceLineCoreProductController extends BaseController {
                           @RequestParam(value = "delPlcpIds", required = false, defaultValue = "")String delPlcpIds,
                           @RequestParam(value = "plcpIds", required = false)Long[] plcpIds,
                           @RequestParam(value = "pIdsForAddP", required = false)Long[] pIds,
-                          @RequestParam(value = "qualifiedRates", required = false)Integer[] qualifiedRates) throws Exception {
+                          @RequestParam(value = "qualifiedRates", required = false)Float[] qualifiedRates) throws Exception {
         JSONObject jsonObject = new JSONObject();
         addProduceLineCoreProductService.add(plId, wcId, delPlcpIds, plcpIds, pIds, qualifiedRates, UserUtil.getLoginUserForName(request));
         jsonObject.put("state", 0);

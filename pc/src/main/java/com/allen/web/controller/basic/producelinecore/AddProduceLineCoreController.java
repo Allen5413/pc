@@ -40,10 +40,8 @@ public class AddProduceLineCoreController extends BaseController {
                        @RequestParam("plId")Long plId) throws Exception {
         //查询所有中心信息
         List<WorkCore> workCoreList = findWorkCoreForAllService.find();
-
         //查询已经关联的中心信息
         List<WorkCoreBean> withWcList = findWorkCoreAndPlIdByPlIdService.findWith(plId);
-
         request.setAttribute("workCoreList", workCoreList);
         request.setAttribute("withWcList", withWcList);
         return "basic/producelinecore/add";

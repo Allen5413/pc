@@ -157,8 +157,38 @@
       var isParent = selectedNodes[0].isParent;
       if(isParent){
         var plId = selectedNodes[0].id;
-        app.openDialog('${pageContext.request.contextPath}/setProduceLineCoreForPlId/open.html?plId='+plId, '关联工作中心', 800, 700, function(index){
-          app.add("${pageContext.request.contextPath}/setProduceLineCoreForPlId/set.json", $('#setForm').serialize(), index, function(){
+        app.openDialog('${pageContext.request.contextPath}/addProduceLineCore/open.html?plId='+plId, '关联工作中心', 800, 500, function(index){
+          var flag = true;
+          var msg = "";
+          var wcIdObj = {};
+          var snoObj = {};
+          $("[name=wcIds]").each(function(){
+            var wcId = $(this).val();
+            if(wcIdObj[wcId]){
+              msg += "工作中心不能重复选择！<br />";
+              flag = false;
+            }else{
+              wcIdObj[wcId] = true;
+            }
+          });
+          $("[name=snos]").each(function(){
+            var sno = $(this).val();
+            if(!vaild.vaildInteger(sno, 1)){
+              msg += "请输入一个大于0的正确的序号！<br />";
+              flag = false;
+            }
+            if(snoObj[sno]){
+              msg += "序号不能重复选择！<br />";
+              flag = false;
+            }else{
+              snoObj[sno] = true;
+            }
+          });
+          if(!flag){
+            app.msg(msg, 1);
+            return;
+          }
+          app.add("${pageContext.request.contextPath}/addProduceLineCore/add.json", $('#setCoreForm').serialize(), index, function(){
             zTreeObj.reAsyncChildNodes(selectedNodes[0], "refresh");
           });
         });
@@ -201,8 +231,8 @@
       });
       $("[name=qualifiedRates]").each(function(){
         var qualifiedRate = $(this).val();
-        if(!vaild.vaildNumber(qualifiedRate, 0)){
-          msg += "请输入一个大于0的正确的合格率！<br />";
+        if(!vaild.vaildNumber(qualifiedRate, 0, 100)){
+          msg += "请输入一个0~100的正确的合格率！<br />";
           flag = false;
         }
       });

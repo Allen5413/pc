@@ -43,7 +43,7 @@ Vaildate.prototype.vaildInteger = function(number, min, max){
  * @max
  */
 Vaildate.prototype.vaildNumber = function(number, min, max){
-    if(!isNaN(number) || "" != number){
+    if(!isNaN(number) && "" != number){
         if("undefined" != typeof (min) && min > number){
             return false;
         }

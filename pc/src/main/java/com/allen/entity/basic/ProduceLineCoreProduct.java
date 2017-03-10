@@ -15,7 +15,7 @@ public class ProduceLineCoreProduct {
     private long id;
     private long produceLineCoreId;
     private long productId;
-    private int qualifiedRate;          //合格率
+    private float qualifiedRate;          //合格率
     private String operator;
     private Date operateTime = new Date();
 
@@ -59,11 +59,11 @@ public class ProduceLineCoreProduct {
         this.operateTime = operateTime;
     }
 
-    public int getQualifiedRate() {
+    public float getQualifiedRate() {
         return qualifiedRate;
     }
 
-    public void setQualifiedRate(int qualifiedRate) {
+    public void setQualifiedRate(float qualifiedRate) {
         this.qualifiedRate = qualifiedRate;
     }
 }

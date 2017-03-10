@@ -37,6 +37,8 @@ public class FindWorkCoreAndPlIdByPlIdServiceImpl implements FindWorkCoreAndPlId
                 workCoreBean.setCode((String) objs[1]);
                 workCoreBean.setName((String) objs[2]);
                 workCoreBean.setPlId(null == objs[3] ? null : Long.parseLong(objs[3].toString()));
+                workCoreBean.setPlcId(null == objs[4] ? null : Long.parseLong(objs[4].toString()));
+                workCoreBean.setSno(null == objs[5] ? null : Integer.parseInt(objs[5].toString()));
                 allList.add(workCoreBean);
 
                 if(null != objs[3] && !StringUtil.isEmpty(objs[3].toString())){
