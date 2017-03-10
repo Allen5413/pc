@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+
 /**
  * Created by Allen on 2017/2/14 0014.
  */
@@ -36,4 +38,12 @@ public interface ProduceLineCoreDao extends CrudRepository<ProduceLineCore, Long
      * @throws Exception
      */
     public ProduceLineCore findByProduceLineIdAndWorkCoreId(long plId, long wcId)throws Exception;
+
+    /**
+     * 通过生产线id查询所有关联中心的关联信息
+     * @param plId
+     * @return
+     * @throws Exception
+     */
+    public List<ProduceLineCore> findByProduceLineId(long plId)throws Exception;
 }

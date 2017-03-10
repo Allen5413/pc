@@ -54,8 +54,8 @@ public class FindWorkCoreAndPlIdByPlIdServiceImpl implements FindWorkCoreAndPlId
     }
 
     @Override
-    public List<WorkCoreBean> findWith(long workGroupId) throws Exception {
-        JSONObject json = this.find(workGroupId);
+    public List<WorkCoreBean> findWith(long plId) throws Exception {
+        JSONObject json = this.find(plId);
         if(null != json){
             List<WorkCoreBean> withList = (List<WorkCoreBean>) json.get("withList");
             return withList;
@@ -64,8 +64,8 @@ public class FindWorkCoreAndPlIdByPlIdServiceImpl implements FindWorkCoreAndPlId
     }
 
     @Override
-    public List<WorkCoreBean> findNotWith(long workGroupId) throws Exception {
-        JSONObject json = this.find(workGroupId);
+    public List<WorkCoreBean> findNotWith(long plId) throws Exception {
+        JSONObject json = this.find(plId);
         if(null != json){
             List<WorkCoreBean> notWithList = (List<WorkCoreBean>) json.get("notWithList");
             return notWithList;

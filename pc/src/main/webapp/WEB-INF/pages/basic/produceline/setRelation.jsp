@@ -127,10 +127,10 @@
           if(0 < productList.length) {
             for(var i=0; i<productList.length; i++) {
               var product = productList[i];
-              var tr = $("<tr><input type='hidden' name='pIds' value='"+product.id+"'></tr>");
-              var td = $("<td style='width: 50%;' onclick='findCG("+product.plcpId+", this)'>[" + product.FNUMBER + "]"+product.FNAME+"</td>");
-              var td2 = $("<td style='width: 15%; onclick='findCG("+product.plcpId+", this)'>" + product.cateGoryName + "</td>");
-              var td3 = $("<td style='width: 15%; onclick='findCG("+product.plcpId+", this)'>"+product.qualifiedRate+"</td>");
+              var tr = $("<tr onclick='findCG("+product.plcpId+", this)'><input type='hidden' name='pIds' value='"+product.id+"'></tr>");
+              var td = $("<td style='width: 50%;' >[" + product.FNUMBER + "]"+product.FNAME+"</td>");
+              var td2 = $("<td style='width: 15%;' >" + product.cateGoryName + "</td>");
+              var td3 = $("<td style='width: 15%;' >"+product.qualifiedRate+"</td>");
               var td4 = $("<td><a class=\"am-badge am-badge-danger am-radius am-text-lg\" onclick=\"delWithProduct(this, "+product.plcpId+")\"><span class=\"am-icon-trash-o\"></span> 删除</a></td>");
               $(tr).append(td).append(td2).append(td3).append(td4);
               table.append(tr);
@@ -186,6 +186,31 @@
       if(0 < $("#delPlcpIds").val().length) {
         $("#delPlcpIds").val($("#delPlcpIds").val().substring(0, $("#delPlcpIds").val().length - 1));
       }
+
+      var flag = true;
+      var msg = "";
+      var pIdObj = {};
+      $("[name=pIdsForAddP]").each(function(){
+        var pId = $(this).val();
+        if(pIdObj[pId]){
+          msg += "产品不能重复选择！<br />";
+          flag = false;
+        }else{
+          pIdObj[pId] = true;
+        }
+      });
+      $("[name=qualifiedRates]").each(function(){
+        var qualifiedRate = $(this).val();
+        if(!vaild.vaildNumber(qualifiedRate, 0)){
+          msg += "请输入一个大于0的正确的合格率！<br />";
+          flag = false;
+        }
+      });
+      if(!flag){
+        app.msg(msg, 1);
+        return;
+      }
+
       app.add("${pageContext.request.contextPath}/addProduceLineCoreProduct/add.json", $('#setCoreProductForm').serialize(), index, function(){
         findProduct(plId, wcId);
       });
@@ -210,7 +235,7 @@
     this.plcpIdForAddCg = plcpId;
     if(typeof (obj) != "undefined") {
       $('#withProductTable tr').removeClass('am-active');
-      $(obj).parent().addClass('am-active');
+      $(obj).addClass('am-active');
     }
     $.ajax({
       cache: true,
@@ -275,7 +300,7 @@
       });
       $("[name=snos]").each(function(){
         var sno = $(this).val();
-        if(!vaild.vaildNum(sno, 0)){
+        if(!vaild.vaildInteger(sno, 1)){
           msg += "请输入一个大于0的正确的序号！<br />";
           flag = false;
         }
@@ -286,7 +311,20 @@
           snoObj[sno] = true;
         }
       });
-
+      $("[name=unitTimeCapacitys]").each(function(){
+        var unitTimeCapacity = $(this).val();
+        if(!vaild.vaildNumber(unitTimeCapacity, 0)){
+          msg += "请输入一个大于0的正确的产能！<br />";
+          flag = false;
+        }
+      });
+      $("[name=minBatchs]").each(function(){
+        var minBatch = $(this).val();
+        if(!vaild.vaildInteger(minBatch, 1)){
+          msg += "请输入一个大于0的正确的最小批量！<br />";
+          flag = false;
+        }
+      });
 
       if(!flag){
         app.msg(msg, 1);

@@ -16,14 +16,34 @@ Vaildate.prototype.vaildMoney = function(money){
 }
 
 /**
+ * 验证整数数字
+ * @param number
+ * @min
+ * @max
+ */
+Vaildate.prototype.vaildInteger = function(number, min, max){
+    var r = /^-?[0-9]\d*$/;
+    if(r.test(number)){
+        if("undefined" != typeof (min) && min > number){
+            return false;
+        }
+        if("undefined" != typeof (max) && max < number){
+            return false;
+        }
+        return true;
+    }else{
+        return false;
+    }
+}
+
+/**
  * 验证数字
  * @param number
  * @min
  * @max
  */
-Vaildate.prototype.vaildNum = function(number, min, max){
-    alert(111);
-    if(!isNaN(number) && "" != number){
+Vaildate.prototype.vaildNumber = function(number, min, max){
+    if(!isNaN(number) || "" != number){
         if("undefined" != typeof (min) && min > number){
             return false;
         }

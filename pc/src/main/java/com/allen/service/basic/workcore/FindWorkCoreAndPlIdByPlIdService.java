@@ -22,17 +22,17 @@ public interface FindWorkCoreAndPlIdByPlIdService {
 
     /**
      * 返回已关联的工作中心
-     * @param workGroupId
+     * @param plId
      * @return
      * @throws Exception
      */
-    public List<WorkCoreBean> findWith(long workGroupId)throws Exception;
+    public List<WorkCoreBean> findWith(long plId)throws Exception;
 
     /**
      * 返回未关联的工作中心
-     * @param workGroupId
+     * @param plId
      * @return
      * @throws Exception
      */
-    public List<WorkCoreBean> findNotWith(long workGroupId)throws Exception;
+    public List<WorkCoreBean> findNotWith(long plId)throws Exception;
 }

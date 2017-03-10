@@ -21,7 +21,7 @@
       <tr>
         <input type="hidden" name="plcpIds" value="${product.plcpId}" />
         <td>
-          <select id="pId${status.index}" name="pIds" data-am-selected="{btnWidth: '370px', maxHeight: '180px', searchBox: 1}">
+          <select id="pId${status.index}" name="pIdsForAddP" data-am-selected="{btnWidth: '370px', maxHeight: '180px', searchBox: 1}">
             <c:forEach var="product2" items="${productList}">
               <option value="${product2['FMATERIALID']}" <c:if test="${product.FMATERIALID eq product2['FMATERIALID']}">selected</c:if> >[${product2['FNUMBER']}]${product2['FNAME']}</option>
             </c:forEach>
@@ -45,7 +45,7 @@
     var table = $("#productTable");
     var tr = $("<tr><input type='hidden' name='plcpIds' value='0' /></tr>");
     var td = $("<td></td>");
-    var tdHtml = "<select id=\"pId${status.index}"+num+"\" name=\"pIds\" data-am-selected=\"{btnWidth: '370px', maxHeight: '180px', searchBox: 1}\">";
+    var tdHtml = "<select id=\"pId${status.index}"+num+"\" name=\"pIdsForAddP\" data-am-selected=\"{btnWidth: '370px', maxHeight: '180px', searchBox: 1}\">";
     <c:forEach var="product2" items="${productList}">
       tdHtml += "<option value=\"${product2['FMATERIALID']}\">[${product2['FNUMBER']}]${product2['FNAME']}</option>";
     </c:forEach>

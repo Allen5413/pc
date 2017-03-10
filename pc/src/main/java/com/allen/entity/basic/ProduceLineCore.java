@@ -17,6 +17,7 @@ public class ProduceLineCore {
     @GeneratedValue
     private long id;
     private long produceLineId;
+    private int sno;
     private long workCoreId;
     private String operator;
     private Date operateTime = new Date();
@@ -59,5 +60,13 @@ public class ProduceLineCore {
 
     public void setOperateTime(Date operateTime) {
         this.operateTime = operateTime;
+    }
+
+    public int getSno() {
+        return sno;
+    }
+
+    public void setSno(int sno) {
+        this.sno = sno;
     }
 }
