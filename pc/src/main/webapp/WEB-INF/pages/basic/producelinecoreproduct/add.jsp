@@ -60,9 +60,11 @@
   }
 
   function del(plcpId, obj){
-    if(plcpId > 0) {
-      $("#delPlcpIds").val($("#delPlcpIds").val() + plcpId + ",");
-    }
-    $(obj).parent().parent().remove();
+    app.confirm("您确定要删除该产品？", function() {
+      if (plcpId > 0) {
+        $("#delPlcpIds").val($("#delPlcpIds").val() + plcpId + ",");
+      }
+      $(obj).parent().parent().remove();
+    });
   }
 </script>

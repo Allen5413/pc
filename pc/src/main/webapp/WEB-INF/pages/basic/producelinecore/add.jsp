@@ -59,9 +59,11 @@
   }
 
   function del(plcId, obj){
-    if(plcId > 0) {
-      $("#delPlcIds").val($("#delPlcIds").val() + plcId + ",");
-    }
-    $(obj).parent().parent().remove();
+    app.confirm("您确定要删除该工作中心？", function() {
+      if (plcId > 0) {
+        $("#delPlcIds").val($("#delPlcIds").val() + plcId + ",");
+      }
+      $(obj).parent().parent().remove();
+    });
   }
 </script>

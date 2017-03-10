@@ -248,16 +248,18 @@
   }
 
   function delWithProduct(trObj, plcpId){
-    $.ajax({
-      cache: true,
-      type: "POST",
-      url:"${pageContext.request.contextPath}/delProduceLineCoreProduct/del.json",
-      data:{"id":plcpId},
-      async: false,
-      success: function(data) {
-        app.msg("删除成功", 0);
-        $(trObj).parent().parent().remove();
-      }
+    app.confirm("您确定要删除该产品？", function(){
+      $.ajax({
+        cache: true,
+        type: "POST",
+        url:"${pageContext.request.contextPath}/delProduceLineCoreProduct/del.json",
+        data:{"id":plcpId},
+        async: false,
+        success: function(data) {
+          app.msg("删除成功", 0);
+          $(trObj).parent().parent().remove();
+        }
+      });
     });
   }
 
@@ -367,16 +369,18 @@
   }
 
   function delWithProductCg(trObj, plcpcgId){
-    $.ajax({
-      cache: true,
-      type: "POST",
-      url:"${pageContext.request.contextPath}/delPlcpcg/del.json",
-      data:{"id":plcpcgId},
-      async: false,
-      success: function(data) {
-        app.msg("删除成功", 0);
-        $(trObj).parent().parent().remove();
-      }
+    app.confirm("您确定要删除该班组？", function(){
+      $.ajax({
+        cache: true,
+        type: "POST",
+        url:"${pageContext.request.contextPath}/delPlcpcg/del.json",
+        data:{"id":plcpcgId},
+        async: false,
+        success: function(data) {
+          app.msg("删除成功", 0);
+          $(trObj).parent().parent().remove();
+        }
+      });
     });
   }
 </script>

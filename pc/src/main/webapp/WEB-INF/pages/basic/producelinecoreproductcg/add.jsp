@@ -84,9 +84,11 @@
   }
 
   function del(plcpcgId, obj){
-    if(plcpcgId > 0) {
-      $("#delPlcpcgIds").val($("#delPlcpcgIds").val() + plcpcgId + ",");
-    }
-    $(obj).parent().parent().remove();
+    app.confirm("您确定要删除该班组？", function() {
+      if (plcpcgId > 0) {
+        $("#delPlcpcgIds").val($("#delPlcpcgIds").val() + plcpcgId + ",");
+      }
+      $(obj).parent().parent().remove();
+    });
   }
 </script>
