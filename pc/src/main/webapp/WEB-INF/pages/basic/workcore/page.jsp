@@ -100,9 +100,6 @@
         <c:if test="${isShowSetWorkGroupBtn}">
           <a class="am-badge am-badge-success am-radius am-text-lg" onClick="setWorkGroupCore(${workCore.id})"><span class="am-icon-cog"></span> 关联工作组</a>
         </c:if>
-        <c:if test="${isShowSetProduceLineBtn}">
-          <a class="am-badge am-badge-success am-radius am-text-lg" onClick="setProduceLineCore(${workCore.id})"><span class="am-icon-cog"></span> 关联生产线</a>
-        </c:if>
         <c:if test="${isShowEditBtn}">
           <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${workCore.id})"><span class="am-icon-edit"></span> 修改</a>
         </c:if>
