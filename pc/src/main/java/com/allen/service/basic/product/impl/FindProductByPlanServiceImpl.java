@@ -47,7 +47,7 @@ public class FindProductByPlanServiceImpl implements FindProductByPlanService {
                 productMap.put(planOrder.getFMATERIALID()+"",childProducts);
             }else{
                List<Map> productMaps = productMap.get(planOrder.getFMATERIALID()+"");
-                planOrder.getProducts().addAll(productMaps);
+               planOrder.getProducts().addAll(productMaps);
             }
             System.out.println(planOrder.getProducts());
         }

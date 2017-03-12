@@ -31,10 +31,13 @@ public class ProduceLineUse implements Serializable{
     private long workTimeId;//班次id
     private long addTime;//加班时间
     private long workTeamId;//班组id
+    private long workTimeSno;//班次序号
+    private long workTeamSno;//班组序号
     private BigDecimal capacity;//实际产能
     private BigDecimal planQuantity;//生产计划量
     private int isFull;//生产线是否已经排满
     private int flag;//同一生产线最晚工作为1其他为0
+    private long customerId;//客户id
 
     public long getcId() {
         return cId;
@@ -130,5 +133,29 @@ public class ProduceLineUse implements Serializable{
 
     public void setFlag(int flag) {
         this.flag = flag;
+    }
+
+    public long getWorkTimeSno() {
+        return workTimeSno;
+    }
+
+    public void setWorkTimeSno(long workTimeSno) {
+        this.workTimeSno = workTimeSno;
+    }
+
+    public long getWorkTeamSno() {
+        return workTeamSno;
+    }
+
+    public void setWorkTeamSno(long workTeamSno) {
+        this.workTeamSno = workTeamSno;
+    }
+
+    public long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
     }
 }
