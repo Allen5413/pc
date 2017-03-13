@@ -12,8 +12,8 @@
       </td>
     </tr>
     <tr class="am-primary" style="border-right: 0px;">
-      <th style="width: 20%; ">名称</th>
-      <th style="width: 20%; ">工作模式</th>
+      <th style="width: 20%; ">班组</th>
+      <th style="width: 20%; ">班次</th>
       <th style="width: 10%;">序号</th>
       <th style="width: 14%;">产能（小时）</th>
       <th style="width: 14%;">最小批量</th>
@@ -31,7 +31,7 @@
         </td>
         <td>
           <select id="wmId${status.index}" name="wmIds" data-am-selected="{btnWidth: '120px', maxHeight: '180px', searchBox: 1}">
-            <c:forEach var="workMode" items="${workModeList}">
+            <c:forEach var="workMode" items="${workTimeList}">
               <option value="${workMode.id}" <c:if test="${plcpcg.work_mode_id eq workMode.id}">selected</c:if> >${workMode.name}</option>
             </c:forEach>
           </select>
@@ -68,7 +68,7 @@
     td.append(tdHtml);
     var td2 = $("<td></td>");
     var td2Html = "<select id=\"wmId${status.index}"+num+"\" name=\"wmIds\" data-am-selected=\"{btnWidth: '120px', maxHeight: '180px', searchBox: 1}\">";
-    <c:forEach var="workMode" items="${workModeList}">
+    <c:forEach var="workMode" items="${workTimeList}">
     td2Html += "<option value=\"${workMode.id}\">${workMode.name}</option>";
     </c:forEach>
     td2Html += "</select>";

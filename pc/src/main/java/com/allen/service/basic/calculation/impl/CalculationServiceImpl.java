@@ -48,9 +48,8 @@ public class CalculationServiceImpl implements CalculationService {
 
         //获取生产计划的产品信息
         List<PlanOrder> planOrders = findProductByPlanService.findProductByPlan();
-        //保存每个产品，每天的计划产量   实际产量  班次 模式等信息
-        Map<String,LinkedHashMap<String,BigDecimal>> produce = new LinkedHashMap<String, LinkedHashMap<String,BigDecimal>>();
         //格式为{客户ID，产品：[{生产日期:产量},{生产日期:产量｝]}
+        Map<String,LinkedHashMap<String,BigDecimal>> produce = new LinkedHashMap<String, LinkedHashMap<String,BigDecimal>>();
         String lastProductId = "-1";
         LinkedHashMap<String,BigDecimal> demandDatePlanQty = null;//每日计划产量
         String produceDate = null;

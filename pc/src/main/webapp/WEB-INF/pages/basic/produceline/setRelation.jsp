@@ -59,9 +59,9 @@
             </td>
           </tr>
           <tr class="am-primary" style="border-right: 0px;">
-            <th style="width:8%;">序号</th>
-            <th style="width:20%;">名称</th>
-            <th style="width:20%;">工作模式</th>
+            <th style="width:10%;">序号</th>
+            <th style="width:18%;">班组</th>
+            <th style="width:20%;">班次</th>
             <th style="width:20%;">产能（小时）</th>
             <th style="width:15%;">最小批量</th>
             <th>操作</th>
@@ -284,8 +284,8 @@
             for(var i=0; i<cgList.length; i++) {
               var cg = cgList[i];
               var tr = $("<tr><input type='hidden' name='plcpcgIds' value='"+cg.id+"'></tr>");
-              var td = $("<td style='width: 8%;'>"+cg.sno+"</td>");
-              var td2 = $("<td style='width: 20%;'>"+cg.cgName+"</td>");
+              var td = $("<td style='width: 10%;'>"+cg.sno+"</td>");
+              var td2 = $("<td style='width: 18%;'>"+cg.cgName+"</td>");
               var td3 = $("<td style='width: 20%;'>"+cg.wmName+"</td>");
               var td4 = $("<td style='width: 20%;'>"+(cg.unit_time_capacity/3600).toFixed(2)+"</td>");
               var td5 = $("<td style='width: 15%;'>"+cg.min_batch+"</td>");

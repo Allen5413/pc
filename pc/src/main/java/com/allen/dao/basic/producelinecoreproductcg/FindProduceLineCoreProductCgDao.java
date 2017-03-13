@@ -21,7 +21,7 @@ public class FindProduceLineCoreProductCgDao extends BaseQueryDao {
      */
     public List<Map> findByPlcpId(long plcpId)throws Exception{
         String fields = "p.*, wm.name wmName, cg.name cgName";
-        String[] tableNames = {"produce_line_core_product_cg p, work_mode wm, class_group cg"};
+        String[] tableNames = {"produce_line_core_product_cg p, work_time wm, class_group cg"};
         String defaultWhere = "p.work_mode_id = wm.id and p.class_group_id = cg.id";
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("p.produce_line_core_product_id", plcpId);

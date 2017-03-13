@@ -3,10 +3,12 @@ package com.allen.web.controller.basic.producelinecoreproductcg;
 import com.alibaba.fastjson.JSONObject;
 import com.allen.entity.basic.ClassGroup;
 import com.allen.entity.basic.WorkMode;
+import com.allen.entity.basic.WorkTime;
 import com.allen.service.basic.classgroup.FindClassGroupForAllService;
 import com.allen.service.basic.producelinecoreproductcg.AddPlcpcgService;
 import com.allen.service.basic.producelinecoreproductcg.FindPlcpcgByPlcpIdService;
 import com.allen.service.basic.workmode.FindWorkModeForAllService;
+import com.allen.service.basic.worktime.FindWorkTimeAllService;
 import com.allen.util.UserUtil;
 import com.allen.web.controller.BaseController;
 import org.springframework.stereotype.Controller;
@@ -34,7 +36,8 @@ public class AddPlcpcgController extends BaseController {
     private FindWorkModeForAllService findWorkModeForAllService;
     @Resource
     private FindPlcpcgByPlcpIdService findPlcpcgByPlcpIdService;
-
+    @Resource
+    private FindWorkTimeAllService findWorkTimeAllService;
     /**
      * 打开新增页面
      * @return
@@ -45,12 +48,14 @@ public class AddPlcpcgController extends BaseController {
         //查询所有班组信息
         List<ClassGroup> classGroupList = findClassGroupForAllService.find();
         //查询所有工作模式信息
-        List<WorkMode> workModeList = findWorkModeForAllService.find();
+        //List<WorkMode> workModeList = findWorkModeForAllService.find();
+        //查询所有班次信息
+        List<WorkTime> workTimeList = findWorkTimeAllService.findAll();
         //查询已经关联的班组信息
         List<Map> withCgList = findPlcpcgByPlcpIdService.find(plcpId);
-
         request.setAttribute("classGroupList", classGroupList);
-        request.setAttribute("workModeList", workModeList);
+        //request.setAttribute("workModeList", workModeList);
+        request.setAttribute("workTimeList", workTimeList);
         request.setAttribute("withCgList", withCgList);
         return "basic/producelinecoreproductcg/add";
     }
