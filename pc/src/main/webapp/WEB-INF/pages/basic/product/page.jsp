@@ -42,11 +42,12 @@
   </c:if>
   <tr class="am-primary">
     <th style="width: 5%;">序号</th>
-    <th style="width: 25%;">编号</th>
-    <th style="width: 40%;">名称</th>
+    <th style="width: 21%;">编号</th>
+    <th style="width: 34%;">名称</th>
+    <th style="width: 6%;">顺序号</th>
     <th style="width: 10%;">类型</th>
-    <th style="width: 10%;">自制件</th>
-    <th>操作</th>
+    <th style="width: 6%;">自制件</th>
+    <th style="width: 17%;">操作</th>
   </tr>
   <c:if test="${empty pageInfo || empty pageInfo.pageResults}">
     <tr>
@@ -58,15 +59,13 @@
       <td align="center">${status.index+1}</td>
       <td>${product['FNUMBER']}</td>
       <td>${product['FNAME']}</td>
+      <td>${product['FSNO']}</td>
       <td>${product['cateGoryName']}</td>
       <td>${product['FERPCLSID']==1?'是':'否'}</td>
       <td>
         <a class="am-badge am-badge-primary am-radius am-text-lg" onClick="detailProduct(${product['FMATERIALID']})"><span class="am-icon-th-list"></span> 详细</a>
-        <c:if test="${false&&isShowEditBtn}">
-          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="editProduct(${product['FMATERIALID']})"><span class="am-icon-edit"></span> 修改</a>
-        </c:if>
-        <c:if test="${false&&isShowDelBtn}">
-          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${product['FMATERIALID']})"><span class="am-icon-trash-o"></span> 删除</a>
+        <c:if test="${isShowEditBtn}">
+          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="productSno(${product['FMATERIALID']},${product['FSNO']})"><span class="am-icon-edit"></span> 顺序号</a>
         </c:if>
       </td>
     </tr>
@@ -75,34 +74,10 @@
 <%@ include file="../../common/page.jsp"%>
 <script>
 
-  function editProduct(id){
-    var url = '${pageContext.request.contextPath}/editProduct/open.html?id='+id;
-    app.openDialog(url, '编辑产品信息', 700, 560, function(index){
-      var code = $("#edit_code").val().trim();
-      var name = $("#edit_name").val().trim();
-      if(code == ""){
-        app.msg("请输入编号", 1);
-        return;
-      }
-      if(name == ""){
-        app.msg("请输入名称", 1);
-        return;
-      }
-      var productDetails = [];
-      //获取产品组成信息
-      $('#editProductDetail tr').each(function(){
-              var productDetail = {};
-              productDetail['code'] = $(this).children('td').eq(1).text();
-              productDetail['name'] = $(this).children('td').eq(2).text();
-              productDetail['quantity'] = $(this).children('td').eq(3).text();
-              productDetail['ahead'] = $(this).children('td').eq(4).text();
-              productDetail['level'] = $(this).children('td').eq(5).text();
-              productDetail['selfProductId'] = $(this).attr('product-id');
-              productDetails.push(productDetail);
-              });
-      app.edit("${pageContext.request.contextPath}/editProduct/editor.json", {'code':code,'name':name,'type':$('#edit_type').val(),
-              'selfMade':$("#editProductForm input[type='radio']:checked").val(),'id':$('#edit_id').val(),
-              'productSelfUseList':JSON.stringify(productDetails)}, index);
+  function productSno(id,fsno){
+    var url = '${pageContext.request.contextPath}/editProduct/open.html?id='+id+"&fsno="+fsno;
+      app.openDialog(url, '设置产品顺序号', 300,180, function(index){
+      app.edit("${pageContext.request.contextPath}/editProduct/editor.json",$('#eidtProductSnoForm').serialize(), index);
     });
   }
 

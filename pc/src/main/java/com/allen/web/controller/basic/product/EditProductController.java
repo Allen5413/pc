@@ -45,15 +45,10 @@ public class EditProductController extends BaseController {
      * @return
      */
     @RequestMapping(value = "open")
-    public String open(@RequestParam("id") long id, HttpServletRequest request) throws Exception {
-        request.setAttribute("productInfo", findProductByIdService.find(id));
-        request.setAttribute("productTypes", findProductTypeSelectService.find());
-        //获取包含产品信息
-        Map<String,Object> paramsMap = new HashMap<String, Object>();
-        paramsMap.put("p.id",new Object[]{id,"<>"});
-        paramsMap.put("p.selfMade",1);
-        request.setAttribute("products",findProductSelectService.find(paramsMap));
-        return "basic/product/edit";
+    public String open(@RequestParam("id") long id,@RequestParam("fsno") long fsno, HttpServletRequest request) throws Exception {
+        request.setAttribute("id", id);
+        request.setAttribute("fsno",fsno);
+        return "basic/product/setSno";
     }
 
     /**
@@ -63,14 +58,9 @@ public class EditProductController extends BaseController {
      */
     @RequestMapping(value = "editor")
     @ResponseBody
-    public JSONObject editor(HttpServletRequest request, Product product, String productSelfUseList)throws Exception{
+    public JSONObject editor(HttpServletRequest request, Product product)throws Exception{
         JSONObject jsonObject = new JSONObject();
-        if(null != product) {
-            if(!StringUtil.isEmpty(productSelfUseList)){
-                product.setProductSelfUses(JSONObject.parseArray(productSelfUseList, ProductSelfUse.class));
-            }
-            editProductService.edit(product);
-        }
+        editProductService.edit(product);
         jsonObject.put("state", 0);
         return jsonObject;
     }

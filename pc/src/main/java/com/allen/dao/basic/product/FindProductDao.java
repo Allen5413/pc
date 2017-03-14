@@ -29,7 +29,7 @@ public class FindProductDao extends BaseQueryDao {
         }
         paramsMap.put("a.FDOCUMENTSTATUS","C");
         paramsMap.put("a.FFORBIDSTATUS","A");
-        String fields = "b.FENTRYID,a.FMATERIALID,a.FNUMBER,d.FNAME as cateGoryName,b.FERPCLSID,c.FNAME";
+        String fields = "b.FENTRYID,a.FMATERIALID,a.FNUMBER,d.FNAME as cateGoryName,b.FERPCLSID,c.FNAME,b.FSNO";
         String[] tableNames = {"t_bd_material a,t_bd_materialbase b,t_bd_material_l c,t_bd_materialcategory_l d"};
         String defaultWhere = "a.FMATERIALID = b.FMATERIALID and  c.FMATERIALID = a.FMATERIALID and b.FCATEGORYID = d.FCATEGORYID and d.FCATEGORYID in (239,241) ";
         return super.findPageByNativeSqlToMap(pageInfo, fields,defaultWhere,tableNames, paramsMap, sortMap);
@@ -56,9 +56,7 @@ public class FindProductDao extends BaseQueryDao {
     public List<Product> find(Map<String,Object> paramsMap) throws Exception{
         String fields = "p";
         String[] tableNames = {"Product p"};
-        Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
-        sortMap.put("p.code",false);
-        return super.findListByHql(tableNames,fields,paramsMap,sortMap,Product.class);
+        return super.findListByHql(tableNames,fields,paramsMap,null,Product.class);
     }
 
     /**

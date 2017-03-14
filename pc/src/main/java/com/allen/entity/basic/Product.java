@@ -18,6 +18,7 @@ public class Product {
     private long FMATERIALID;//产品id
     private String FERPCLSID;//产品属性
     private long FCATEGORYID;//产品类别id
+    private long FSNO;//产品序号
     @Transient
     private String FNUMBER;//产品编码
     @Transient
@@ -89,5 +90,13 @@ public class Product {
 
     public void setProductSelfUses(List<ProductSelfUse> productSelfUses) {
         this.productSelfUses = productSelfUses;
+    }
+
+    public long getFSNO() {
+        return FSNO;
+    }
+
+    public void setFSNO(long FSNO) {
+        this.FSNO = FSNO;
     }
 }
