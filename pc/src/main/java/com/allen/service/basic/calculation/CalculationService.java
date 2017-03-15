@@ -9,5 +9,5 @@ import com.allen.base.exception.BusinessException;
  * 创建时间: 2017-03-07 20:58
  */
 public interface CalculationService {
-    public boolean calculation() throws BusinessException;
+    public boolean calculation() throws Exception;
 }

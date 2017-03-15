@@ -1,5 +1,6 @@
 package com.allen.service.basic.calculation.impl;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.allen.base.exception.BusinessException;
 import com.allen.dao.basic.producelinecoreproduct.FindProduceLineCoreProductDao;
 import com.allen.dao.basic.producelineuse.FindProduceLineUseDao;
@@ -7,7 +8,9 @@ import com.allen.entity.basic.PlanOrder;
 import com.allen.entity.basic.ProduceLineUse;
 import com.allen.entity.basic.ProductInventory;
 import com.allen.entity.basic.WorkTime;
+import com.allen.entity.calculation.PlanDayMaterial;
 import com.allen.service.basic.calculation.CalculationService;
+import com.allen.service.basic.factorydate.FindIsWorkByDateService;
 import com.allen.service.basic.producelineuse.AddProduceLineUseService;
 import com.allen.service.basic.product.FindProductByPlanService;
 import com.allen.service.basic.productinventory.EditProductInventoryService;
@@ -41,36 +44,58 @@ public class CalculationServiceImpl implements CalculationService {
     private EditProductInventoryService editProductInventoryService;
     @Resource
     private FindProInvByPIdService findProInvByPIdService;
+    @Resource
+    private FindIsWorkByDateService findIsWorkByDateService;
     @Override
     @Transactional
-    public boolean calculation() throws BusinessException {
+    public boolean calculation() throws Exception {
         //清空临时表信息
 
+        String start = "2017-03-01";//计划开始时间
+        String end = "2017-03-07";//计划结束时间
+        BigDecimal minAddTime = new BigDecimal(4);//最低加班时间
         //获取生产计划的产品信息
         List<PlanOrder> planOrders = findProductByPlanService.findProductByPlan();
-        //格式为{客户ID，产品：[{生产日期:产量},{生产日期:产量｝]}
-        Map<String,LinkedHashMap<String,BigDecimal>> produce = new LinkedHashMap<String, LinkedHashMap<String,BigDecimal>>();
+        //功能根据生产计划产品  获取库存信息 格式为Map<String,ProductInventory> 产品id 库存信息
+        Map<String,ProductInventory> pInvMaps = getProductInv();
+        //格式为{产品：[{生产日期:产量},{生产日期:产量｝]} //客户ID，
+        Map<String,LinkedHashMap<String,PlanDayMaterial>> produce = new LinkedHashMap<String, LinkedHashMap<String,PlanDayMaterial>>();
         String lastProductId = "-1";
-        LinkedHashMap<String,BigDecimal> demandDatePlanQty = null;//每日计划产量
+        LinkedHashMap<String,PlanDayMaterial> demandDatePlanQty = null;//每日计划产量
         String produceDate = null;
+        PlanDayMaterial planDayMaterial = null;
+        String level = null;//产品级别
         for(PlanOrder planOrder:planOrders){
-            List<Map> products = planOrder.getProducts();
+            //获取每个订单的产品信息
+            List<Map> products = planOrder.getSortProducts();
+            System.out.println(products);
             //生产日期
             produceDate  = DateUtil.getFormattedString(planOrder.getFDEMANDDATE(),DateUtil.shortDatePattern);
             for(Map product:products){
-                if("-1".equals(lastProductId)||produce.get(planOrder.getFCUSTID()+","+product.get("FMATERIALID").toString())==null){
-                    demandDatePlanQty = new LinkedHashMap<String, BigDecimal>();
-                    produce.put(planOrder.getFCUSTID()+","+product.get("FMATERIALID").toString(),demandDatePlanQty);
+                if("-1".equals(lastProductId)||produce.get(product.get("FMATERIALID").toString())==null){
+                    demandDatePlanQty = new LinkedHashMap<String, PlanDayMaterial>();
+                    produce.put(product.get("FMATERIALID").toString(),demandDatePlanQty);
                 }else{
-                    demandDatePlanQty = produce.get(planOrder.getFCUSTID()+","+product.get("FMATERIALID").toString());
+                    demandDatePlanQty = produce.get(product.get("FMATERIALID").toString());
                 }
                 if(demandDatePlanQty.get(produceDate)==null){
-                    demandDatePlanQty.put(produceDate,planOrder.getFFIRMQTY().multiply(new BigDecimal(product.get("useQty").toString())));
+                    planDayMaterial = new PlanDayMaterial();
+                    //计划产能
+                    planDayMaterial.setUseQty(planOrder.getFFIRMQTY().multiply(new BigDecimal(product.get("useQty").toString())));
+                    planDayMaterial.setCustomerId(Long.valueOf(planOrder.getFCUSTID()));
+                    planDayMaterial.setDemandDate(produceDate);
+                    if(product.get("childs")!=null){
+                        planDayMaterial.setChilds((ArrayList)product.get("childs"));
+                    }
+
+                    demandDatePlanQty.put(produceDate,planDayMaterial);
                 }else{
-                    demandDatePlanQty.put(produceDate,planOrder.getFFIRMQTY().multiply(new BigDecimal(product.get("useQty").toString())
-                            .add(demandDatePlanQty.get(produceDate))));
+                    //同一产品 同一计划生产日期累加
+                    planDayMaterial = demandDatePlanQty.get(produceDate);
+                    planDayMaterial.setUseQty(planOrder.getFFIRMQTY().multiply(new BigDecimal(product.get("useQty").toString())
+                            .add(planDayMaterial.getUseQty())));
                 }
-                lastProductId = planOrder.getFCUSTID()+","+product.get("FMATERIALID").toString();
+                lastProductId = product.get("FMATERIALID").toString();
             }
         }
         //计算产品的产能信息
@@ -89,31 +114,43 @@ public class CalculationServiceImpl implements CalculationService {
         Map<String,LinkedHashMap<String,LinkedHashMap<String,Map>>> workCores = null;//生产线工作中心
         LinkedHashMap<String,LinkedHashMap<String,Map>> classGroups = null;//工作组
         LinkedHashMap<String,Map> workTimes = null;//班次信息
-        ProductInventory productInventory = null;
+        ProductInventory productInventory = null;//单个产品库存信息
         for(String key:keys){
             //获取产品id
             String[] ids = key.split(",");
             //产品id
-            long fMaterialId = Long.valueOf(ids[1]);
+            String fMaterialId = key;
             //客户id
-            long customerId = Long.valueOf(ids[0]);
+           // long customerId = Long.valueOf(ids[0]);
             materialDemandDate = produce.get(key).keySet();
             //计算每个生产计划生产日的各个工作中心的产量
             for(String demandDate:materialDemandDate){
                 productionDate = DateUtil.getFormatDate(demandDate,DateUtil.shortDatePattern);
                 //产品计划产量
-                useQty = produce.get(key).get(demandDate);
+                useQty = produce.get(key).get(demandDate).getUseQty();
                 //获取库存信息
-                productInventory = findProInvByPIdService.findProductInventoryByProductId(fMaterialId);
+                productInventory = pInvMaps.get(fMaterialId);
+                //判断计划成产时间是否正常上班
+                if(!findIsWorkByDateService.find(demandDate,start,end)){//不上班时产能为0
+                     if(DateUtil.compareDate(demandDate,start)==0){//计划第一天 直接入临时库存
+                         productInventory.setProductNum(productInventory.getProductNum().multiply(useQty));
+                         pInvMaps.put(fMaterialId,productInventory);
+                     }else{//倒推生产计划 例如：1 2 3 4，3不上班  倒推 1 2 产能都不够用的时候，3是否直接加班？还是让计划日期跑完了来在算不上班的加班
+
+                     }
+                    continue;
+                }
                 //库存够用
                 if(productInventory.getProductNum().subtract(productInventory.getSafe()).compareTo(useQty)>0){
-                    editProductInventoryService.editProductInventory(fMaterialId,productInventory.getProductNum().subtract(productInventory.getSafe()).subtract(useQty));
+                    //临时库存这个不需要表存 直接数据结构存
+                    productInventory.setProductNum(productInventory.getProductNum().subtract(productInventory.getSafe()).subtract(useQty));
+                    pInvMaps.put(fMaterialId,productInventory);
                     continue;
                 }else{
                     useQty = useQty.subtract(productInventory.getProductNum()).add(productInventory.getSafe());
                 }
                 //获取产品的生产线 生产中心 工作租 班次信息
-                List<Map> produceLines = findProduceLineUseDao.findUnUserProduceLine(fMaterialId,productionDate,0);
+                List<Map> produceLines = findProduceLineUseDao.findUnUserProduceLine(Long.valueOf(fMaterialId),productionDate,0);
                 //格式化分组生产线  工作中心  工作组 班次信息
                 Map<String,Map<String,LinkedHashMap<String,LinkedHashMap<String,Map>>>> pLines =
                         new LinkedHashMap<String, Map<String, LinkedHashMap<String, LinkedHashMap<String,Map>>>>();
@@ -196,7 +233,7 @@ public class CalculationServiceImpl implements CalculationService {
                                 produceLineUse.setFlag(1);
                                 produceLineUse.setWorkCoreId(Long.valueOf(workCoreId));
                                 //产品id
-                                produceLineUse.setProductId(fMaterialId);
+                                produceLineUse.setProductId(Long.valueOf(fMaterialId));
                                 //生产线id
                                 produceLineUse.setProduceLineId(Long.valueOf(pLineId));
                                 //生产日期
@@ -210,7 +247,7 @@ public class CalculationServiceImpl implements CalculationService {
                                 //班组序号
                                 produceLineUse.setWorkTeamSno(Long.valueOf(workTimes.get(workTimeId).get("sno").toString()));
                                 //客户id
-                                produceLineUse.setCustomerId(customerId);
+                                //produceLineUse.setCustomerId(customerId);
                                 addProduceLineUseService.addProduceLineUse(produceLineUse);
                                 if(actualQty.compareTo(useQty)>0){//实际产量大于计划产量
                                     coreFlag = false;
@@ -237,7 +274,8 @@ public class CalculationServiceImpl implements CalculationService {
                     }
                 }
                 //更新库存信息
-                editProductInventoryService.editProductInventory(fMaterialId,lineTotalCapacity.subtract(useQty));
+                productInventory.setProductNum(lineTotalCapacity.subtract(useQty));
+                pInvMaps.put(fMaterialId,productInventory);
             }
         }
         //System.out.println(produce);
@@ -256,7 +294,42 @@ public class CalculationServiceImpl implements CalculationService {
         return new BigDecimal((float)(end.getTime() - start.getTime())/3600/1000).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
-    public static void main(String[] args) {
+    /**
+     * 功能：当天产能不够时，查找该产品的前一天的生产计划日期
+     * @param demandDate 不够产能的当天时间
+     * @param start 计划安排的开始时间
+     * @param end 计划安排结束时间
+     * @param plans 产品的生产安排计划
+     * @return
+     */
+    private String getBeforePlanDate(String demandDate,String start,String end,
+                                     LinkedHashMap<String,PlanDayMaterial> plans) throws Exception {
+        String beforeDate = DateUtil.beforeDay(demandDate);
+        if(DateUtil.compareDate(beforeDate,start)<=0){//代表前一天已经是最开始时间不能再找
+           return start;
+        }
+        if(plans.get(beforeDate)==null){//前一天没有安排工作计划
+           return getBeforePlanDate(beforeDate,start,end,plans);
+        }
+        return beforeDate;
+    }
 
+    /**
+     * 功能：获取产品库存信息
+     * @return
+     */
+    private Map<String,ProductInventory> getProductInv(){
+        Map<String,ProductInventory> pInvMaps = new HashMap<String, ProductInventory>();
+        ProductInventory pInvObj = new ProductInventory();
+        pInvObj.setProductNum(new BigDecimal(220));//产品库存
+        pInvObj.setSafe(new BigDecimal(200));//安全库存
+        pInvObj.setMax(new BigDecimal(400));//最大库存
+        pInvObj.setMin(new BigDecimal(100));//最小库存
+        pInvMaps.put("114937",pInvObj);
+        return pInvMaps;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(DateUtil.beforeDay("2017-03-01"));
     }
 }

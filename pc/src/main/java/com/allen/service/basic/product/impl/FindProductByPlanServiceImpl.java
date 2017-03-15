@@ -38,13 +38,12 @@ public class FindProductByPlanServiceImpl implements FindProductByPlanService {
             product.put("FMATERIALID",planOrder.getFMATERIALID());//产品id
             product.put("useQty",1);//产品数量
             product.put("level",1);//当前产品的层级
-            planOrder.getProducts().add(product);
+
             if(productMap.get(planOrder.getFMATERIALID()+"")==null){//同一个产品不用重新取产品组成
-                List<Map> childProducts = new ArrayList<Map>();
+                planOrder.getProducts().add(product);
                 //获取产品组成
-                findProductSelfUseDao.findProductChild(childProducts,planOrder.getFMATERIALID(),new BigDecimal(1),1);
-                planOrder.getProducts().addAll(childProducts);
-                productMap.put(planOrder.getFMATERIALID()+"",childProducts);
+                findProductSelfUseDao.findProductChild(planOrder.getProducts(),planOrder.getFMATERIALID(),new BigDecimal(1),1);
+                productMap.put(planOrder.getFMATERIALID()+"",planOrder.getProducts());
             }else{
                List<Map> productMaps = productMap.get(planOrder.getFMATERIALID()+"");
                planOrder.getProducts().addAll(productMaps);

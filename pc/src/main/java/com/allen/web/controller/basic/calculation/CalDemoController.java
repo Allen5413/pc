@@ -35,7 +35,11 @@ public class CalDemoController extends BaseController {
      */
     @RequestMapping(value = "open")
     public String open(){
-       calculationService.calculation();
+        try {
+            calculationService.calculation();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "basic/menu/add";
     }
 

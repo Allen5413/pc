@@ -2,10 +2,12 @@ package com.allen.dao.basic.productselfuse;
 
 import com.allen.dao.BaseQueryDao;
 import com.allen.dao.PageInfo;
+import com.allen.entity.basic.PlanOrder;
 import com.allen.entity.basic.Product;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +44,7 @@ public class FindProductSelfUseDao extends BaseQueryDao {
      * @param level 当前产品所在层级
      * @return
      */
-    public void findProductChild(List<Map> products,long productId, BigDecimal parentProductNum,int level){
+    public void findProductChild(List<Map> products, long productId, BigDecimal parentProductNum, int level){
         Map<String,Object>  paramsMap = new HashMap<String, Object>();
         paramsMap.put("d.FDOCUMENTSTATUS","C");
         paramsMap.put("d.FFORBIDSTATUS","A");
@@ -50,7 +52,7 @@ public class FindProductSelfUseDao extends BaseQueryDao {
         String fields = "e.FNUMERATOR/e.FDENOMINATOR*"+parentProductNum.doubleValue()
                 +" useQty,e.FOFFSETTIME,e.FSEQ,d.FID,e.FMATERIALID";
         String[] tableNames = {"t_eng_bom d,t_eng_bomchild e,t_bd_materialbase a"};
-        String defaultWhere = "d.FID = e.FID and e.FMATERIALID = a.FMATERIALID and a.FCATEGORYID in (239,241) ";
+        String defaultWhere = "d.FID = e.FID and e.FMATERIALID = a.FMATERIALID ";
         Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
         sortMap.put("e.FSEQ",true);
         List<Map> childProducts =  super.findListBySqlToMap(tableNames,fields,defaultWhere,paramsMap,sortMap);
@@ -58,6 +60,18 @@ public class FindProductSelfUseDao extends BaseQueryDao {
             return ;
         }
         level++;
+
+        for(Map childProduct:childProducts) {
+            if (products.get(products.size() - 1).get("childs") == null) {
+                List<String> childs = new ArrayList<String>();
+                childs.add(childProduct.get("FMATERIALID").toString());
+                products.get(products.size() - 1).put("childs", childs);
+            } else {
+                List<String> childs = (List<String>) products.get(products.size() - 1).get("childs");
+                childs.add(childProduct.get("FMATERIALID").toString());
+                products.get(products.size() - 1).put("childs", childs);
+            }
+        }
         for(Map childProduct:childProducts){
             childProduct.put("level",level);
             products.add(childProduct);

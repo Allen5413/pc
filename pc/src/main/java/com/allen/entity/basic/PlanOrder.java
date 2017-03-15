@@ -86,6 +86,9 @@ public class PlanOrder implements Serializable {
     }
 
     public List<Map> getProducts() {
+        return products;
+    }
+    public List<Map> getSortProducts(){
         if(products!=null){
             Collections.sort(products, new Comparator<Map>() {
                 @Override
@@ -98,7 +101,6 @@ public class PlanOrder implements Serializable {
         }
         return products;
     }
-
     public void setProducts(List<Map> products) {
         this.products = products;
     }

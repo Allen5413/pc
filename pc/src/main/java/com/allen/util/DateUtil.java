@@ -239,4 +239,37 @@ public class DateUtil {
         }
         return str;
     }
+
+    /**
+     * 功能计算前一天
+     * @param specifiedDay
+     * @return
+     */
+    public static String beforeDay(String specifiedDay){
+        Calendar c = Calendar.getInstance();
+        Date date = null;
+        try{
+            date = new SimpleDateFormat(shortDatePattern).parse(specifiedDay);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        c.setTime(date);
+        c.add(Calendar.DAY_OF_MONTH, -1);
+        String dayBefore = new SimpleDateFormat(shortDatePattern).format(c.getTime());
+        return dayBefore;
+    }
+
+    /**
+     * 功能：比较时间大小
+     * @param source
+     * @param target
+     * @return
+     * @throws Exception
+     */
+    public static int compareDate(String source,String target) throws Exception {
+        Date sourceDate = new SimpleDateFormat(shortDatePattern).parse(source);
+        Date targetDate = new SimpleDateFormat(shortDatePattern).parse(target);
+        return sourceDate.compareTo(targetDate);
+    }
 }
