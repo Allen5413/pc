@@ -58,7 +58,7 @@ public class CalculationServiceImpl implements CalculationService {
         List<PlanOrder> planOrders = findProductByPlanService.findProductByPlan();
         //功能根据生产计划产品  获取库存信息 格式为Map<String,ProductInventory> 产品id 库存信息
         Map<String,ProductInventory> pInvMaps = getProductInv();
-        //格式为{产品：[{生产日期:产量},{生产日期:产量｝]} //客户ID，
+        //格式为{客户ID，产品：[{生产日期:产量},{生产日期:产量｝]}
         Map<String,LinkedHashMap<String,PlanDayMaterial>> produce = new LinkedHashMap<String, LinkedHashMap<String,PlanDayMaterial>>();
         String lastProductId = "-1";
         LinkedHashMap<String,PlanDayMaterial> demandDatePlanQty = null;//每日计划产量
@@ -72,11 +72,11 @@ public class CalculationServiceImpl implements CalculationService {
             //生产日期
             produceDate  = DateUtil.getFormattedString(planOrder.getFDEMANDDATE(),DateUtil.shortDatePattern);
             for(Map product:products){
-                if("-1".equals(lastProductId)||produce.get(product.get("FMATERIALID").toString())==null){
+                if("-1".equals(lastProductId)||produce.get(planOrder.getFCUSTID()+","+product.get("FMATERIALID").toString())==null){
                     demandDatePlanQty = new LinkedHashMap<String, PlanDayMaterial>();
-                    produce.put(product.get("FMATERIALID").toString(),demandDatePlanQty);
+                    produce.put(planOrder.getFCUSTID()+","+product.get("FMATERIALID").toString(),demandDatePlanQty);
                 }else{
-                    demandDatePlanQty = produce.get(product.get("FMATERIALID").toString());
+                    demandDatePlanQty = produce.get(planOrder.getFCUSTID()+","+product.get("FMATERIALID").toString());
                 }
                 if(demandDatePlanQty.get(produceDate)==null){
                     planDayMaterial = new PlanDayMaterial();
@@ -95,7 +95,7 @@ public class CalculationServiceImpl implements CalculationService {
                     planDayMaterial.setUseQty(planOrder.getFFIRMQTY().multiply(new BigDecimal(product.get("useQty").toString())
                             .add(planDayMaterial.getUseQty())));
                 }
-                lastProductId = product.get("FMATERIALID").toString();
+                lastProductId = planOrder.getFCUSTID()+","+product.get("FMATERIALID").toString();
             }
         }
         //计算产品的产能信息
