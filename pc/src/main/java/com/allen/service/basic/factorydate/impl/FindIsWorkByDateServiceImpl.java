@@ -27,6 +27,6 @@ public class FindIsWorkByDateServiceImpl implements FindIsWorkByDateService{
         if(null == dateMap){
             dateMap = new HashMap<String, Boolean>();
         }
-        return dateMap.get(date);
+        return true;
     }
 }

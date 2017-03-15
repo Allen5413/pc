@@ -52,8 +52,9 @@ public class AddProduceLineUseServiceImpl implements AddProduceLineUseService{
             produceLineUseDao.save(produceLineUse);
         }else{
             ProduceLineUse oldUse = produceLineUses.get(0);
-            oldUse.setWorkTimeSno(produceLineUse.getWorkTimeSno());
-            oldUse.setWorkTimeId(produceLineUse.getWorkTimeId());
+            oldUse.setCapacity(produceLineUse.getCapacity().add(oldUse.getCapacity()));
+            oldUse.setPlanQuantity(produceLineUse.getPlanQuantity().add(oldUse.getPlanQuantity()));
+            oldUse.setAddTime(produceLineUse.getAddTime()+oldUse.getAddTime());
             produceLineUseDao.save(oldUse);
         }
 
