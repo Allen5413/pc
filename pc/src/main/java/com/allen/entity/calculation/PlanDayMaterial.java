@@ -13,6 +13,7 @@ import java.util.List;
 public class PlanDayMaterial {
     private String demandDate;//计划时间
     private BigDecimal useQty;//计划生产量
+    private BigDecimal capacity;//实际生产量
     private boolean isLastProduction;//是否最后生产
     private long materialId;//产品id
     private long customerId;//客户id
@@ -67,5 +68,13 @@ public class PlanDayMaterial {
 
     public void setChilds(List<String> childs) {
         this.childs = childs;
+    }
+
+    public BigDecimal getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(BigDecimal capacity) {
+        this.capacity = capacity;
     }
 }

@@ -59,17 +59,15 @@ public class CalculationServiceImpl implements CalculationService {
         List<PlanOrder> planOrders = findProductByPlanService.findProductByPlan();
         //功能根据生产计划产品  获取库存信息 格式为Map<String,ProductInventory> 产品id 库存信息
         Map<String,ProductInventory> pInvMaps = getProductInv();
-        //格式为{客户ID，产品：[{生产日期:产量},{生产日期:产量｝]}
+        //格式为{客户ID，产品：[{生产日期:PlanDayMaterial},{生产日期:PlanDayMaterial｝]}
         Map<String,LinkedHashMap<String,PlanDayMaterial>> produce = new LinkedHashMap<String, LinkedHashMap<String,PlanDayMaterial>>();
         String lastProductId = "-1";
         LinkedHashMap<String,PlanDayMaterial> demandDatePlanQty = null;//每日计划产量
         String produceDate = null;
         PlanDayMaterial planDayMaterial = null;
-        String level = null;//产品级别
         for(PlanOrder planOrder:planOrders){
             //获取每个订单的产品信息
             List<Map> products = planOrder.getSortProducts();
-            System.out.println(products);
             //生产日期
             produceDate  = DateUtil.getFormattedString(planOrder.getFDEMANDDATE(),DateUtil.shortDatePattern);
             for(Map product:products){
@@ -134,12 +132,13 @@ public class CalculationServiceImpl implements CalculationService {
             //计算每个生产计划生产日的各个工作中心的产量
             for(String demandDate:materialDemandDate){
                 productionDate = DateUtil.getFormatDate(demandDate,DateUtil.shortDatePattern);
-                //产品计划产量
-                useQty = produce.get(key).get(demandDate).getUseQty();
+                //产品计划产
+                planDayMaterial = produce.get(key).get(demandDate);
+                useQty = planDayMaterial.getUseQty();
                 //获取库存信息
                 productInventory = pInvMaps.get(fMaterialId);
                 //判断计划成产时间是否正常上班
-                if(!findIsWorkByDateService.find(demandDate,start,end)){//不上班时产能为0
+                if(!findIsWorkByDateService.isWork(demandDate,start,end)){//不上班时产能为0
                      if(DateUtil.compareDate(demandDate,start)==0){//计划第一天 直接入临时库存
                          productInventory.setProductNum(productInventory.getProductNum().multiply(useQty));
                          pInvMaps.put(fMaterialId,productInventory);
@@ -156,6 +155,10 @@ public class CalculationServiceImpl implements CalculationService {
                     continue;
                 }else{
                     useQty = useQty.subtract(productInventory.getProductNum()).add(productInventory.getSafe());
+                    //判断产品是否有下级产品
+                    if(planDayMaterial.getChilds()!=null&&planDayMaterial.getChilds().size()>0){
+
+                    }
                 }
                 //获取产品的生产线 生产中心 工作租 班次信息
                 List<Map> produceLines = findProduceLineUseDao.findUnUserProduceLine(Long.valueOf(fMaterialId),productionDate,0);
@@ -249,7 +252,7 @@ public class CalculationServiceImpl implements CalculationService {
                                        continue;
                                    }
                                     //如果加班时超过了总时间16小时 取相差时间为工作时间   如果小于16小时取最小工作时间为准
-                                   workTime = maxWorkTotalTime.subtract(workTotalTime.get(classGroupId)).compareTo(minAddTime)>0?
+                                    workTime = maxWorkTotalTime.subtract(workTotalTime.get(classGroupId)).compareTo(minAddTime)>0?
                                            minAddTime:maxWorkTotalTime.subtract(workTotalTime.get(classGroupId));
                                     workTotalTime.put(classGroupId,workTotalTime.get(classGroupId).add(workTime));
                                 }
@@ -341,6 +344,8 @@ public class CalculationServiceImpl implements CalculationService {
                 if(lineTotalCapacity.compareTo(useQty)<0){
                     //倒推生产日期，加班 满负荷生产，如果不够用就将差的数量入库，后面多生产
                     //如果是最后一天  去找前面是否有未上班如果没有就向后延续加班知道生产计划结束日期，产能不够 也入库负数
+                    productInventory.setProductNum(lineTotalCapacity.subtract(useQty));
+                    pInvMaps.put(fMaterialId,productInventory);
                 }else{//满足入库
                     //存放库存量
                     productInventory.setProductNum(lineTotalCapacity.subtract(useQty));
@@ -390,7 +395,7 @@ public class CalculationServiceImpl implements CalculationService {
     private Map<String,ProductInventory> getProductInv(){
         Map<String,ProductInventory> pInvMaps = new HashMap<String, ProductInventory>();
         ProductInventory pInvObj = new ProductInventory();
-        pInvObj.setProductNum(new BigDecimal(220));//产品库存
+        pInvObj.setProductNum(new BigDecimal(200));//产品库存
         pInvObj.setSafe(new BigDecimal(200));//安全库存
         pInvObj.setMax(new BigDecimal(400));//最大库存
         pInvObj.setMin(new BigDecimal(100));//最小库存
