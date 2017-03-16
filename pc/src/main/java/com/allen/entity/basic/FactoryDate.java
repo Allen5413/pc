@@ -11,7 +11,7 @@ import java.util.Date;
  * Created by Allen on 2017/2/15 0015.
  */
 @Entity
-@Table(name = "t_eng_workcalfulldata")
+@Table(name = "factory_date")
 public class FactoryDate{
 
     /**
