@@ -1,10 +1,13 @@
 package com.allen.service.basic.factorydate.impl;
 
+import com.allen.dao.basic.factorydate.FactoryDateDao;
+import com.allen.entity.basic.FactoryDate;
 import com.allen.service.basic.factorydate.FindIsWorkByDateService;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * 查询一个日期是否需要上班
@@ -13,7 +16,10 @@ import java.util.Map;
 @Service
 public class FindIsWorkByDateServiceImpl implements FindIsWorkByDateService{
 
-    private Map<String, Boolean> dateMap = null;
+    @Resource
+    private FactoryDateDao factoryDateDao;
+
+    private List<FactoryDate> factoryDateList = null;
 
     /**
      * @param date          //查询日期
@@ -23,9 +29,21 @@ public class FindIsWorkByDateServiceImpl implements FindIsWorkByDateService{
      * @throws Exception
      */
     @Override
-    public boolean find(String date, String beginDate, String endDate)throws Exception{
-        if(null == dateMap){
-            dateMap = new HashMap<String, Boolean>();
+    public boolean isWork(String date, String beginDate, String endDate)throws Exception{
+        if(null == factoryDateList){
+            factoryDateList = factoryDateDao.findByBeginDateAndEndDate(beginDate, endDate);
+        }
+        if(null != factoryDateList && 0 < factoryDateList.size()) {
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+            for (FactoryDate factoryDate : factoryDateList) {
+                if(factoryDate.getFDAY().getTime() == sdf.parse(date).getTime()){
+                    if(factoryDate.getFISWORKTIME() == FactoryDate.ISWORK_YES){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
+            }
         }
         return true;
     }

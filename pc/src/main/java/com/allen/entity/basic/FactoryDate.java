@@ -11,7 +11,7 @@ import java.util.Date;
  * Created by Allen on 2017/2/15 0015.
  */
 @Entity
-@Table(name = "factory_date")
+@Table(name = "t_eng_workcalfulldata")
 public class FactoryDate{
 
     /**
@@ -19,90 +19,36 @@ public class FactoryDate{
      * 0：否
      * 1：是
      */
-    private final static int ISWORK_NOT = 0;
-    private final static int ISWORK_YES = 1;
+    public final static int ISWORK_NOT = 0;
+    public final static int ISWORK_YES = 1;
 
     @Id
     @GeneratedValue
-    private long id;
-    private String year;
-    private String month;
-    private String day;
-    private int isWork;
-    private String creator;
-    private Date createTime = new Date();
-    private String operator;
-    private Date operateTime = new Date();
+    private long FENTRYID;
+    private Date FDAY;
+    private int FISWORKTIME;
 
-    public long getId() {
-        return id;
+    public long getFENTRYID() {
+        return FENTRYID;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setFENTRYID(long FENTRYID) {
+        this.FENTRYID = FENTRYID;
     }
 
-    public String getYear() {
-        return year;
+    public Date getFDAY() {
+        return FDAY;
     }
 
-    public void setYear(String year) {
-        this.year = year;
+    public void setFDAY(Date FDAY) {
+        this.FDAY = FDAY;
     }
 
-    public String getMonth() {
-        return month;
+    public int getFISWORKTIME() {
+        return FISWORKTIME;
     }
 
-    public void setMonth(String month) {
-        this.month = month;
-    }
-
-    public String getDay() {
-        return day;
-    }
-
-    public void setDay(String day) {
-        this.day = day;
-    }
-
-    public int getIsWork() {
-        return isWork;
-    }
-
-    public void setIsWork(int isWork) {
-        this.isWork = isWork;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public Date getOperateTime() {
-        return operateTime;
-    }
-
-    public void setOperateTime(Date operateTime) {
-        this.operateTime = operateTime;
+    public void setFISWORKTIME(int FISWORKTIME) {
+        this.FISWORKTIME = FISWORKTIME;
     }
 }
