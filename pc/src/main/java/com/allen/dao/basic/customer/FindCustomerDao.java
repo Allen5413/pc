@@ -21,7 +21,9 @@ public class FindCustomerDao extends BaseQueryDao {
      * @throws Exception
      */
     public PageInfo findPage(PageInfo pageInfo, Map<String, Object> paramsMap, Map<String, Boolean> sortMap)throws Exception{
-        String[] tableNames = {"Customer"};
-        return super.findPageByJpal(pageInfo, tableNames, paramsMap, sortMap);
+        String fields = "c.FCUSTID, c.FNUMBER, cl.FNAME";
+        String[] tableNames = {"t_bd_customer c, t_bd_customer_l cl"};
+        String defaultWhere = "c.FCUSTID = cl.FCUSTID";
+        return super.findPageByNativeSqlToMap(pageInfo, fields, defaultWhere, tableNames, paramsMap, sortMap);
     }
 }

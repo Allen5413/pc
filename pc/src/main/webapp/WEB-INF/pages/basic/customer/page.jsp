@@ -27,20 +27,10 @@
 <p /><p />
 
 <table class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
-  <c:if test="${isShowAddBtn}">
-    <tr>
-      <td colspan="999" style="background-color:#FFF">
-          <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="add()"><span class="am-icon-plus"></span> 新增</button>
-      </td>
-    </tr>
-  </c:if>
   <tr class="am-primary">
     <th style="width: 5%;">序号</th>
-    <th style="width: 15%;">编号</th>
-    <th style="width: 20%;">名称</th>
-    <th style="width: 10%;">操作人</th>
-    <th style="width: 15%;">操作时间</th>
-    <th>操作</th>
+    <th style="width: 40%;">编号</th>
+    <th style="width: 55%;">名称</th>
   </tr>
   <c:if test="${empty pageInfo || empty pageInfo.pageResults}">
     <tr>
@@ -50,18 +40,8 @@
   <c:forEach var="customer" items="${pageInfo.pageResults}" varStatus="status">
     <tr>
       <td align="center">${status.index+1}</td>
-      <td>${customer.code}</td>
-      <td>${customer.name}</td>
-      <td>${customer.operator}</td>
-      <td><fmt:formatDate value="${customer.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
-      <td>
-        <c:if test="${isShowEditBtn}">
-          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="edit(${customer.id})"><span class="am-icon-edit"></span> 修改</a>
-        </c:if>
-        <c:if test="${isShowDelBtn}">
-          <a class="am-badge am-badge-danger am-radius am-text-lg" onClick="del(${customer.id})"><span class="am-icon-trash-o"></span> 删除</a>
-        </c:if>
-      </td>
+      <td>${customer.FNUMBER}</td>
+      <td>${customer.FNAME}</td>
     </tr>
   </c:forEach>
 </table>
