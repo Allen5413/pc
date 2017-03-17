@@ -1,5 +1,7 @@
 package com.allen.service.basic.materialstock;
 
+import com.allen.entity.basic.MaterialStock;
+
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -11,8 +13,8 @@ public interface FindStockByFmaterialIdsService {
     /**
      * 通过多个产品id，查询各自的库存信息
      * @param fmaterialIds
-     * @return 返回格式 Map<产品id, map<[safe,xxx],[min,xxx],[max,xxx]>>
+     * @return 返回格式 Map<产品id, MaterialStock>
      * @throws Exception
      */
-    public Map<Long, Map<String, BigDecimal>> find(Long... fmaterialIds)throws Exception;
+    public Map<Long, MaterialStock> find(Long... fmaterialIds)throws Exception;
 }

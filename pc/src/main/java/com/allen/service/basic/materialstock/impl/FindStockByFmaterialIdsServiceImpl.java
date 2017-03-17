@@ -1,6 +1,7 @@
 package com.allen.service.basic.materialstock.impl;
 
 import com.allen.dao.basic.materialstock.FindMaterialStockDao;
+import com.allen.entity.basic.MaterialStock;
 import com.allen.service.basic.materialstock.FindStockByFmaterialIdsService;
 import org.springframework.stereotype.Service;
 
@@ -20,22 +21,22 @@ public class FindStockByFmaterialIdsServiceImpl implements FindStockByFmaterialI
     private FindMaterialStockDao findMaterialStockDao;
 
     @Override
-    public Map<Long, Map<String, BigDecimal>> find(Long... fmaterialIds) throws Exception {
-        Map<Long, Map<String, BigDecimal>> returnMap = null;
+    public Map<Long, MaterialStock> find(Long... fmaterialIds) throws Exception {
+        Map<Long, MaterialStock> returnMap = null;
         List<Map> resultList = findMaterialStockDao.findByFmaterialIds(fmaterialIds);
         if(null != resultList && 0 < resultList.size()){
-            returnMap = new HashMap<Long, Map<String, BigDecimal>>(resultList.size());
-            Map<String, BigDecimal> stockMap = null;
+            returnMap = new HashMap<Long, MaterialStock>(resultList.size());
             for(Map map : resultList){
-                stockMap = new HashMap<String, BigDecimal>(3);
+                MaterialStock materialStock = new MaterialStock();
                 long fmaterialId = (Long) map.get("FMATERIALID");
                 BigDecimal safe = (BigDecimal) map.get("FSAFESTOCK");
                 BigDecimal min = (BigDecimal) map.get("FMINSTOCK");
                 BigDecimal max = (BigDecimal) map.get("FMAXSTOCK");
-                stockMap.put("safe", null == safe ? new BigDecimal(0) : safe);
-                stockMap.put("min", null == min ? new BigDecimal(0) : min);
-                stockMap.put("max", null == max ? new BigDecimal(0) : max);
-                returnMap.put(fmaterialId, stockMap);
+                materialStock.setFMATERIALID(fmaterialId);
+                materialStock.setFSAFESTOCK(safe);
+                materialStock.setFMINSTOCK(min);
+                materialStock.setFMAXSTOCK(max);
+                returnMap.put(fmaterialId, materialStock);
             }
         }
         return returnMap;
