@@ -21,6 +21,8 @@ public class MaterialStock {
     private BigDecimal FMAXSTOCK;
     @Transient
     private BigDecimal FSORENUM = new BigDecimal(100);
+    @Transient
+    private BigDecimal FQTY;
 
     public long getFENTRYID() {
         return FENTRYID;
@@ -68,5 +70,13 @@ public class MaterialStock {
 
     public void setFSORENUM(BigDecimal FSORENUM) {
         this.FSORENUM = FSORENUM;
+    }
+
+    public BigDecimal getFQTY() {
+        return FQTY;
+    }
+
+    public void setFQTY(BigDecimal FQTY) {
+        this.FQTY = FQTY;
     }
 }

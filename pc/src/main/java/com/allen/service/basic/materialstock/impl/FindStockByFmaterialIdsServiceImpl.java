@@ -32,10 +32,12 @@ public class FindStockByFmaterialIdsServiceImpl implements FindStockByFmaterialI
                 BigDecimal safe = (BigDecimal) map.get("FSAFESTOCK");
                 BigDecimal min = (BigDecimal) map.get("FMINSTOCK");
                 BigDecimal max = (BigDecimal) map.get("FMAXSTOCK");
+                BigDecimal qty = (BigDecimal)map.get("FQTY");
                 materialStock.setFMATERIALID(fmaterialId);
                 materialStock.setFSAFESTOCK(safe);
                 materialStock.setFMINSTOCK(min);
                 materialStock.setFMAXSTOCK(max);
+                materialStock.setFQTY(qty);
                 returnMap.put(fmaterialId, materialStock);
             }
         }
