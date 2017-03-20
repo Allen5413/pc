@@ -19,8 +19,6 @@ import java.util.Date;
 public class ProduceLineUse implements Serializable{
     public static int FULL= 1;
     public static int UNFULL = 0;
-    public static int FLAG = 1;
-    public static int UNFLAG = 0;
     @Id
     @GeneratedValue
     private long cId;
@@ -29,14 +27,13 @@ public class ProduceLineUse implements Serializable{
     private Date productionDate;//生产日期
     private long workCoreId;//工作中心id
     private long workTimeId;//班次id
-    private long addTime;//加班时间
+    private BigDecimal addTime;//加班时间
     private long workTeamId;//班组id
-    private long workTimeSno;//班次序号
-    private long workTeamSno;//班组序号
     private BigDecimal capacity;//实际产能
     private BigDecimal planQuantity;//生产计划量
+    private BigDecimal balanceCapacity;//剩余产能
+    private BigDecimal balanceTime;//剩余时间
     private int isFull;//生产线是否已经排满
-    private int flag;//同一生产线最晚工作为1其他为0
     private long customerId;//客户id
 
     public long getcId() {
@@ -87,11 +84,11 @@ public class ProduceLineUse implements Serializable{
         this.workTimeId = workTimeId;
     }
 
-    public long getAddTime() {
+    public BigDecimal getAddTime() {
         return addTime;
     }
 
-    public void setAddTime(long addTime) {
+    public void setAddTime(BigDecimal addTime) {
         this.addTime = addTime;
     }
 
@@ -126,36 +123,27 @@ public class ProduceLineUse implements Serializable{
     public void setIsFull(int isFull) {
         this.isFull = isFull;
     }
-
-    public int getFlag() {
-        return flag;
-    }
-
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
-
-    public long getWorkTimeSno() {
-        return workTimeSno;
-    }
-
-    public void setWorkTimeSno(long workTimeSno) {
-        this.workTimeSno = workTimeSno;
-    }
-
-    public long getWorkTeamSno() {
-        return workTeamSno;
-    }
-
-    public void setWorkTeamSno(long workTeamSno) {
-        this.workTeamSno = workTeamSno;
-    }
-
     public long getCustomerId() {
         return customerId;
     }
 
     public void setCustomerId(long customerId) {
         this.customerId = customerId;
+    }
+
+    public BigDecimal getBalanceCapacity() {
+        return balanceCapacity;
+    }
+
+    public void setBalanceCapacity(BigDecimal balanceCapacity) {
+        this.balanceCapacity = balanceCapacity;
+    }
+
+    public BigDecimal getBalanceTime() {
+        return balanceTime;
+    }
+
+    public void setBalanceTime(BigDecimal balanceTime) {
+        this.balanceTime = balanceTime;
     }
 }

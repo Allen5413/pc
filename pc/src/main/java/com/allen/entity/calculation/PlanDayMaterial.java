@@ -13,11 +13,14 @@ import java.util.List;
 public class PlanDayMaterial {
     private String demandDate;//计划时间
     private BigDecimal useQty;//计划生产量
+    private BigDecimal useQtyStock;//实际计划生产量（计算库存后的数量）
     private BigDecimal capacity;//实际生产量
+    private BigDecimal balanceCapacity;//剩余产能
+    private boolean isFullWork;//是否已经满负荷生产
     private boolean isLastProduction;//是否最后生产
     private long materialId;//产品id
     private long customerId;//客户id
-    private List<String> childs = new ArrayList<String>();
+    private List<String> childs = new ArrayList<String>();//记录子产品的
 
     public String getDemandDate() {
         return demandDate;
@@ -65,7 +68,21 @@ public class PlanDayMaterial {
     public List<String> getChilds() {
         return childs;
     }
-
+    //获取当前产品的下级产品
+    public List<String[]> getSelfChilds(){
+        List<String[]> selfChids = null;
+        if(childs!=null&&childs.size()>0){
+            selfChids = new ArrayList<String[]>();
+            for(String str:childs){
+                String[] materialAttr = str.split(",");
+                //产品是自制半成品 产成品
+                if("239".equals(materialAttr[2])||"241".equals(materialAttr[2])){
+                    selfChids.add(materialAttr);
+                }
+            }
+        }
+        return  selfChids;
+    }
     public void setChilds(List<String> childs) {
         this.childs = childs;
     }
@@ -76,5 +93,29 @@ public class PlanDayMaterial {
 
     public void setCapacity(BigDecimal capacity) {
         this.capacity = capacity;
+    }
+
+    public BigDecimal getUseQtyStock() {
+        return useQtyStock;
+    }
+
+    public void setUseQtyStock(BigDecimal useQtyStock) {
+        this.useQtyStock = useQtyStock;
+    }
+
+    public boolean isFullWork() {
+        return isFullWork;
+    }
+
+    public void setFullWork(boolean fullWork) {
+        isFullWork = fullWork;
+    }
+
+    public BigDecimal getBalanceCapacity() {
+        return balanceCapacity;
+    }
+
+    public void setBalanceCapacity(BigDecimal balanceCapacity) {
+        this.balanceCapacity = balanceCapacity;
     }
 }

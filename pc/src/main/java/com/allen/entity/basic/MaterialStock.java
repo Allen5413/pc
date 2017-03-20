@@ -1,7 +1,9 @@
 package com.allen.entity.basic;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 
 /**
@@ -11,11 +13,14 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "t_bd_materialstock")
 public class MaterialStock {
+    @Id
     private long FENTRYID;
     private long FMATERIALID;
     private BigDecimal FSAFESTOCK;
     private BigDecimal FMINSTOCK;
     private BigDecimal FMAXSTOCK;
+    @Transient
+    private BigDecimal FSORENUM = new BigDecimal(100);
 
     public long getFENTRYID() {
         return FENTRYID;
@@ -55,5 +60,13 @@ public class MaterialStock {
 
     public void setFMAXSTOCK(BigDecimal FMAXSTOCK) {
         this.FMAXSTOCK = FMAXSTOCK;
+    }
+
+    public BigDecimal getFSORENUM() {
+        return FSORENUM;
+    }
+
+    public void setFSORENUM(BigDecimal FSORENUM) {
+        this.FSORENUM = FSORENUM;
     }
 }

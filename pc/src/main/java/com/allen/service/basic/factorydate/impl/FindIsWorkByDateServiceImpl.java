@@ -3,10 +3,12 @@ package com.allen.service.basic.factorydate.impl;
 import com.allen.dao.basic.factorydate.FactoryDateDao;
 import com.allen.entity.basic.FactoryDate;
 import com.allen.service.basic.factorydate.FindIsWorkByDateService;
+import com.allen.util.DateUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,7 +33,9 @@ public class FindIsWorkByDateServiceImpl implements FindIsWorkByDateService{
     @Override
     public boolean isWork(String date, String beginDate, String endDate)throws Exception{
         if(null == factoryDateList){
-            factoryDateList = factoryDateDao.findByBeginDateAndEndDate(beginDate, endDate);
+            factoryDateList = factoryDateDao.findByBeginDateAndEndDate(
+                    DateUtil.getFormatDate(beginDate,DateUtil.shortDatePattern),
+                    DateUtil.getFormatDate(endDate,DateUtil.shortDatePattern));
         }
         if(null != factoryDateList && 0 < factoryDateList.size()) {
             SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");

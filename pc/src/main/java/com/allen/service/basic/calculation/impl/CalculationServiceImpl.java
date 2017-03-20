@@ -4,13 +4,12 @@ import ch.qos.logback.core.net.SyslogOutputStream;
 import com.allen.base.exception.BusinessException;
 import com.allen.dao.basic.producelinecoreproduct.FindProduceLineCoreProductDao;
 import com.allen.dao.basic.producelineuse.FindProduceLineUseDao;
-import com.allen.entity.basic.PlanOrder;
-import com.allen.entity.basic.ProduceLineUse;
-import com.allen.entity.basic.ProductInventory;
-import com.allen.entity.basic.WorkTime;
+import com.allen.entity.basic.*;
 import com.allen.entity.calculation.PlanDayMaterial;
+import com.allen.entity.pojo.producelineuse.ProduceLineUseBean;
 import com.allen.service.basic.calculation.CalculationService;
 import com.allen.service.basic.factorydate.FindIsWorkByDateService;
+import com.allen.service.basic.materialstock.FindStockByFmaterialIdsService;
 import com.allen.service.basic.producelineuse.AddProduceLineUseService;
 import com.allen.service.basic.product.FindProductByPlanService;
 import com.allen.service.basic.productinventory.EditProductInventoryService;
@@ -46,362 +45,526 @@ public class CalculationServiceImpl implements CalculationService {
     private FindProInvByPIdService findProInvByPIdService;
     @Resource
     private FindIsWorkByDateService findIsWorkByDateService;
+    @Resource
+    private FindStockByFmaterialIdsService findStockByFmaterialIdsService;
+    private static int SMALL_NUMBER= 4;
+    //格式为{客户ID，产品：[{生产日期:PlanDayMaterial},{生产日期:PlanDayMaterial｝]}
+    Map<String, LinkedHashMap<String, PlanDayMaterial>> produce = new LinkedHashMap<String, LinkedHashMap<String, PlanDayMaterial>>();
+    PlanDayMaterial planDayMaterial = null;
+    String start = "2017-03-01";//计划开始时间
+    String end = "2017-03-07";//计划结束时间
+    BigDecimal minAddTime = new BigDecimal(4);//最低加班时间
+    BigDecimal maxWorkTotalTime = new BigDecimal(12);//最高连续工作时间
+
+    Map<Long, MaterialStock> pInvMaps = null;
+    Set<String> materialDemandDate = null;
+    BigDecimal useQty = null;//生产计划量
+    Date productionDate = null;//生产日期
+    BigDecimal unitWorkProduct = new BigDecimal(0);//单位时间产能
+    BigDecimal actualQty = new BigDecimal(0);//实际产量
+    BigDecimal workTime = new BigDecimal(0);//工作时间
+    BigDecimal minBatch = new BigDecimal(0);//最小批量
+
+    BigDecimal pRate = new BigDecimal(0);//产品合格率
+    BigDecimal minCapacity = new BigDecimal(0);//生产线中最小产能
+    BigDecimal minBalanceCapacity = new BigDecimal(0);//生产线的最小剩余产能
+    BigDecimal workTimeCapacity = new BigDecimal(0);//工作组班次产量
+    BigDecimal workGroupQty = new BigDecimal(0);//班组生产计划产能
+    BigDecimal workCoreTotalCapacity = new BigDecimal(0);//工作中心总产能
+    Map<String, LinkedHashMap<String, Map>> workCores = null;//生产线工作中心
+    LinkedHashMap<String, Map> classGroups = null;//工作组
+    Map workTimeInfo = null;//班次信息
+    MaterialStock materialStock = null;//单个产品库存信息
+    BigDecimal minChildMaterial = null;//记录产品组成的最小量
+    BigDecimal childMaterialCapacity = null;//组成产品的实际产能
+    List<String[]> childMaterials = null;//记录产品的下级产品信息
+    Long fMaterialId = null;
+    //客户id
+    long customerId = 0;
+    //记录生产计划日期 生产线 工作中心  班组使用情况
+    Map<String,ProduceLineUseBean> produceLineUseMap = null;
+    ProduceLineUseBean produceLineUseBean = null;
     @Override
     @Transactional
     public boolean calculation() throws Exception {
-        //清空临时表信息
-
-        String start = "2017-03-01";//计划开始时间
-        String end = "2017-03-07";//计划结束时间
-        BigDecimal minAddTime = new BigDecimal(4);//最低加班时间
-        BigDecimal maxWorkTotalTime = new BigDecimal(16);//最高连续工作时间
-        //获取生产计划的产品信息
-        List<PlanOrder> planOrders = findProductByPlanService.findProductByPlan();
-        //功能根据生产计划产品  获取库存信息 格式为Map<String,ProductInventory> 产品id 库存信息
-        Map<String,ProductInventory> pInvMaps = getProductInv();
-        //格式为{客户ID，产品：[{生产日期:PlanDayMaterial},{生产日期:PlanDayMaterial｝]}
-        Map<String,LinkedHashMap<String,PlanDayMaterial>> produce = new LinkedHashMap<String, LinkedHashMap<String,PlanDayMaterial>>();
-        String lastProductId = "-1";
-        LinkedHashMap<String,PlanDayMaterial> demandDatePlanQty = null;//每日计划产量
-        String produceDate = null;
-        PlanDayMaterial planDayMaterial = null;
-        for(PlanOrder planOrder:planOrders){
-            //获取每个订单的产品信息
-            List<Map> products = planOrder.getSortProducts();
-            //生产日期
-            produceDate  = DateUtil.getFormattedString(planOrder.getFDEMANDDATE(),DateUtil.shortDatePattern);
-            for(Map product:products){
-                if(product.get("FCATEGORYID")!=null&&!"239".equals(product.get("FCATEGORYID").toString())&&
-                        !"241".equals(product.get("FCATEGORYID").toString())){//产品不是自制半成品 产成品的不计算
-                    continue;
-                }
-                if("-1".equals(lastProductId)||produce.get(planOrder.getFCUSTID()+","+product.get("FMATERIALID").toString())==null){
-                    demandDatePlanQty = new LinkedHashMap<String, PlanDayMaterial>();
-                    produce.put(planOrder.getFCUSTID()+","+product.get("FMATERIALID").toString(),demandDatePlanQty);
-                }else{
-                    demandDatePlanQty = produce.get(planOrder.getFCUSTID()+","+product.get("FMATERIALID").toString());
-                }
-                if(demandDatePlanQty.get(produceDate)==null){
-                    planDayMaterial = new PlanDayMaterial();
-                    //计划产能
-                    planDayMaterial.setUseQty(planOrder.getFFIRMQTY().multiply(new BigDecimal(product.get("useQty").toString())));
-                    planDayMaterial.setCustomerId(Long.valueOf(planOrder.getFCUSTID()));
-                    planDayMaterial.setDemandDate(produceDate);
-                    if(product.get("childs")!=null){
-                        planDayMaterial.setChilds((ArrayList)product.get("childs"));
-                    }
-                    demandDatePlanQty.put(produceDate,planDayMaterial);
-                }else{
-                    //同一产品 同一计划生产日期累加
-                    planDayMaterial = demandDatePlanQty.get(produceDate);
-                    planDayMaterial.setUseQty(planOrder.getFFIRMQTY().multiply(new BigDecimal(product.get("useQty").toString())
-                            .add(planDayMaterial.getUseQty())));
-                }
-                lastProductId = planOrder.getFCUSTID()+","+product.get("FMATERIALID").toString();
+        Set<String> planCycle = new LinkedHashSet<String>();
+        String endNow = start;
+        while (true){
+            planCycle.add(endNow);
+            endNow = DateUtil.afterDay(endNow);
+            if(DateUtil.compareDate(end,endNow)<0){
+                break;
             }
         }
-        //计算产品的产能信息
+        //清空临时表信息
+        produceLineUseMap = new HashMap<String, ProduceLineUseBean>();
+        //获取生产计划的产品信息
+        List<PlanOrder> planOrders = findProductByPlanService.findProductByPlan();
+        //格式为{客户ID，产品：[{生产日期:PlanDayMaterial},{生产日期:PlanDayMaterial｝]},返回产品id集合
+        Set<Long> productIds = formatPlan(planOrders);
+        //功能根据生产计划产品  获取库存信息 格式为Map<String,ProductInventory> 产品id 库存信息
+        pInvMaps = findStockByFmaterialIdsService.find(productIds.toArray(new Long[productIds.size()]));
+        //获取生产计划的keys
         Set<String> keys = produce.keySet();
-        Set<String> materialDemandDate = null;
-        BigDecimal useQty = null;//生产计划量
-        Date productionDate = null;//生产日期
-        BigDecimal unitWorkProduct = new BigDecimal(0);//单位时间产能
-        BigDecimal actualQty = new BigDecimal(0);//实际产量
-        BigDecimal workTime = new BigDecimal(0);//工作时间
-        BigDecimal minBatch = new BigDecimal(0);//最小批量
-        String lastPLine = null;//生产线
-        String lastWorkCore = null;//工作中心
-        String lastClassGroup = null;//工作组
-        BigDecimal pRate = new BigDecimal(0);//产品合格率
-        BigDecimal minCapacity = new BigDecimal(0);//生产线中最小产能
-        BigDecimal workTimeCapacity = new BigDecimal(0);//工作组班次产量
-        BigDecimal workGroupQty = new BigDecimal(0);//班组生产计划产能
-        BigDecimal workCoreTotalCapacity = new BigDecimal(0);//工作中心总产能
-        Map<String,LinkedHashMap<String,Map>> workCores = null;//生产线工作中心
-        LinkedHashMap<String,Map> classGroups = null;//工作组
-        Map workTimes = null;//班次信息
-        ProductInventory productInventory = null;//单个产品库存信息
-        for(String key:keys){
+        //生产计划的keys循环产品信息  key有客户id，产品id组成
+        for (String key : keys) {
             //获取产品id
             String[] ids = key.split(",");
             //产品id
-            String fMaterialId = ids[1];
+            fMaterialId = Long.valueOf(ids[1]);
             //客户id
-            long customerId = Long.valueOf(ids[0]);
+            customerId = Long.valueOf(ids[0]);
+            //产品的每天生产计划信息
             materialDemandDate = produce.get(key).keySet();
-            //计算每个生产计划生产日的各个工作中心的产量
-            for(String demandDate:materialDemandDate){
-                productionDate = DateUtil.getFormatDate(demandDate,DateUtil.shortDatePattern);
-                //产品计划产
-                planDayMaterial = produce.get(key).get(demandDate);
-                useQty = planDayMaterial.getUseQty();
-                //获取库存信息
-                productInventory = pInvMaps.get(fMaterialId);
-                //判断计划成产时间是否正常上班
-                if(!findIsWorkByDateService.isWork(demandDate,start,end)){//不上班时产能为0
-                     if(DateUtil.compareDate(demandDate,start)==0){//计划第一天 直接入临时库存
-                         productInventory.setProductNum(productInventory.getProductNum().multiply(useQty));
-                         pInvMaps.put(fMaterialId,productInventory);
-                     }else{//倒推生产计划 例如：1 2 3 4，3不上班  倒推 1 2 产能都不够用的时候，3是否直接加班？还是让计划日期跑完了来在算不上班的加班
-
-                     }
-                    continue;
-                }
-                //库存够用
-                if(productInventory.getProductNum().subtract(productInventory.getSafe()).compareTo(useQty)>0){
-                    //临时库存这个不需要表存 直接数据结构存
-                    productInventory.setProductNum(productInventory.getProductNum().subtract(productInventory.getSafe()).subtract(useQty));
-                    pInvMaps.put(fMaterialId,productInventory);
-                    continue;
-                }else{
-                    useQty = useQty.subtract(productInventory.getProductNum()).add(productInventory.getSafe());
-                    //判断产品是否有下级产品
-                    if(planDayMaterial.getChilds()!=null&&planDayMaterial.getChilds().size()>0){
-
+            calMaterialDate(key,null);
+            //如果产品实际生产还不够  根据产品库存判断
+            if(materialStock.getFSORENUM().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))<0){
+                Set<String> unPlanDate = planCycle;
+                //查找是否有未安排生产计划的时间的
+                for(String demandDate:materialDemandDate){
+                    if(!planCycle.add(demandDate)){
+                        unPlanDate.remove(demandDate);
                     }
-                }
-                //获取产品的生产线 生产中心 工作租 班次信息
-                List<Map> produceLines = findProduceLineUseDao.findUnUserProduceLine(Long.valueOf(fMaterialId),productionDate,0);
-                //格式化分组生产线  工作中心  工作组 班次信息
-                Map<String,Map<String,LinkedHashMap<String,Map>>> pLines =
-                        new LinkedHashMap<String, Map<String, LinkedHashMap<String,Map>>>();
-                lastPLine = null;
-                workCores = null;
-                classGroups = null;
-                workTimes = null;
-                lastWorkCore = null;
-                lastClassGroup = null;
-                for (Map pLine:produceLines){
-                    //生产线不同时候
-                    if(lastPLine==null||!pLine.get("produce_line_id").toString().equals(lastPLine)){
-                        workCores = new HashMap<String, LinkedHashMap<String, Map>>();
-                        pLines.put(pLine.get("produce_line_id").toString(),workCores);
-                    }
-                    //工作中心不同
-                    if(lastPLine==null||!pLine.get("produce_line_id").toString().equals(lastPLine)||
-                            !pLine.get("work_core_id").toString().equals(lastWorkCore) ){
-                        classGroups = new LinkedHashMap<String, Map>();
-                        workCores.put(pLine.get("work_core_id").toString(),classGroups);
-                    }
-                    //工作组不同
-                    if(lastPLine==null||!pLine.get("produce_line_id").toString().equals(lastPLine)||
-                            !pLine.get("work_core_id").toString().equals(lastWorkCore)||
-                            !pLine.get("class_group_id").toString().equals(lastClassGroup)){
-                        workTimes =  new LinkedHashMap<String, Map>();
-                        classGroups.put(pLine.get("class_group_id").toString(),workTimes);
-                    }
-                    classGroups.put(pLine.get("class_group_id").toString(),pLine);
-                    lastPLine = pLine.get("produce_line_id").toString();
-                    lastWorkCore = pLine.get("work_core_id").toString();
-                    lastClassGroup = pLine.get("class_group_id").toString();
-                }
-                Set<String> pLineIds = pLines.keySet();//生产线id
-                Set<String> workCoreIds = null;//生产中心id
-                Set<String> classGroupIds = null;//班组信息
-                Set<String> workTimeIds = null;//班次信息
-                workCores = null;//生产线工作中心
-                classGroups = null;//工作组
-                workTimes = null;//班次信息
-                boolean lineFlag = true;
-                boolean coreFlag = true;
-                BigDecimal lineTotalCapacity = new BigDecimal(0);//产品当天产能
-                //循环生产线信息
-                for(String pLineId:pLineIds){
-                    workCores = pLines.get(pLineId);//生产中心
-                    workCoreIds = workCores.keySet();
-                    minCapacity = new BigDecimal(0);//生产线最小产能
-                    //循环生产中心
-                    for(String workCoreId:workCoreIds) {
-                        classGroups = workCores.get(workCoreId);//班组信息
-                        classGroupIds = classGroups.keySet();
-                        //实际产量
-                        actualQty = new BigDecimal(0);
-                        workCoreTotalCapacity = new BigDecimal(0);
-                        coreFlag = true;
-                        //此循环是为了应对正常工作模式 时间无法满足产能的情况 需要加班
-                        //跳出循环有两种情况 1是产能够用  2是所有班组都已经满负荷上班（班组超过工作时间超过16小时）
-                        //加班是4个小时为一个单位计算
-                        boolean isAddWorkTime = false;//是否加班
-                        //记录当前班组的工作时间
-                        Map<String,BigDecimal> workTotalTime = new HashMap<String, BigDecimal>();
-                        int index = 0;
-                        while (true){
-                            index = 0;
-                            //循环班组
-                            for(String classGroupId:classGroupIds) {
-                                index++;
-                                workTimes = classGroups.get(classGroupId);//班组对应班次信息
-                                //班组已经是使用  但是不是加班情况  找下一个班组
-                                if(workTimes.get("capacity")!=null&&!isAddWorkTime){
-                                    continue;
-                                }
-                                //计算班次工作时间
-                                workTime = getWorkTime(workTimes.get("begin_time").toString(),
-                                        workTimes.get("end_time").toString());
-                                if(!isAddWorkTime){//不是加班
-                                    //获取是否存在已经上班的情况
-                                    BigDecimal hasWorkTime = workTimes.get("add_time")==null?new BigDecimal(0):
-                                            new BigDecimal(workTimes.get("add_time").toString());
-                                    workTotalTime.put(classGroupId,hasWorkTime.add(workTime));
-                                }else{
-                                    //总工作时间超过16小时
-                                   if(workTotalTime.get(classGroupId).compareTo(maxWorkTotalTime)==0){
-                                       if(classGroupIds.size()==index){//最后 一个班组都满16小时表示工作中心满负荷生产
-                                           coreFlag = false;
-                                       }
-                                       continue;
-                                   }
-                                    //如果加班时超过了总时间16小时 取相差时间为工作时间   如果小于16小时取最小工作时间为准
-                                    workTime = maxWorkTotalTime.subtract(workTotalTime.get(classGroupId)).compareTo(minAddTime)>0?
-                                           minAddTime:maxWorkTotalTime.subtract(workTotalTime.get(classGroupId));
-                                    workTotalTime.put(classGroupId,workTotalTime.get(classGroupId).add(workTime));
-                                }
-
-                                //记录生产线使用情况
-                                ProduceLineUse produceLineUse = new ProduceLineUse();
-                                produceLineUse.setIsFull(0);
-                                produceLineUse.setFlag(1);
-                                produceLineUse.setWorkCoreId(Long.valueOf(workCoreId));
-                                //产品id
-                                produceLineUse.setProductId(Long.valueOf(fMaterialId));
-                                //生产线id
-                                produceLineUse.setProduceLineId(Long.valueOf(pLineId));
-                                //生产日期
-                                produceLineUse.setProductionDate(productionDate);
-                                //班次id
-                                produceLineUse.setWorkTimeId(Long.valueOf(workTimes.get("work_time_id").toString()));
-                                //班组id
-                                produceLineUse.setWorkTeamId(Long.valueOf(classGroupId));
-                                //班次序号
-                                produceLineUse.setWorkTimeSno(Long.valueOf(workTimes.get("workTimeSno").toString()));
-                                //班组序号
-                                produceLineUse.setWorkTeamSno(Long.valueOf(workTimes.get("sno").toString()));
-                                //客户id
-                                produceLineUse.setCustomerId(customerId);
-                                //加班时间
-                                produceLineUse.setAddTime(isAddWorkTime?workTime.longValue():0);
-
-                                //生产中心产品合格率
-                                pRate = new BigDecimal(workTimes.get("qualified_rate").toString());
-
-                                //单位时间产能，数据库存的是秒的产能
-                                unitWorkProduct = new BigDecimal(workTimes.get("unit_time_capacity").toString()).divide(new BigDecimal(3600));
-                                minBatch = new BigDecimal(workTimes.get("min_batch").toString());//最小批量
-                                //计算方法 生产中心合格率*班组单位时间产能*班次工作时间 全班次产量
-                                workTimeCapacity = unitWorkProduct.multiply(workTime).multiply(pRate).divide(new BigDecimal(100));
-                                //当前班组计划产能  总计划产能减去 工作中心已经生产的产能
-                                workGroupQty = useQty.subtract(workCoreTotalCapacity);
-                                if(workTimeCapacity.compareTo(workGroupQty)>0){//产能够用的情况
-                                    //计划产能除以最小批量  整除时候
-                                    if(workGroupQty.divideAndRemainder(minBatch)[1].compareTo(new BigDecimal(0))==0){
-                                        actualQty = workGroupQty;
-                                    }else{
-                                        //不整除 加1 乘以最小批量
-                                        actualQty = workGroupQty.divideAndRemainder(minBatch)[0].add(new BigDecimal(1)).multiply(minBatch);
-                                        //如果超过班次生产量 以班次生产量为准
-                                        if(actualQty.compareTo(workTimeCapacity)>0){
-                                            actualQty = workTimeCapacity;
-                                        }
-                                        //如果超过最大库存量 需要计算？
-                                    }
-                                    produceLineUse.setCapacity(actualQty);
-                                    produceLineUse.setPlanQuantity(workGroupQty);
-                                    workCoreTotalCapacity = workCoreTotalCapacity.add(actualQty);
-                                    coreFlag = false;
-                                }else{
-                                    produceLineUse.setCapacity(workTimeCapacity);
-                                    produceLineUse.setPlanQuantity(workGroupQty);
-                                    workCoreTotalCapacity = workCoreTotalCapacity.add(workTimeCapacity);
-                                }
-                                addProduceLineUseService.addProduceLineUse(produceLineUse);
-                                if(!coreFlag){
-                                    break;
-                                }
-                            }
-                            //表示产量已够或者满负荷生产了
-                            if(!coreFlag){
-                                break;
-                            }else{//如果共生产中心所有班组正常情况不能满足产能  需要加班
-                                isAddWorkTime = true;
-                            }
-                        }
-                        //计算生产线中工作中心最小产能
-                        if(minCapacity.compareTo(new BigDecimal(0))==0){
-                            minCapacity = workCoreTotalCapacity;
-                        }else {
-                            minCapacity = minCapacity.compareTo(workCoreTotalCapacity)>0?workCoreTotalCapacity:minCapacity;
-                        }
-                    }
-                    //生产线总产能
-                    lineTotalCapacity = lineTotalCapacity.add(minCapacity);
-                    //生产线满足 跳出产能计算
-                    if(lineTotalCapacity.compareTo(useQty)>0){
-                        lineFlag = false;
-                        break;
-                    }
-                }
-                //所有生产线满负荷生产  不能满足生产计划
-                if(lineTotalCapacity.compareTo(useQty)<0){
-                    //倒推生产日期，加班 满负荷生产，如果不够用就将差的数量入库，后面多生产
-                    //如果是最后一天  去找前面是否有未上班如果没有就向后延续加班知道生产计划结束日期，产能不够 也入库负数
-                    productInventory.setProductNum(lineTotalCapacity.subtract(useQty));
-                    pInvMaps.put(fMaterialId,productInventory);
-                }else{//满足入库
-                    //存放库存量
-                    productInventory.setProductNum(lineTotalCapacity.subtract(useQty));
-                    pInvMaps.put(fMaterialId,productInventory);
                 }
             }
+
         }
         return false;
     }
 
     /**
+     * 功能：计算产品每天的产能
+     * @param key
+     * @param lessDemanDate 产能不足够那天
+     * @return
+     * @throws Exception
+     */
+    private void calMaterialDate(String key,String lessDemanDate) throws Exception {
+        //循环生产计划时间
+        for (String demandDate : materialDemandDate) {
+            //产品某天产能不够 重新循环的时候超过不够那天退出循环，返回还差的产能值
+            if(!StringUtil.isEmpty(lessDemanDate)&&DateUtil.compareDate(demandDate,lessDemanDate)>=0){
+                return ;
+            }
+            productionDate = DateUtil.getFormatDate(demandDate, DateUtil.shortDatePattern);
+            //产品计划产
+            planDayMaterial = produce.get(key).get(demandDate);
+            if(!StringUtil.isEmpty(lessDemanDate)){
+                useQty = new BigDecimal(0);
+            }else{
+                //产品计划产量
+                useQty = planDayMaterial.getUseQty();
+            }
+            //获取库存信息
+            materialStock = pInvMaps.get(fMaterialId);
+            //判断计划生产时间是否正常上班
+            if (!findIsWorkByDateService.isWork(demandDate, start, end)) {//不上班时产能为0
+                if (DateUtil.compareDate(demandDate, start) == 0) {//计划第一天 直接入临时库存
+                    materialStock.setFSORENUM(materialStock.getFSORENUM().multiply(useQty));
+                    pInvMaps.put(fMaterialId, materialStock);
+                } else {
+                   calMaterialDate(key,demandDate);
+                }
+                continue;
+            }
+            //库存够用
+            if (materialStock.getFSORENUM().subtract(materialStock.getFSAFESTOCK()).compareTo(useQty) > 0) {
+                //临时库存这个不需要表存 直接数据结构存
+                materialStock.setFSORENUM(materialStock.getFSORENUM().subtract(materialStock.getFSAFESTOCK()).subtract(useQty));
+                pInvMaps.put(fMaterialId, materialStock);
+                //记录当天产品的实际产能
+                produce.get(key).get(demandDate).setCapacity(useQty);
+                produce.get(key).get(demandDate).setBalanceCapacity(new BigDecimal(0));
+                produce.get(key).get(demandDate).setUseQtyStock(materialStock.getFSORENUM().subtract(materialStock.getFSAFESTOCK()));
+                continue;
+            } else {
+                //
+                useQty = useQty.subtract(materialStock.getFSORENUM()).add(materialStock.getFSAFESTOCK());
+                //判断产品是否有下级产品
+                childMaterials = planDayMaterial.getSelfChilds();
+                if (childMaterials != null && childMaterials.size() > 0) {
+                    minChildMaterial = new BigDecimal(0);
+                    //根据下级产品的产能，计算当前产品实际的产能数量
+                    for (String[] childMaterial : childMaterials) {
+                        //根据下级产能计算出当前级别的产品最多能生产好多个
+                        childMaterialCapacity = produce.get(customerId + "," + childMaterial[0]).get(demandDate)
+                                .getUseQtyStock().divide(new BigDecimal(childMaterial[1]));
+                        if (minChildMaterial.intValue() == 0) {
+                            minChildMaterial = childMaterialCapacity;
+                        } else {
+                            minChildMaterial = minChildMaterial.compareTo(childMaterialCapacity) > 0 ? childMaterialCapacity : minChildMaterial;
+                        }
+                    }
+                    //生产产品计划量 与下级产品的最小数量对比
+                    useQty = useQty.compareTo(minChildMaterial) > 0 ? useQty : minChildMaterial;
+                }
+            }
+            //获取产品的生产线 生产中心 工作租 班次信息
+            List<Map> produceLines = findProduceLineUseDao.findUnUserProduceLine(fMaterialId);
+            //格式化分组生产线  工作中心  工作组 班次信息
+            Map<String, Map<String, LinkedHashMap<String, Map>>> pLines = formatProductLine(produceLines);
+            Set<String> pLineIds = pLines.keySet();//生产线id
+            Set<String> workCoreIds = null;//生产中心id
+            Set<String> classGroupIds = null;//班组信息
+            workCores = null;//生产线工作中心
+            classGroups = null;//工作组
+            workTimeInfo = null;//班次信息
+            boolean lineFlag = true;
+            boolean coreFlag = true;
+            BigDecimal lineTotalCapacity = new BigDecimal(0);//产品当天产能
+            //循环生产线信息
+            for (String pLineId : pLineIds) {
+                workCores = pLines.get(pLineId);//生产中心
+                workCoreIds = workCores.keySet();
+                minCapacity = new BigDecimal(0);//生产线最小产能
+                minBalanceCapacity = new BigDecimal(Integer.MAX_VALUE);//生产线最小剩余产能
+                //循环生产中心
+                for (String workCoreId : workCoreIds) {
+                    classGroups = workCores.get(workCoreId);//班组信息
+                    classGroupIds = classGroups.keySet();
+                    //实际产量
+                    actualQty = new BigDecimal(0);
+                    workCoreTotalCapacity = new BigDecimal(0);
+                    coreFlag = true;
+                    //此循环是为了应对正常工作模式 时间无法满足产能的情况 需要加班
+                    //跳出循环有两种情况 1是产能够用  2是所有班组都已经满负荷上班（班组超过工作时间超过16小时）
+                    //加班是4个小时为一个单位计算
+                    boolean isAddWorkTime = false;//是否加班
+                    int index = 0;
+                    while (true) {
+                        index = 0;
+                        //循环班组
+                        for (String classGroupId : classGroupIds) {
+                            index++;
+                            workTimeInfo = classGroups.get(classGroupId);//班组对应班次信息
+                            //生产线工作中心班组使用情况
+                            String produceeLineUseKey = demandDate+","+pLineId+","+workCoreId+","+classGroupId;
+                            if(produceLineUseMap.get(produceeLineUseKey)==null){
+                                produceLineUseBean = new ProduceLineUseBean();
+                            }else{
+                                produceLineUseBean = produceLineUseMap.get(produceeLineUseKey);
+                            }
+                            //生产线 工作中心 班组 已经满负荷生产 同时没有剩余产能
+                            if(produceLineUseBean.isFullWork()
+                                    &&produceLineUseBean.getBalanceCapacity().compareTo(new BigDecimal(0))<=0){
+                                if(index == classGroupIds.size()){
+                                    coreFlag = false;
+                                }
+                                continue;
+                            }
+                            String workTimeId = workTimeInfo.get("work_time_id").toString();
+                            //当前班组计划产能  工作中心总计划产能减去 其他班组已经生产的产能
+                            workGroupQty = useQty.subtract(workCoreTotalCapacity);
+                            //最小批量
+                            minBatch = new BigDecimal(workTimeInfo.get("min_batch").toString());
+                            //计划产能除以最小批量  不整除时候
+                            if (workGroupQty.divideAndRemainder(minBatch)[1].compareTo(new BigDecimal(0)) != 0) {
+                                //不整除 加1 乘以最小批量
+                                workGroupQty = workGroupQty.divideAndRemainder(minBatch)[0].add(new BigDecimal(1)).multiply(minBatch);
+                            }
+                            //单位时间产能，数据库存的是秒的产能
+                            unitWorkProduct = new BigDecimal(workTimeInfo.get("unit_time_capacity").toString()).divide(new BigDecimal(3600));
+                            //判断上次生产产品与这次生产产品是否一致
+                            if(produceLineUseBean.getLastFMaterialId()==fMaterialId){
+                                //表示工作中心生产剩余产能够用
+                                if(produceLineUseBean.getBalanceCapacity().compareTo(workGroupQty)>=0){
+                                    //重新计算剩余产能
+                                    produceLineUseBean.setBalanceCapacity(
+                                            produceLineUseBean.getBalanceCapacity().subtract(workGroupQty));
+                                    //重新计算剩余时间
+                                    produceLineUseBean.setBalanceWorkTime(produceLineUseBean.getBalanceWorkTime()
+                                            .subtract(workGroupQty.divide(unitWorkProduct) ));
+                                    produceLineUseMap.put(produceeLineUseKey,produceLineUseBean);
+                                    saveProduceLineUse(fMaterialId,workCoreId,pLineId,0,productionDate,workTimeId,
+                                            classGroupId,customerId,produceLineUseBean.getAddWorkTime(),
+                                            produceLineUseBean.getBalanceWorkTime(),produceLineUseBean.getBalanceCapacity(),
+                                            workGroupQty,workGroupQty);
+                                    continue;
+                                }else {
+                                    workGroupQty = workGroupQty.subtract(produceLineUseBean.getBalanceCapacity());
+                                    //重新计算剩余产能
+                                    produceLineUseBean.setBalanceCapacity(new BigDecimal(0));
+                                    //重新计算剩余时间
+                                    produceLineUseBean.setBalanceWorkTime(new BigDecimal(0));
+                                }
+                            }else{//不是同一个产品 不能使用剩余产能，需要重新计算
+                                //重新计算剩余产能
+                                produceLineUseBean.setBalanceCapacity(new BigDecimal(0));
+                            }
+                            //第一次使用工作中心  班组
+                            if(produceLineUseMap.get(produceeLineUseKey)==null){
+                                //计算班次工作时间
+                                workTime = getWorkTime(workTimeInfo.get("begin_time").toString(),
+                                        workTimeInfo.get("end_time").toString());
+                                produceLineUseBean.setWorkTotalTime(workTime);
+                            }else{
+                                //正常上班
+                                if(!isAddWorkTime){
+                                    workTime = produceLineUseBean.getBalanceWorkTime();
+                                    if(workTime.compareTo(new BigDecimal(0))==0){
+                                        continue;
+                                    }
+                                }else{
+                                    //加班
+                                    produceLineUseBean.setFullWork(produceLineUseBean.getWorkTotalTime()
+                                            .add(minAddTime).compareTo(maxWorkTotalTime)>=0);
+                                    //如果加班时超过了总时间12小时 取相差时间为工作时间   如果小于12小时取最小工作时间为准
+                                    workTime = produceLineUseBean.isFullWork()? maxWorkTotalTime
+                                            .subtract(produceLineUseBean.getWorkTotalTime()):minAddTime;
+                                    produceLineUseBean.setAddWorkTime(produceLineUseBean.getAddWorkTime().add(workTime));
+                                    produceLineUseBean.setWorkTotalTime(produceLineUseBean.getWorkTotalTime().add(workTime));
+                                }
+                            }
+                            //当前生产的产品id
+                            produceLineUseBean.setLastFMaterialId(fMaterialId);
+                            //生产中心产品合格率
+                            pRate = new BigDecimal(workTimeInfo.get("qualified_rate").toString());
+                            //计算方法 生产中心合格率*班组单位时间产能*班次工作时间
+                            workTimeCapacity = unitWorkProduct.multiply(workTime).multiply(pRate).divide(new BigDecimal(100));
+                            //班组产能  大于班组计划产能
+                            if(workTimeCapacity.compareTo(workGroupQty)>=0){
+                                //剩余产能
+                                produceLineUseBean.setBalanceCapacity(workTimeCapacity.subtract(workGroupQty));
+                                //剩余时间  剩余产能除合格率除单位时间产能
+                                produceLineUseBean.setBalanceWorkTime(produceLineUseBean.getBalanceCapacity()
+                                        .divide(pRate,SMALL_NUMBER,BigDecimal.ROUND_HALF_EVEN)
+                                        .divide(unitWorkProduct,SMALL_NUMBER,BigDecimal.ROUND_HALF_EVEN)
+                                        .multiply(new BigDecimal(100)));
+                                actualQty = workGroupQty;
+                                workCoreTotalCapacity = workCoreTotalCapacity.add(workGroupQty);
+                                coreFlag = false;
+                            }else{
+                                produceLineUseBean.setBalanceCapacity(new BigDecimal(0));
+                                produceLineUseBean.setBalanceWorkTime(new BigDecimal(0));
+                                actualQty = workTimeCapacity;
+                                workGroupQty = workTimeCapacity;
+                                workCoreTotalCapacity = workCoreTotalCapacity.add(workTimeCapacity);
+                            }
+                            produceLineUseMap.put(produceeLineUseKey,produceLineUseBean);
+                            saveProduceLineUse(fMaterialId,workCoreId,pLineId,produceLineUseBean.isFullWork()?1:0,productionDate,workTimeId,
+                                    classGroupId,customerId,produceLineUseBean.getAddWorkTime(),
+                                    produceLineUseBean.getBalanceWorkTime(),produceLineUseBean.getBalanceCapacity(),
+                                    workGroupQty,actualQty);
+                            if (!coreFlag) {
+                                break;
+                            }
+                        }
+                        //表示产量已够或者满负荷生产了
+                        if (!coreFlag) {
+                            break;
+                        } else {//如果共生产中心所有班组正常情况不能满足产能  需要加班
+                            isAddWorkTime = true;
+                        }
+                    }
+                    //计算生产线中工作中心最小产能
+                    if (minCapacity.compareTo(new BigDecimal(0)) == 0) {
+                        minCapacity = workCoreTotalCapacity;
+                    } else {
+                        minCapacity = minCapacity.compareTo(workCoreTotalCapacity) > 0 ? workCoreTotalCapacity : minCapacity;
+                    }
+                }
+                //生产线总产能
+                lineTotalCapacity = lineTotalCapacity.add(minCapacity);
+                //生产线满足 跳出产能计算
+                if (lineTotalCapacity.compareTo(useQty) > 0) {
+                    lineFlag = false;
+                    break;
+                }
+            }
+            //记录当天产品的实际产能
+            produce.get(key).get(demandDate).setCapacity(lineTotalCapacity);
+            //如果库存有多余的 当天实际有的产品数量要加上库存
+            if(materialStock.getFSORENUM().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))>=0){
+                produce.get(key).get(demandDate).setUseQtyStock(lineTotalCapacity.add(
+                        materialStock.getFSORENUM().subtract(materialStock.getFSAFESTOCK())));
+            }else{
+                //库存没有多余的  当天实际产品数量以生产量为准
+                produce.get(key).get(demandDate).setUseQtyStock(lineTotalCapacity);
+            }
+            materialStock.setFSORENUM(lineTotalCapacity.subtract(useQty));
+            pInvMaps.put(fMaterialId, materialStock);
+            //所有生产线满负荷生产  不能满足生产计划
+            if (lineTotalCapacity.compareTo(useQty) < 0) {
+                calMaterialDate(key,demandDate);
+            }
+        }
+    }
+
+    /**
      * 功能:获取最小工作时间
+     *
      * @param startTime
      * @param endTime
      * @return
      */
-    private BigDecimal getWorkTime(String startTime,String endTime){
-        Date start = DateUtil.getFormatDate(startTime,DateUtil.longDatePattern);
-        Date end = DateUtil.getFormatDate(endTime,DateUtil.longDatePattern);
-        return new BigDecimal((float)(end.getTime() - start.getTime())/3600/1000).setScale(2, BigDecimal.ROUND_HALF_UP);
+    private BigDecimal getWorkTime(String startTime, String endTime) {
+        Date start = DateUtil.getFormatDate(startTime, DateUtil.longDatePattern);
+        Date end = DateUtil.getFormatDate(endTime, DateUtil.longDatePattern);
+        return new BigDecimal((float) (end.getTime() - start.getTime()) / 3600 / 1000).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     /**
      * 功能：当天产能不够时，查找该产品的前一天的生产计划日期
+     *
      * @param demandDate 不够产能的当天时间
-     * @param start 计划安排的开始时间
-     * @param end 计划安排结束时间
-     * @param plans 产品的生产安排计划
+     * @param start      计划安排的开始时间
+     * @param end        计划安排结束时间
+     * @param plans      产品的生产安排计划
      * @return
      */
-    private String getBeforePlanDate(String demandDate,String start,String end,
-                                     LinkedHashMap<String,PlanDayMaterial> plans) throws Exception {
+    private String getBeforePlanDate(String demandDate, String start, String end,
+                                     LinkedHashMap<String, PlanDayMaterial> plans) throws Exception {
         String beforeDate = DateUtil.beforeDay(demandDate);
-        if(DateUtil.compareDate(beforeDate,start)<=0){//代表前一天已经是最开始时间不能再找
-           return start;
+        if (DateUtil.compareDate(beforeDate, start) <= 0) {//代表前一天已经是最开始时间不能再找
+            return start;
         }
-        if(plans.get(beforeDate)==null){//前一天没有安排工作计划
-           return getBeforePlanDate(beforeDate,start,end,plans);
+        if (plans.get(beforeDate) == null) {//前一天没有安排工作计划
+            return getBeforePlanDate(beforeDate, start, end, plans);
         }
         return beforeDate;
     }
 
     /**
      * 功能：获取产品库存信息
+     *
      * @return
      */
-    private Map<String,ProductInventory> getProductInv(){
-        Map<String,ProductInventory> pInvMaps = new HashMap<String, ProductInventory>();
+    private Map<String, ProductInventory> getProductInv() {
+        Map<String, ProductInventory> pInvMaps = new HashMap<String, ProductInventory>();
         ProductInventory pInvObj = new ProductInventory();
         pInvObj.setProductNum(new BigDecimal(200));//产品库存
         pInvObj.setSafe(new BigDecimal(200));//安全库存
         pInvObj.setMax(new BigDecimal(400));//最大库存
         pInvObj.setMin(new BigDecimal(100));//最小库存
-        pInvMaps.put("114937",pInvObj);
+        pInvMaps.put("114937", pInvObj);
         return pInvMaps;
     }
+    //格式化生产计划
+    private  Set<Long> formatPlan(List<PlanOrder> planOrders){
+        String lastProductId = "-1";
+        LinkedHashMap<String, PlanDayMaterial> demandDatePlanQty = null;//每日计划产量
+        String produceDate = null;
+        Set<Long> productIds = new HashSet<Long>();
+        for (PlanOrder planOrder : planOrders) {
+            //获取每个订单的产品信息
+            List<Map> products = planOrder.getSortProducts();
+            //生产日期
+            produceDate = DateUtil.getFormattedString(planOrder.getFDEMANDDATE(), DateUtil.shortDatePattern);
+            for (Map product : products) {
+                if (product.get("FCATEGORYID") != null && !"239".equals(product.get("FCATEGORYID").toString()) &&
+                        !"241".equals(product.get("FCATEGORYID").toString())) {//产品不是自制半成品 产成品的不计算
+                    continue;
+                }
+                productIds.add(Long.valueOf(product.get("FMATERIALID").toString()));
+                if ("-1".equals(lastProductId) || produce.get(planOrder.getFCUSTID() + "," + product.get("FMATERIALID").toString()) == null) {
+                    demandDatePlanQty = new LinkedHashMap<String, PlanDayMaterial>();
+                    produce.put(planOrder.getFCUSTID() + "," + product.get("FMATERIALID").toString(), demandDatePlanQty);
+                } else {
+                    demandDatePlanQty = produce.get(planOrder.getFCUSTID() + "," + product.get("FMATERIALID").toString());
+                }
+                if (demandDatePlanQty.get(produceDate) == null) {
+                    planDayMaterial = new PlanDayMaterial();
+                    //计划产能
+                    planDayMaterial.setUseQty(planOrder.getFFIRMQTY().multiply(new BigDecimal(product.get("useQty").toString())));
+                    planDayMaterial.setCustomerId(Long.valueOf(planOrder.getFCUSTID()));
+                    planDayMaterial.setDemandDate(produceDate);
+                    if (product.get("childs") != null) {
+                        planDayMaterial.setChilds((ArrayList) product.get("childs"));
+                    }
+                    demandDatePlanQty.put(produceDate, planDayMaterial);
+                } else {
+                    //同一产品 同一计划生产日期累加
+                    planDayMaterial = demandDatePlanQty.get(produceDate);
+                    planDayMaterial.setUseQty(planOrder.getFFIRMQTY().multiply(new BigDecimal(product.get("useQty").toString())
+                            .add(planDayMaterial.getUseQty())));
+                }
+                lastProductId = planOrder.getFCUSTID() + "," + product.get("FMATERIALID").toString();
+            }
+        }
+        return  productIds;
+    }
+    //格式化生产线信息
+    private Map<String, Map<String, LinkedHashMap<String, Map>>> formatProductLine(List<Map> produceLines){
+        String lastPLine = null;//生产线
+        String lastWorkCore = null;//工作中心
+        String lastClassGroup = null;//工作组
+        Map<String, Map<String, LinkedHashMap<String, Map>>> pLines =
+                new LinkedHashMap<String, Map<String, LinkedHashMap<String, Map>>>();
+        for (Map pLine : produceLines) {
+            //生产线不同时候
+            if (lastPLine == null || !pLine.get("produce_line_id").toString().equals(lastPLine)) {
+                workCores = new HashMap<String, LinkedHashMap<String, Map>>();
+                pLines.put(pLine.get("produce_line_id").toString(), workCores);
+            }
+            //工作中心不同
+            if (lastPLine == null || !pLine.get("produce_line_id").toString().equals(lastPLine) ||
+                    !pLine.get("work_core_id").toString().equals(lastWorkCore)) {
+                classGroups = new LinkedHashMap<String, Map>();
+                workCores.put(pLine.get("work_core_id").toString(), classGroups);
+            }
+            //工作组不同
+            if (lastPLine == null || !pLine.get("produce_line_id").toString().equals(lastPLine) ||
+                    !pLine.get("work_core_id").toString().equals(lastWorkCore) ||
+                    !pLine.get("class_group_id").toString().equals(lastClassGroup)) {
+                workTimeInfo = new LinkedHashMap<String, Map>();
+                classGroups.put(pLine.get("class_group_id").toString(), workTimeInfo);
+            }
+            classGroups.put(pLine.get("class_group_id").toString(), pLine);
+            lastPLine = pLine.get("produce_line_id").toString();
+            lastWorkCore = pLine.get("work_core_id").toString();
+            lastClassGroup = pLine.get("class_group_id").toString();
+        }
+        return pLines;
+    }
+
+    /**
+     * 保存产品使用生产情况
+     * @param fMaterialId
+     * @param workCoreId
+     * @param pLineId
+     * @param isFull
+     * @param productionDate
+     * @param workTimeId
+     * @param classGroupId
+     * @param customerId
+     * @param addWorkTime
+     * @param balanceTime
+     * @param balanceCapacity
+     * @param planQuantity
+     * @param capacity
+     */
+    private void saveProduceLineUse(Long fMaterialId,String workCoreId,String pLineId,int isFull,Date productionDate,
+                                    String workTimeId,String classGroupId,Long customerId,BigDecimal addWorkTime,
+                                    BigDecimal balanceTime,BigDecimal balanceCapacity,BigDecimal planQuantity,
+                                    BigDecimal capacity){
+        ProduceLineUse produceLineUse = new ProduceLineUse();
+        produceLineUse.setIsFull(0);
+        produceLineUse.setWorkCoreId(Long.valueOf(workCoreId));
+        //产品id
+        produceLineUse.setProductId(fMaterialId);
+        //生产线id
+        produceLineUse.setProduceLineId(Long.valueOf(pLineId));
+        //生产日期
+        produceLineUse.setProductionDate(productionDate);
+        //班次id
+        produceLineUse.setWorkTimeId(Long.valueOf(workTimeId));
+        //班组id
+        produceLineUse.setWorkTeamId(Long.valueOf(classGroupId));
+        //客户id
+        produceLineUse.setCustomerId(customerId);
+        //加班时间
+        produceLineUse.setAddTime(addWorkTime);
+        //剩余时间
+        produceLineUse.setBalanceTime(balanceTime);
+        //剩余产能
+        produceLineUse.setBalanceCapacity(balanceCapacity);
+        //计划产量
+        produceLineUse.setPlanQuantity(planQuantity);
+        //实际产量
+        produceLineUse.setCapacity(capacity);
+        addProduceLineUseService.addProduceLineUse(produceLineUse);
+    }
+
 
     public static void main(String[] args) {
         System.out.println(DateUtil.beforeDay("2017-03-01"));

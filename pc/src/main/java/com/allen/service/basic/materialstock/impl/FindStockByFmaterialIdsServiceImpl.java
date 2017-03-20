@@ -28,7 +28,7 @@ public class FindStockByFmaterialIdsServiceImpl implements FindStockByFmaterialI
             returnMap = new HashMap<Long, MaterialStock>(resultList.size());
             for(Map map : resultList){
                 MaterialStock materialStock = new MaterialStock();
-                long fmaterialId = (Long) map.get("FMATERIALID");
+                Long fmaterialId = Long.valueOf(map.get("FMATERIALID").toString());
                 BigDecimal safe = (BigDecimal) map.get("FSAFESTOCK");
                 BigDecimal min = (BigDecimal) map.get("FMINSTOCK");
                 BigDecimal max = (BigDecimal) map.get("FMAXSTOCK");

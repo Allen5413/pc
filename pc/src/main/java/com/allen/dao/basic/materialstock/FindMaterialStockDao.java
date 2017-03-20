@@ -19,7 +19,7 @@ public class FindMaterialStockDao extends BaseQueryDao {
      * @throws Exception
      */
     public List<Map> findByFmaterialIds(Long... fmaterialIds)throws Exception{
-        String sql = "select s.FMATERIALID, s.FSAFESTOCK, s.FMINSTOCK, s.FMAXSTOCK from t_bd_materialstock s where s.FMATERIALID in (1,2,3)";
+        String sql = "select s.FMATERIALID, s.FSAFESTOCK, s.FMINSTOCK, s.FMAXSTOCK ";
         sql += "from t_bd_materialstock s where 1=1 ";
         if(null != fmaterialIds && 0 < fmaterialIds.length){
             sql += "and s.FMATERIALID in (";
@@ -28,8 +28,8 @@ public class FindMaterialStockDao extends BaseQueryDao {
                 if(i < fmaterialIds.length - 1){
                     sql += ",";
                 }
-
             }
+            sql +=")";
         }
         List<Map> list = super.sqlQueryByNativeSqlToMap(sql.toString(), fmaterialIds);
         return list;

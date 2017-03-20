@@ -60,16 +60,23 @@ public class FindProductSelfUseDao extends BaseQueryDao {
             return ;
         }
         level++;
-
         for(Map childProduct:childProducts) {
             if (products.get(products.size() - 1).get("childs") == null) {
-                List<String> childs = new ArrayList<String>();
-                childs.add(childProduct.get("FMATERIALID").toString());
-                products.get(products.size() - 1).put("childs", childs);
+                if("239".equals(childProduct.get("FCATEGORYID").toString())||
+                        "241".equals(childProduct.get("FCATEGORYID").toString())){
+                    List<String> childs = new ArrayList<String>();
+                    childs.add(childProduct.get("FMATERIALID").toString()+","+childProduct.get("useQty").toString()
+                            +","+childProduct.get("FCATEGORYID").toString());
+                    products.get(products.size() - 1).put("childs", childs);
+                }
             } else {
-                List<String> childs = (List<String>) products.get(products.size() - 1).get("childs");
-                childs.add(childProduct.get("FMATERIALID").toString());
-                products.get(products.size() - 1).put("childs", childs);
+                if ("239".equals(childProduct.get("FCATEGORYID").toString()) ||
+                        "241".equals(childProduct.get("FCATEGORYID").toString())) {
+                    List<String> childs = (List<String>) products.get(products.size() - 1).get("childs");
+                    childs.add(childProduct.get("FMATERIALID").toString() + "," + childProduct.get("useQty").toString()
+                            + "," + childProduct.get("FCATEGORYID").toString());
+                    products.get(products.size() - 1).put("childs", childs);
+                }
             }
         }
         for(Map childProduct:childProducts){

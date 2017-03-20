@@ -22,27 +22,20 @@ import java.util.Map;
 public class FindProduceLineUseDao extends BaseQueryDao {
 
     /**
-     * 功能：根据产品id获取未加工产品的非公共生产线 生产日期
+     * 功能：根据产品id 生产日期
      * @param productId 产品id
-     * @param productionDate 生产日期
-     * @param isPublic 是否公共线 0 否 1 是
      * @return
      */
-    public List<Map> findUnUserProduceLine(long productId,Date productionDate,int isPublic){
-        String sql = "select g.*,h.capacity,h.plan_quantity,h.add_time from ( " +
-                "select f.begin_time,f.end_time,c.qualified_rate,b.produce_line_id,b.work_core_id,d.class_group_id, " +
-                "d.unit_time_capacity,d.sno,c.product_id,d.min_batch,f.sno as workTimeSno,f.id as work_time_id,a.is_public " +
+    public List<Map> findUnUserProduceLine(long productId){
+        String sql = "select f.begin_time,f.end_time,c.qualified_rate,b.produce_line_id,b.work_core_id,d.class_group_id, " +
+                "d.unit_time_capacity,d.sno,c.product_id,d.min_batch,f.sno as workTimeSno,f.id as work_time_id,a.is_public,b.sno as workCoreSno " +
                 "from produce_line a,produce_line_core b,produce_line_core_product c ,produce_line_core_product_cg d,work_time f  " +
                 "where  a.id = b.produce_line_id and b.id = c.produce_line_core_id " +
                 "and c.product_id = ? and c.id = d.produce_line_core_product_id  " +
-                "and d.work_mode_id = f.id " +
-                ") g left join produce_line_use h on h.production_date =? and  h.produce_line_id = g.produce_line_id and h.work_core_id = g.work_core_id " +
-                " and g.class_group_id = h.work_team_id and g.work_time_id = h.work_time_id and h.flag=1  " +
-                "order by g.is_public,g.sno,g.workTimeSno ";
+                "and d.work_mode_id = f.id order by b.sno,d.sno,f.sno";
         Session session = super.entityManager.unwrap(Session.class);
         SQLQuery sqlQuery = session.createSQLQuery(sql);
         sqlQuery.setParameter(0,productId);
-        sqlQuery.setParameter(1,productionDate);
         List<Map> results = sqlQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
         return results;
     }
@@ -61,9 +54,6 @@ public class FindProduceLineUseDao extends BaseQueryDao {
         params.put("p.productionDate",productionDate);
         params.put("p.produceLineId",produceLineId);
         params.put("p.workCoreId",workCoreId);
-        if(flag!=-1){
-            params.put("p.flag",Integer.valueOf(ProduceLineUse.FLAG));
-        }
         return super.findListByHql(tableNames,fields,params,null,ProduceLineUse.class);
     }
 

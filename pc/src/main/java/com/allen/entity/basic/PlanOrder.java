@@ -88,6 +88,16 @@ public class PlanOrder implements Serializable {
     public List<Map> getProducts() {
         return products;
     }
+
+    public List<Long> getProductIds(){
+        List<Long> productIds = new ArrayList<Long>();
+        if(products!=null&&products.size()>0){
+            for (Map product:products){
+                productIds.add(Long.valueOf(product.get("FMATERIALID").toString()));
+            }
+        }
+        return  productIds;
+    }
     public List<Map> getSortProducts(){
         if(products!=null){
             Collections.sort(products, new Comparator<Map>() {
