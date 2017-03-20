@@ -116,9 +116,9 @@ public class CalculationServiceImpl implements CalculationService {
             customerId = Long.valueOf(ids[0]);
             //产品的每天生产计划信息
             materialDemandDate = produce.get(key).keySet();
-            calMaterialDate(key,null);
+            calMaterialDate(key,null,true);
             //如果产品实际生产还不够  根据产品库存判断
-            if(materialStock.getFSORENUM().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))<0){
+            if(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))<0){
                 Set<String> unPlanDate = planCycle;
                 //查找是否有未安排生产计划的时间的
                 for(String demandDate:materialDemandDate){
@@ -126,8 +126,26 @@ public class CalculationServiceImpl implements CalculationService {
                         unPlanDate.remove(demandDate);
                     }
                 }
+                if(unPlanDate.size()>0){
+                    materialDemandDate = unPlanDate;
+                    LinkedHashMap<String, PlanDayMaterial> playDayMaterials = produce.get(key);
+                    PlanDayMaterial planDayMaterial = null;
+                    for(String demandDate:unPlanDate){
+                        planDayMaterial = new PlanDayMaterial();
+                        planDayMaterial.setMaterialId(fMaterialId);
+                        planDayMaterial.setCustomerId(customerId);
+                        planDayMaterial.setDemandDate(demandDate);
+                        planDayMaterial.setUseQty(new BigDecimal(0));
+                        playDayMaterials.put(demandDate,planDayMaterial);
+                    }
+                    produce.put(key,playDayMaterials);
+                    calMaterialDate(key,null,false);
+                }
             }
-
+            //如果产品还不够用
+            if(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))<0){
+               //安排加班，不上班
+            }
         }
         return false;
     }
@@ -136,10 +154,11 @@ public class CalculationServiceImpl implements CalculationService {
      * 功能：计算产品每天的产能
      * @param key
      * @param lessDemanDate 产能不足够那天
+     * @param isBack 是否需要回退查找上一步
      * @return
      * @throws Exception
      */
-    private void calMaterialDate(String key,String lessDemanDate) throws Exception {
+    private void calMaterialDate(String key,String lessDemanDate,boolean isBack) throws Exception {
         //循环生产计划时间
         for (String demandDate : materialDemandDate) {
             //产品某天产能不够 重新循环的时候超过不够那天退出循环，返回还差的产能值
@@ -160,26 +179,31 @@ public class CalculationServiceImpl implements CalculationService {
             //判断计划生产时间是否正常上班
             if (!findIsWorkByDateService.isWork(demandDate, start, end)) {//不上班时产能为0
                 if (DateUtil.compareDate(demandDate, start) == 0) {//计划第一天 直接入临时库存
-                    materialStock.setFSORENUM(materialStock.getFSORENUM().multiply(useQty));
+                    materialStock.setFQTY(materialStock.getFQTY().multiply(useQty));
                     pInvMaps.put(fMaterialId, materialStock);
                 } else {
-                   calMaterialDate(key,demandDate);
+                    if(isBack){
+                        calMaterialDate(key,demandDate,true);
+                    }
                 }
                 continue;
             }
             //库存够用
-            if (materialStock.getFSORENUM().subtract(materialStock.getFSAFESTOCK()).compareTo(useQty) > 0) {
+            if (materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(useQty) > 0) {
                 //临时库存这个不需要表存 直接数据结构存
-                materialStock.setFSORENUM(materialStock.getFSORENUM().subtract(materialStock.getFSAFESTOCK()).subtract(useQty));
+                materialStock.setFQTY(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).subtract(useQty));
                 pInvMaps.put(fMaterialId, materialStock);
                 //记录当天产品的实际产能
                 produce.get(key).get(demandDate).setCapacity(useQty);
                 produce.get(key).get(demandDate).setBalanceCapacity(new BigDecimal(0));
-                produce.get(key).get(demandDate).setUseQtyStock(materialStock.getFSORENUM().subtract(materialStock.getFSAFESTOCK()));
+                produce.get(key).get(demandDate).setUseQtyStock(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()));
                 continue;
             } else {
                 //
-                useQty = useQty.subtract(materialStock.getFSORENUM()).add(materialStock.getFSAFESTOCK());
+                useQty = useQty.subtract(materialStock.getFQTY()).add(materialStock.getFSAFESTOCK());
+                if(useQty.compareTo(new BigDecimal(0))==0){
+                    continue;
+                }
                 //判断产品是否有下级产品
                 childMaterials = planDayMaterial.getSelfChilds();
                 if (childMaterials != null && childMaterials.size() > 0) {
@@ -374,18 +398,20 @@ public class CalculationServiceImpl implements CalculationService {
             //记录当天产品的实际产能
             produce.get(key).get(demandDate).setCapacity(lineTotalCapacity);
             //如果库存有多余的 当天实际有的产品数量要加上库存
-            if(materialStock.getFSORENUM().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))>=0){
+            if(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))>=0){
                 produce.get(key).get(demandDate).setUseQtyStock(lineTotalCapacity.add(
-                        materialStock.getFSORENUM().subtract(materialStock.getFSAFESTOCK())));
+                        materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK())));
             }else{
                 //库存没有多余的  当天实际产品数量以生产量为准
                 produce.get(key).get(demandDate).setUseQtyStock(lineTotalCapacity);
             }
-            materialStock.setFSORENUM(lineTotalCapacity.subtract(useQty));
+            materialStock.setFQTY(lineTotalCapacity.subtract(useQty));
             pInvMaps.put(fMaterialId, materialStock);
             //所有生产线满负荷生产  不能满足生产计划
             if (lineTotalCapacity.compareTo(useQty) < 0) {
-                calMaterialDate(key,demandDate);
+                if(isBack) {
+                    calMaterialDate(key, demandDate, true);
+                }
             }
         }
     }
