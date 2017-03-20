@@ -10,9 +10,9 @@
   <input type="hidden" name="resourceId" value="${requestScope.resourceId}" />
   <c:set var="isShowFindBtn" value="${my:isPermission(requestScope.resourceId,'query',sessionScope.menuMap)}" />
   <label >开始日期：</label>
-  <input type="text" id="code" name="code" value="${param.code}" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="text" id="start" name="start" value="${param.start}" />&nbsp;&nbsp;&nbsp;&nbsp;
   <label >结束日期：</label>
-  <input type="text" id="code" name="code" value="${param.code}" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="text" id="end" name="end" value="${param.end}" />&nbsp;&nbsp;&nbsp;&nbsp;
   <label >产品名称：</label>
   <input type="text" id="name" name="name" value="${param.name}" />&nbsp;&nbsp;&nbsp;&nbsp;
   <label >产品类型：</label>
@@ -44,61 +44,53 @@
     <th style="width:100px;text-align: center;vertical-align: middle;" rowspan="2">客户需求</th>
     <th style="width:100px;text-align: center;vertical-align: middle;" rowspan="2">净需求</th>
     <th style="width:100px;text-align: center;vertical-align: middle;" rowspan="2">库存</th>
-    <th colspan="3" style="text-align: center;">2017-03-01</th>
-    <th colspan="3" style="text-align: center;">2017-03-02</th>
-    <th colspan="3" style="text-align: center;">2017-03-03</th>
-    <th colspan="3" style="text-align: center;">2017-03-04</th>
-    <th colspan="3" style="text-align: center;">2017-03-05</th>
+    <c:forEach items="${planCycle}" var="plans">
+      <th colspan="3" style="text-align: center;">${plans}</th>
+    </c:forEach>
   </tr>
   <tr class="am-primary">
-    <th>需求</th>
-    <th>产能</th>
-    <th>计划</th>
-    <th>需求</th>
-    <th>产能</th>
-    <th>计划</th>
-    <th >需求</th>
-    <th>产能</th>
-    <th>计划</th>
-    <th>需求</th>
-    <th>产能</th>
-    <th>计划</th>
-    <th >需求</th>
-    <th>产能</th>
-    <th >计划</th>
+    <c:forEach items="${planCycle}" var="plans">
+      <th>需求</th>
+      <th>产能</th>
+      <th>计划</th>
+    </c:forEach>
   </tr>
-  <c:if test="${empty pageInfo || empty pageInfo.pageResults}">
+  <c:if test="${empty proPlanInfo}">
     <tr>
       <td colspan="99" align="center" style="color: red;">没有找到相关数据</td>
     </tr>
   </c:if>
-  <c:forEach var="classGroup" items="${pageInfo.pageResults}" varStatus="status">
+  <c:forEach var="planInfo" items="${proPlanInfo}" varStatus="status">
     <tr>
-      <td align="center">${status.index+1}</td>
-      <td>${classGroup.code}</td>
-      <td>${classGroup.name}</td>
-      <td>${classGroup.operator}</td>
-      <td><fmt:formatDate value="${classGroup.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+      <td>${planInfo.productNo}</td>
+      <td>${planInfo.productName}</td>
+      <td></td>
+      <td></td>
+      <td>${planInfo.stockNum}</td>
+      <c:forEach items="${planCycle}" var="plans">
+        <td>${planInfo.plans[plans]['demandNum']}</td>
+        <td>${planInfo.plans[plans]['productionNum']}</td>
+        <td>${planInfo.plans[plans]['planNum']}</td>
+      </c:forEach>
     </tr>
   </c:forEach>
 </table>
 <%@ include file="../../common/page.jsp"%>
 <script>
-
-  function edit(id){
-    var url = '${pageContext.request.contextPath}/editClassGroup/open.html?id='+id;
-    app.openDialog(url, '编辑班组', 600, 260, function(index){
-      var code = $("#edit_code").val().trim();
-      var name = $("#edit_name").val().trim();
-      if(code == ""){
-        app.msg("请输入编号", 1);
-        return;
-      }
-      if(name == ""){
-        app.msg("请输入名称", 1);
-        return;
-      }
-      app.edit("${pageContext.request.contextPath}/editClassGroup/editor.json", $('#editForm').serialize(), index);
-    });
-  }
+  $(function(){
+     $('#calBtn').on('click',function(){
+             $.ajax({
+                     type: "POST",
+                     url:"${pageContext.request.contextPath}/calProPlan/cal.json",
+                     async: false,
+                     success: function(data) {
+                             if(data.state == 0){
+                                     app.msg('计算处理中', 0);
+                             }else{
+                                 app.msg("正在计算中，请稍后", 1);
+                             }
+                     }
+             });
+     });
+  });
 </script>

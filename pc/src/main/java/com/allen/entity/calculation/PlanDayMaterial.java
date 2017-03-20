@@ -20,6 +20,8 @@ public class PlanDayMaterial {
     private boolean isLastProduction;//是否最后生产
     private long materialId;//产品id
     private long customerId;//客户id
+    private String productNo;//产品编号
+    private String productName;//产品名称
     private List<String> childs = new ArrayList<String>();//记录子产品的
 
     public String getDemandDate() {
@@ -117,5 +119,21 @@ public class PlanDayMaterial {
 
     public void setBalanceCapacity(BigDecimal balanceCapacity) {
         this.balanceCapacity = balanceCapacity;
+    }
+
+    public String getProductNo() {
+        return productNo;
+    }
+
+    public void setProductNo(String productNo) {
+        this.productNo = productNo;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 }
