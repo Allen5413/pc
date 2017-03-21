@@ -31,14 +31,6 @@ public class FindCapacityController extends BaseController {
     @Resource
     private FindClassGroupForAllService findClassGroupForAllService;
 
-    @RequestMapping(value = "open")
-    public String open(HttpServletRequest request) throws Exception {
-        request.setAttribute("wgList", findWorkGroupForAllService.find());
-        request.setAttribute("wcList", findWorkCoreForAllService.find());
-        request.setAttribute("cgList", findClassGroupForAllService.find());
-        return "/basic/reportform/capacity";
-    }
-
     @RequestMapping(value = "find")
     public String find(@RequestParam(value="wgId", required=false, defaultValue = "") String wgId,
                        @RequestParam(value="wcId", required=false, defaultValue = "") String wcId,
@@ -48,8 +40,11 @@ public class FindCapacityController extends BaseController {
         params.put("wgId", wgId);
         params.put("wcId", wcId);
         params.put("cgId", cgId);
-        List<WorkGroupForCapacityBean> wgList = findCapacityService.find(params);
-        request.setAttribute("wgList", wgList);
-        return "/basic/produceline/page";
+        List<WorkGroupForCapacityBean> resultList = findCapacityService.find(params);
+        request.setAttribute("resultList", resultList);
+        request.setAttribute("wgList", findWorkGroupForAllService.find());
+        request.setAttribute("wcList", findWorkCoreForAllService.find());
+        request.setAttribute("cgList", findClassGroupForAllService.find());
+        return "/reportform/capacity";
     }
 }

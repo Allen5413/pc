@@ -5,6 +5,7 @@ import com.allen.entity.pojo.classgroup.ClassGroupForCapacityBean;
 import com.allen.entity.pojo.workcore.WorkCoreForCapacityBean;
 import com.allen.entity.pojo.workgroup.WorkGroupForCapacityBean;
 import com.allen.service.reportform.FindCapacityService;
+import com.allen.util.DateUtil;
 import com.allen.util.StringUtil;
 import org.springframework.stereotype.Service;
 
@@ -47,8 +48,8 @@ public class FindCapacityServiceImpl implements FindCapacityService {
                 ClassGroupForCapacityBean classGroup = new ClassGroupForCapacityBean();
                 classGroup.setCgName(cgName);
                 classGroup.setWtName(wtName);
-                classGroup.setWorkDate(productDate+" "+beginTime+" - "+endTime);
-                classGroup.setIsAddWork("0".equals(addTime) ? ClassGroupForCapacityBean.IS_ADDWORK_NOT : ClassGroupForCapacityBean.IS_ADDWORK_YES);
+                classGroup.setWorkDate(productDate + " " + beginTime.substring(11, 16) + " - " + endTime.substring(11, 16));
+                classGroup.setIsAddWork("0".equals(addTime) || "0.00".equals(addTime) ? ClassGroupForCapacityBean.IS_ADDWORK_NOT : ClassGroupForCapacityBean.IS_ADDWORK_YES);
                 classGroup.setAddWorkTime(addTime);
                 classGroup.setCapacity(capacity);
 
@@ -59,9 +60,10 @@ public class FindCapacityServiceImpl implements FindCapacityService {
                     workCore = new WorkCoreForCapacityBean();
                     workCore.setWcName(wcName);
                     cgList = new ArrayList<ClassGroupForCapacityBean>();
-
                     cgList.add(classGroup);
+                    workCore.setCgList(cgList);
                     wcList.add(workCore);
+                    workGroup.setWcList(wcList);
 
                     beforeWgName = wgName;
                     beforeWcName = wcName;
@@ -77,7 +79,9 @@ public class FindCapacityServiceImpl implements FindCapacityService {
                         cgList = new ArrayList<ClassGroupForCapacityBean>();
 
                         cgList.add(classGroup);
+                        workCore.setCgList(cgList);
                         wcList.add(workCore);
+                        workGroup.setWcList(wcList);
                         beforeWgName = wgName;
                         beforeWcName = wcName;
 
@@ -89,10 +93,12 @@ public class FindCapacityServiceImpl implements FindCapacityService {
                             cgList = new ArrayList<ClassGroupForCapacityBean>();
 
                             cgList.add(classGroup);
-
+                            workCore.setCgList(cgList);
                             wcList = workGroup.getWcList();
                             wcList.add(workCore);
                             workGroup.setWcList(wcList);
+
+                            beforeWcName = wcName;
                         }else{
                             cgList = workCore.getCgList();
                             cgList.add(classGroup);
