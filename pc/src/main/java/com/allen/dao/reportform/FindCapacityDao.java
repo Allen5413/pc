@@ -2,6 +2,7 @@ package com.allen.dao.reportform;
 
 import com.allen.dao.BaseQueryDao;
 import com.allen.util.StringUtil;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Map;
  * 查询产能排班报表
  * Created by Allen on 2017/3/20 0020.
  */
+@Service
 public class FindCapacityDao extends BaseQueryDao {
     public List<Map> findByFmaterialIds(Map<String, String> param)throws Exception{
         List<Object> paramsList = new ArrayList<Object>();
