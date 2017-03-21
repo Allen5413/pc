@@ -22,6 +22,12 @@ public class CalProPlanController extends BaseController {
     @Resource
     private CalculationService calculationService;
     private boolean isRun = false;
+
+    @RequestMapping(value = "open")
+    public String open(){
+        return "produce/proplan/cal";
+    }
+
     @RequestMapping(value = "cal")
     @ResponseBody
     public JSONObject find(){

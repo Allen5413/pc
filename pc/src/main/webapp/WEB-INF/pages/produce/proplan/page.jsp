@@ -10,13 +10,22 @@
   <input type="hidden" name="resourceId" value="${requestScope.resourceId}" />
   <c:set var="isShowFindBtn" value="${my:isPermission(requestScope.resourceId,'query',sessionScope.menuMap)}" />
   <label >开始日期：</label>
-  <input type="text" id="start" name="start" value="${param.start}" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="text" id="q_start" name="start" value="${param.start}" style="height: 30px;"
+         onfocus="WdatePicker({firstDayOfWeek:1})" class="Wdate" />&nbsp;&nbsp;&nbsp;&nbsp;
   <label >结束日期：</label>
-  <input type="text" id="end" name="end" value="${param.end}" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="text" id="q_end" name="end" value="${param.end}" style="height: 30px;"
+         onfocus="WdatePicker({firstDayOfWeek:1})" class="Wdate"/>&nbsp;&nbsp;&nbsp;&nbsp;
   <label >产品名称：</label>
-  <input type="text" id="name" name="name" value="${param.name}" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="text" id="q_name" name="name" value="${param.name}" style="height: 30px;"/>&nbsp;&nbsp;&nbsp;&nbsp;
   <label >产品类型：</label>
-  <input type="text" id="name" name="name" value="${param.name}" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <select id="q_type" name="type"  onchange="app.changeSelect(this)"
+          data-am-selected="{maxHeight: 300,btnWidth:'120px'}">
+    <option value=""></option>
+    <option value="null">全部</option>
+    <c:forEach items="${productTypes}" var="productType">
+      <option value="${productType.FCATEGORYID}" <c:if test="${param.type==productType.FCATEGORYID}"> selected </c:if>>${productType.FNAME}</option>
+    </c:forEach>
+  </select>&nbsp;&nbsp;&nbsp;&nbsp;
   <c:if test="${isShowFindBtn}">
     <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
             data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
@@ -79,17 +88,25 @@
 <script>
   $(function(){
      $('#calBtn').on('click',function(){
-             $.ajax({
-                     type: "POST",
-                     url:"${pageContext.request.contextPath}/calProPlan/cal.json",
-                     async: false,
-                     success: function(data) {
+             app.openDialog("${pageContext.request.contextPath}/calProPlan/open.html", '计算生产', 400, 250, function(index){
+                     var start = $("#start").val().trim();
+                     var end = $("#end").val().trim();
+                     if(start == ""){
+                          app.msg("请输入开始时间", 1);
+                          return;
+                     }
+                     if(start == ""){
+                           app.msg("请输入结束时间", 1);
+                           return;
+                     }
+                     app.getAjaxData("${pageContext.request.contextPath}/calProPlan/cal.json",{},true,function(data){
                              if(data.state == 0){
                                      app.msg('计算处理中', 0);
                              }else{
-                                 app.msg("正在计算中，请稍后", 1);
+                                     app.msg("正在计算中，请稍后", 1);
                              }
-                     }
+                             layer.close(index);
+                     });
              });
      });
   });

@@ -1,6 +1,7 @@
 package com.allen.web.controller.produce.proplan;
 
 import com.allen.service.basic.productionplan.FindProductionPlanService;
+import com.allen.service.basic.producttype.FindProductTypeSelectService;
 import com.allen.util.DateUtil;
 import com.allen.util.StringUtil;
 import com.allen.web.controller.BaseController;
@@ -24,11 +25,13 @@ import java.util.Set;
 @Controller
 @RequestMapping(value = "/findProPlan")
 public class FindProPlanController extends BaseController {
-
+    @Resource
+    private FindProductTypeSelectService findProductTypeSelectService;
     @Resource
     private FindProductionPlanService findProductionPlanService;
     @RequestMapping(value = "find")
     public String find(HttpServletRequest request,String start,String end) throws Exception {
+        request.setAttribute("productTypes",findProductTypeSelectService.find());
         if(StringUtil.isEmpty(start)||StringUtil.isEmpty(end)){
             return "/produce/proplan/page";
         }
