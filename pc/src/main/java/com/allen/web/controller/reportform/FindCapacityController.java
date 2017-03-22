@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,12 @@ public class FindCapacityController extends BaseController {
         params.put("wcId", wcId);
         params.put("cgId", cgId);
         List<WorkGroupForCapacityBean> resultList = findCapacityService.find(params);
-        request.setAttribute("resultList", resultList);
+        List<WorkGroupForCapacityBean> resultList2 = new ArrayList<WorkGroupForCapacityBean>();
+        resultList2.addAll(resultList);
+        resultList2.addAll(resultList);
+        resultList2.addAll(resultList);
+        resultList2.addAll(resultList);
+        request.setAttribute("resultList", resultList2);
         request.setAttribute("wgList", findWorkGroupForAllService.find());
         request.setAttribute("wcList", findWorkCoreForAllService.find());
         request.setAttribute("cgList", findClassGroupForAllService.find());

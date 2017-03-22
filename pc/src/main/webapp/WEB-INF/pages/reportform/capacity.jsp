@@ -41,7 +41,7 @@
 </form>
 <p /><p />
 <c:forEach var="data" items="${resultList}">
-  <div class="am-panel am-panel-primary no-margin-bottom" style="width:100%; margin-left: 5px;">
+  <div class="am-panel am-panel-primary no-margin-bottom" style="width:100%; margin-left: 5px; margin-top: 10px;">
     <div class="am-panel-hd am-cf">${data.wgName}</div>
     <div class="am-in">
       <table id="findProductCgTable" class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%;">
