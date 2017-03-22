@@ -11,10 +11,12 @@ import com.allen.service.basic.calculation.CalculationService;
 import com.allen.service.basic.factorydate.FindIsWorkByDateService;
 import com.allen.service.basic.materialstock.FindStockByFmaterialIdsService;
 import com.allen.service.basic.producelineuse.AddProduceLineUseService;
+import com.allen.service.basic.producelineuse.DelProduceLineUseService;
 import com.allen.service.basic.product.FindProductByPlanService;
 import com.allen.service.basic.productinventory.EditProductInventoryService;
 import com.allen.service.basic.productinventory.FindProInvByPIdService;
 import com.allen.service.basic.productionplan.AddProductionPlanService;
+import com.allen.service.basic.productionplan.DelProductionPlanService;
 import com.allen.util.DateUtil;
 import com.allen.util.StringUtil;
 import org.springframework.stereotype.Service;
@@ -50,12 +52,16 @@ public class CalculationServiceImpl implements CalculationService {
     private FindStockByFmaterialIdsService findStockByFmaterialIdsService;
     @Resource
     private AddProductionPlanService addProductionPlanService;
+    @Resource
+    private DelProduceLineUseService delProduceLineUseService;
+    @Resource
+    private DelProductionPlanService delProductionPlanService;
     private static int SMALL_NUMBER= 4;
     //格式为{客户ID，产品：[{生产日期:PlanDayMaterial},{生产日期:PlanDayMaterial｝]}
     Map<String, LinkedHashMap<String, PlanDayMaterial>> produce = new LinkedHashMap<String, LinkedHashMap<String, PlanDayMaterial>>();
     PlanDayMaterial planDayMaterial = null;
-    String start = "2017-03-01";//计划开始时间
-    String end = "2017-03-07";//计划结束时间
+    String start = null;//计划开始时间
+    String end = null;//计划结束时间
     BigDecimal minAddTime = new BigDecimal(4);//最低加班时间
     BigDecimal maxWorkTotalTime = new BigDecimal(12);//最高连续工作时间
 
@@ -91,7 +97,9 @@ public class CalculationServiceImpl implements CalculationService {
     ProductionPlan productionPlan = null;
     @Override
     @Transactional
-    public boolean calculation() throws Exception {
+    public boolean calculation(String start,String end) throws Exception {
+        this.start = start;
+        this.end = end;
         Set<String> planCycle = new LinkedHashSet<String>();
         String endNow = start;
         while (true){
@@ -104,7 +112,7 @@ public class CalculationServiceImpl implements CalculationService {
         //初始化数据
         init();
         //获取生产计划的产品信息
-        List<PlanOrder> planOrders = findProductByPlanService.findProductByPlan();
+        List<PlanOrder> planOrders = findProductByPlanService.findProductByPlan(start,end);
         //格式为{客户ID，产品：[{生产日期:PlanDayMaterial},{生产日期:PlanDayMaterial｝]},返回产品id集合
         Set<Long> productIds = formatPlan(planOrders);
         //功能根据生产计划产品  获取库存信息 格式为Map<String,ProductInventory> 产品id 库存信息
@@ -124,7 +132,7 @@ public class CalculationServiceImpl implements CalculationService {
             calMaterialDate(key,null,true);
             //如果产品实际生产还不够  根据产品库存判断
             if(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))<0){
-                Set<String> unPlanDate = planCycle;
+                 Set<String> unPlanDate = planCycle;
                 //查找是否有未安排生产计划的时间的
                 for(String demandDate:materialDemandDate){
                     if(!planCycle.add(demandDate)){
@@ -142,14 +150,17 @@ public class CalculationServiceImpl implements CalculationService {
                 if(unPlanDate.size()>0){
                     materialDemandDate = unPlanDate;
                     LinkedHashMap<String, PlanDayMaterial> playDayMaterials = produce.get(key);
-                    PlanDayMaterial planDayMaterial = null;
+                    PlanDayMaterial planDayMaterialNew = null;
                     for(String demandDate:unPlanDate){
-                        planDayMaterial = new PlanDayMaterial();
-                        planDayMaterial.setMaterialId(fMaterialId);
-                        planDayMaterial.setCustomerId(customerId);
-                        planDayMaterial.setDemandDate(demandDate);
-                        planDayMaterial.setUseQty(new BigDecimal(0));
-                        playDayMaterials.put(demandDate,planDayMaterial);
+                        planDayMaterialNew = new PlanDayMaterial();
+                        planDayMaterialNew.setMaterialId(fMaterialId);
+                        planDayMaterialNew.setCustomerId(customerId);
+                        planDayMaterialNew.setDemandDate(demandDate);
+                        planDayMaterialNew.setUseQty(new BigDecimal(0));
+                        planDayMaterialNew.setProductNo(planDayMaterial.getProductNo());
+                        planDayMaterialNew.setProductName(planDayMaterial.getProductName());
+                        planDayMaterialNew.setProductType(planDayMaterial.getProductType());
+                        playDayMaterials.put(demandDate,planDayMaterialNew);
                     }
                     produce.put(key,playDayMaterials);
                     calMaterialDate(key,null,false);
@@ -213,8 +224,9 @@ public class CalculationServiceImpl implements CalculationService {
                 productionPlan.setGrossNum(new BigDecimal(0));
                 productionPlan.setPlanTotalNum(new BigDecimal(0));
                 productionPlan.setStockNum(new BigDecimal(0));
-                productionPlan.setProductNo("");
-                productionPlan.setProductName("");
+                productionPlan.setProductNo(planDayMaterial.getProductNo());
+                productionPlan.setProductName(planDayMaterial.getProductName());
+                productionPlan.setProductType(planDayMaterial.getProductType());
                 addProductionPlanService.addProductionPlan(productionPlan);
                 continue;
             } else {
@@ -438,8 +450,9 @@ public class CalculationServiceImpl implements CalculationService {
             productionPlan.setGrossNum(new BigDecimal(0));
             productionPlan.setPlanTotalNum(new BigDecimal(0));
             productionPlan.setStockNum(new BigDecimal(0));
-            productionPlan.setProductNo("");
-            productionPlan.setProductName("");
+            productionPlan.setProductType(planDayMaterial.getProductType());
+            productionPlan.setProductNo(planDayMaterial.getProductNo());
+            productionPlan.setProductName(planDayMaterial.getProductName());
             addProductionPlanService.addProductionPlan(productionPlan);
             if (lineTotalCapacity.compareTo(useQty) < 0) {
                 if(isBack) {
@@ -528,6 +541,9 @@ public class CalculationServiceImpl implements CalculationService {
                     planDayMaterial.setUseQty(planOrder.getFFIRMQTY().multiply(new BigDecimal(product.get("useQty").toString())));
                     planDayMaterial.setCustomerId(Long.valueOf(planOrder.getFCUSTID()));
                     planDayMaterial.setDemandDate(produceDate);
+                    planDayMaterial.setProductName(product.get("FNAME")==null?planOrder.getFNAME():product.get("FNAME").toString());
+                    planDayMaterial.setProductNo(product.get("FNUMBER")==null?planOrder.getFNUMBER():product.get("FNUMBER").toString());
+                    planDayMaterial.setProductType(product.get("FCATEGORYID")==null?planOrder.getFCATEGORYID():product.get("FCATEGORYID").toString());
                     if (product.get("childs") != null) {
                         planDayMaterial.setChilds((ArrayList) product.get("childs"));
                     }
@@ -626,6 +642,9 @@ public class CalculationServiceImpl implements CalculationService {
     }
 
     private void init(){
+        //删除计划时间已经存在的数据
+        delProductionPlanService.delProductionPlan(start,end);
+        delProduceLineUseService.delProduceLineUse(start,end);
         produce = new LinkedHashMap<String, LinkedHashMap<String, PlanDayMaterial>>();
         planDayMaterial = null;
         pInvMaps = null;

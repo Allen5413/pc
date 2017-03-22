@@ -31,6 +31,10 @@ public class FindProductionPlanServiceImpl implements FindProductionPlanService 
             if(fMaterialId==-1||fMaterialId!=productionPlan.getProductId()){
                 productionPlanNew = new ProductionPlan();
                 productionPlanNew.setStockNum(productionPlan.getStockNum());
+                productionPlanNew.setProductNo(productionPlan.getProductNo());
+                productionPlanNew.setProductName(productionPlan.getProductName());
+                productionPlanNew.setGrossNum(productionPlan.getGrossNum());
+                productionPlanNew.setPlanTotalNum(productionPlan.getPlanTotalNum());
                 plans = new HashMap<String, HashMap<String, Object>>();
                 productionPlanNew.setPlans(plans);
                 resultPlans.add(productionPlanNew);

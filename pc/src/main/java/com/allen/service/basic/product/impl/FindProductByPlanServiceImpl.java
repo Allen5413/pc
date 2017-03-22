@@ -5,14 +5,12 @@ import com.allen.dao.basic.product.FindProductDao;
 import com.allen.dao.basic.productselfuse.FindProductSelfUseDao;
 import com.allen.entity.basic.PlanOrder;
 import com.allen.service.basic.product.FindProductByPlanService;
+import com.allen.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 包路径：com.allen.service.basic.product.impl
@@ -28,9 +26,11 @@ public class FindProductByPlanServiceImpl implements FindProductByPlanService {
     @Autowired
     private FindProductSelfUseDao findProductSelfUseDao;
     @Override
-    public List<PlanOrder> findProductByPlan() {
+    public List<PlanOrder> findProductByPlan(String start,String end) {
         //获取生产计划信息
-        List<PlanOrder> planOrders = findPlanOrderDao.findPlanOrder();
+        List<PlanOrder> planOrders = findPlanOrderDao.findPlanOrder(
+                DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
+                DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
         //获取订单产品信息
         Map<String,List<Map>> productMap = new HashMap<String, List<Map>>();
         for(PlanOrder planOrder:planOrders){
@@ -48,7 +48,6 @@ public class FindProductByPlanServiceImpl implements FindProductByPlanService {
                List<Map> productMaps = productMap.get(planOrder.getFMATERIALID()+"");
                planOrder.getProducts().addAll(productMaps);
             }
-            System.out.println(planOrder.getProducts());
         }
         return planOrders;
     }

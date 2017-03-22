@@ -649,9 +649,13 @@ App.prototype.getAjaxData = function(url,params,isShow,callBack){
         data:params,
         async: false,
         success: function(data) {
-             if(callBack){
-                 callBack(data.data);
-             }
+            if(data.state == 0){
+                if(callBack){
+                    callBack(data.data);
+                }
+            }else{
+                app.msg(data.msg, 1);
+            }
         },
         error:function(data){
             app.msg('服务器异常', 0);

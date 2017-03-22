@@ -36,7 +36,7 @@ public class CalDemoController extends BaseController {
     @RequestMapping(value = "open")
     public String open(){
         try {
-            calculationService.calculation();
+            calculationService.calculation("2017-03-01","2017-03-07");
         } catch (Exception e) {
             e.printStackTrace();
         }

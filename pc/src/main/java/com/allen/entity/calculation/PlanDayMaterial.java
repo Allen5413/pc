@@ -22,6 +22,7 @@ public class PlanDayMaterial {
     private long customerId;//客户id
     private String productNo;//产品编号
     private String productName;//产品名称
+    private String productType;//产品类型
     private List<String> childs = new ArrayList<String>();//记录子产品的
 
     public String getDemandDate() {
@@ -135,5 +136,13 @@ public class PlanDayMaterial {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setProductType(String productType) {
+        this.productType = productType;
     }
 }

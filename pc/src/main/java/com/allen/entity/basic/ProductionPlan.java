@@ -22,6 +22,7 @@ public class ProductionPlan implements Serializable{
     private long productId;//产品id
     private String productNo;//产品编号
     private String productName;//产品名称
+    private String productType;//产品类型
     private Date productionDate;//生产日期
     private BigDecimal demandNum;//需求量
     private BigDecimal productionNum;//生产量
@@ -125,5 +126,13 @@ public class ProductionPlan implements Serializable{
 
     public void setPlans(Map<String, HashMap<String, Object>> plans) {
         this.plans = plans;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setProductType(String productType) {
+        this.productType = productType;
     }
 }

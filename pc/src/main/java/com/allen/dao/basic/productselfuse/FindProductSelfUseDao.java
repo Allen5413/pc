@@ -50,9 +50,9 @@ public class FindProductSelfUseDao extends BaseQueryDao {
         paramsMap.put("d.FFORBIDSTATUS","A");
         paramsMap.put("d.FMATERIALID",Long.valueOf(productId));
         String fields = "e.FNUMERATOR/e.FDENOMINATOR*"+parentProductNum.doubleValue()
-                +" useQty,e.FOFFSETTIME,e.FSEQ,d.FID,e.FMATERIALID,a.FCATEGORYID";
-        String[] tableNames = {"t_eng_bom d,t_eng_bomchild e,t_bd_materialbase a"};
-        String defaultWhere = "d.FID = e.FID and e.FMATERIALID = a.FMATERIALID ";
+                +" useQty,e.FOFFSETTIME,e.FSEQ,d.FID,e.FMATERIALID,a.FCATEGORYID,b.FNUMBER,c.FNAME";
+        String[] tableNames = {"t_eng_bom d,t_eng_bomchild e,t_bd_materialbase a,t_bd_material b,t_bd_material_l c"};
+        String defaultWhere = "d.FID = e.FID and e.FMATERIALID = a.FMATERIALID and a.FMATERIALID = b.FMATERIALID and b.FMATERIALID = c.FMATERIALID ";
         Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
         sortMap.put("e.FSEQ",true);
         List<Map> childProducts =  super.findListBySqlToMap(tableNames,fields,defaultWhere,paramsMap,sortMap);

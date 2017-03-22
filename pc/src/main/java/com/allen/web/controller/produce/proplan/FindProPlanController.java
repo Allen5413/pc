@@ -11,10 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 包路径：com.allen.web.controller.produce.proplan
@@ -30,7 +27,7 @@ public class FindProPlanController extends BaseController {
     @Resource
     private FindProductionPlanService findProductionPlanService;
     @RequestMapping(value = "find")
-    public String find(HttpServletRequest request,String start,String end) throws Exception {
+    public String find(HttpServletRequest request,String start,String end,String name,String type) throws Exception {
         request.setAttribute("productTypes",findProductTypeSelectService.find());
         if(StringUtil.isEmpty(start)||StringUtil.isEmpty(end)){
             return "/produce/proplan/page";
@@ -44,8 +41,13 @@ public class FindProPlanController extends BaseController {
                 break;
             }
         }
+        Map<String,Object> params = new HashMap<String,Object>();
+        params.put("p.productionDate",new Object[]{DateUtil.getFormatDate(start,DateUtil.shortDatePattern),">="});
+        params.put("p.productionDate",new Object[]{DateUtil.getFormatDate(end,DateUtil.shortDatePattern),"<="});
+        params.put("p.productName", new Object[]{StringUtil.isEmpty(name) ? "" : "%"+name+"%", "like"});
+        params.put("p.productType",type);
         request.setAttribute("planCycle",planCycle);
-        request.setAttribute("proPlanInfo",findProductionPlanService.find(null));
+        request.setAttribute("proPlanInfo",findProductionPlanService.find(params));
         return "/produce/proplan/page";
     }
 }

@@ -30,7 +30,7 @@ public class CalProPlanController extends BaseController {
 
     @RequestMapping(value = "cal")
     @ResponseBody
-    public JSONObject find(){
+    public JSONObject find(final String start, final String end){
         JSONObject jsonObject = new JSONObject();
         if(isRun){
             jsonObject.put("state", 1);
@@ -41,7 +41,7 @@ public class CalProPlanController extends BaseController {
             public void run() {
                 isRun = true;
                 try {
-                    calculationService.calculation();
+                    calculationService.calculation(start, end);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

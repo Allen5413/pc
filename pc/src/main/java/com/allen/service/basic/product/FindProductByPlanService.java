@@ -12,5 +12,5 @@ import java.util.Map;
  * 创建时间: 2017-03-04 23:09
  */
 public interface FindProductByPlanService {
-    public List<PlanOrder> findProductByPlan();
+    public List<PlanOrder> findProductByPlan(String start,String end);
 }

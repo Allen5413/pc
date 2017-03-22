@@ -28,6 +28,12 @@ public class PlanOrder implements Serializable {
     @Transient
     private long FCUSTID;//
     @Transient
+    private String FNUMBER;//产品编号
+    @Transient
+    private String FNAME;//产品名称
+    @Transient
+    private String FCATEGORYID;
+    @Transient
     private List<Map> products = new ArrayList<Map>();//具体需要的产品列表信息，最底层排序下来
     public long getFID() {
         return FID;
@@ -121,5 +127,29 @@ public class PlanOrder implements Serializable {
 
     public void setFCUSTID(long FCUSTID) {
         this.FCUSTID = FCUSTID;
+    }
+
+    public String getFNUMBER() {
+        return FNUMBER;
+    }
+
+    public void setFNUMBER(String FNUMBER) {
+        this.FNUMBER = FNUMBER;
+    }
+
+    public String getFNAME() {
+        return FNAME;
+    }
+
+    public void setFNAME(String FNAME) {
+        this.FNAME = FNAME;
+    }
+
+    public String getFCATEGORYID() {
+        return FCATEGORYID;
+    }
+
+    public void setFCATEGORYID(String FCATEGORYID) {
+        this.FCATEGORYID = FCATEGORYID;
     }
 }

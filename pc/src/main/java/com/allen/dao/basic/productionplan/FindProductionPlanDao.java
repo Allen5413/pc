@@ -22,7 +22,7 @@ public class FindProductionPlanDao extends BaseQueryDao {
         String[] tableNames = {"ProductionPlan p"};
         Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
         sortMap.put("productId",true);
-        sortMap.put("productionDate",true);
-        return super.findListByHql(tableNames,fields,params,null,ProductionPlan.class);
+        return super.findListByHql(tableNames,fields,params,sortMap,ProductionPlan.class);
     }
+
 }
