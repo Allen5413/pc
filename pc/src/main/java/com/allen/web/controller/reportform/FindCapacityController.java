@@ -42,12 +42,7 @@ public class FindCapacityController extends BaseController {
         params.put("wcId", wcId);
         params.put("cgId", cgId);
         List<WorkGroupForCapacityBean> resultList = findCapacityService.find(params);
-        List<WorkGroupForCapacityBean> resultList2 = new ArrayList<WorkGroupForCapacityBean>();
-        resultList2.addAll(resultList);
-        resultList2.addAll(resultList);
-        resultList2.addAll(resultList);
-        resultList2.addAll(resultList);
-        request.setAttribute("resultList", resultList2);
+        request.setAttribute("resultList", resultList);
         request.setAttribute("wgList", findWorkGroupForAllService.find());
         request.setAttribute("wcList", findWorkCoreForAllService.find());
         request.setAttribute("cgList", findClassGroupForAllService.find());
