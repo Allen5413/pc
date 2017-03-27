@@ -78,8 +78,8 @@
         <td>${planInfo.stockNum}</td>
         <c:forEach items="${planCycle}" var="plans">
           <td>${planInfo.plans[plans]['demandNum']}</td>
-          <td>${planInfo.plans[plans]['productionNum']}</td>
-          <td>${planInfo.plans[plans]['planNum']}</td>
+          <td>${planInfo.plans[plans]['capacity']}</td>
+          <td>${planInfo.plans[plans]['actualProductionNum']}</td>
         </c:forEach>
       </tr>
     </c:forEach>

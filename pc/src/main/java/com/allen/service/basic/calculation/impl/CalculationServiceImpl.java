@@ -78,6 +78,8 @@ public class CalculationServiceImpl implements CalculationService {
     BigDecimal pRate = new BigDecimal(0);//产品合格率
     BigDecimal minCapacity = new BigDecimal(0);//生产线中最小产能
     BigDecimal workCoreTotalActLast = null;//上一次最小生产量
+    BigDecimal eighthCapacity = null;//工作中心8小时产能
+    BigDecimal eighthCapacityLast = null;//工作中心8小时产能最后
     BigDecimal minBalanceCapacity = new BigDecimal(0);//生产线的最小剩余产能
     BigDecimal workTimeCapacity = new BigDecimal(0);//工作组班次产量
     BigDecimal workGroupQty = new BigDecimal(0);//班组生产计划产能
@@ -282,6 +284,8 @@ public class CalculationServiceImpl implements CalculationService {
                 workCoreIds = workCores.keySet();
                 minCapacity = new BigDecimal(0);//生产线最小产能
                 workCoreTotalActLast = new BigDecimal(0);
+                eighthCapacityLast = new BigDecimal(0);
+                eighthCapacity = new BigDecimal(0);
                 minBalanceCapacity = new BigDecimal(Integer.MAX_VALUE);//生产线最小剩余产能
                 //循环生产中心
                 for (String workCoreId : workCoreIds) {
@@ -353,11 +357,9 @@ public class CalculationServiceImpl implements CalculationService {
                                     continue;
                                 }else {
 
-                                    workGroupQty = workGroupQty.subtract((produceLineUseBean.getBalanceCapacity().divide(minBatch,0, RoundingMode.FLOOR)).multiply(minBatch));
+                                    //workGroupQty = workGroupQty.subtract((produceLineUseBean.getBalanceCapacity().divide(minBatch,0, RoundingMode.FLOOR)).multiply(minBatch));
                                     //重新计算剩余产能
                                     produceLineUseBean.setBalanceCapacity(new BigDecimal(0));
-                                    //重新计算剩余时间
-                                    produceLineUseBean.setBalanceWorkTime(new BigDecimal(0));
                                 }
                             }else{//不是同一个产品 不能使用剩余产能，需要重新计算
                                 //重新计算剩余产能
@@ -368,6 +370,7 @@ public class CalculationServiceImpl implements CalculationService {
                                 //计算班次工作时间
                                 workTime = getWorkTime(workTimeInfo.get("begin_time").toString(),
                                         workTimeInfo.get("end_time").toString());
+                                eighthCapacity = eighthCapacity.add(workTime.multiply(unitWorkProduct));
                                 produceLineUseBean.setWorkTotalTime(workTime);
                             }else{
                                 //正常上班
@@ -446,9 +449,12 @@ public class CalculationServiceImpl implements CalculationService {
                     if (minCapacity.compareTo(new BigDecimal(0)) == 0) {
                         minCapacity = workCoreTotalCapacity;
                         workCoreTotalActLast = workCoreTotalAct;
+                        eighthCapacityLast = eighthCapacity;
                     } else {
-                        minCapacity = minCapacity.compareTo(workCoreTotalCapacity) > 0 ? workCoreTotalCapacity : minCapacity;
-                        workCoreTotalActLast = minCapacity.compareTo(workCoreTotalCapacity) > 0 ? workCoreTotalAct : workCoreTotalActLast;
+                        boolean isMin = minCapacity.compareTo(workCoreTotalCapacity) > 0;
+                        minCapacity = isMin ? workCoreTotalCapacity : minCapacity;
+                        workCoreTotalActLast = isMin ? workCoreTotalAct : workCoreTotalActLast;
+                        eighthCapacityLast = isMin ? eighthCapacity : eighthCapacityLast;
                     }
                 }
                 //生产线总产能
@@ -484,7 +490,8 @@ public class CalculationServiceImpl implements CalculationService {
             productionPlan.setProductType(planDayMaterial.getProductType());
             productionPlan.setProductNo(planDayMaterial.getProductNo());
             productionPlan.setProductName(planDayMaterial.getProductName());
-            productionPlan.setActualProductionNum(workCoreTotalAct);
+            productionPlan.setActualProductionNum(workCoreTotalActLast);
+            productionPlan.setCapacity(eighthCapacityLast);
             addProductionPlanService.addProductionPlan(productionPlan);
             if (lineTotalCapacity.compareTo(useQty) < 0) {
                 if(isBack) {
@@ -683,6 +690,7 @@ public class CalculationServiceImpl implements CalculationService {
         materialDemandDate = null;
         useQty = null;//生产计划量
         productionDate = null;//生产日期
+        eighthCapacity = null;//8小时产能
         unitWorkProduct = new BigDecimal(0);//单位时间产能
         actualQty = new BigDecimal(0);//实际产量
         workTime = new BigDecimal(0);//工作时间
@@ -729,6 +737,10 @@ public class CalculationServiceImpl implements CalculationService {
             productionPlan.setGrossNum(new BigDecimal(0));
             productionPlan.setPlanTotalNum(planDayMaterial.getUseQty());
             productionPlan.setStockNum(first==0?materialStock.getFQTY():new BigDecimal(0));
+            if(first==0){
+                materialStock.setFQTY(materialStock.getFSAFESTOCK());
+                pInvMaps.put(fMaterialId,materialStock);
+            }
             productionPlan.setProductType(planDayMaterial.getProductType());
             productionPlan.setProductNo(planDayMaterial.getProductNo());
             productionPlan.setProductName(planDayMaterial.getProductName());

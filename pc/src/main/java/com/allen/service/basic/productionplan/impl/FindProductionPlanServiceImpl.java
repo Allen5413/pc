@@ -41,6 +41,8 @@ public class FindProductionPlanServiceImpl implements FindProductionPlanService 
             demandDate.put("demandNum",productionPlan.getDemandNum());
             demandDate.put("productionNum",productionPlan.getProductionNum());
             demandDate.put("planNum",productionPlan.getPlanNum());
+            demandDate.put("actualProductionNum",productionPlan.getActualProductionNum());
+            demandDate.put("capacity",productionPlan.getCapacity());
             plans.put(DateUtil.getFormattedString(productionPlan.getProductionDate(),DateUtil.shortDatePattern),demandDate);
             productionPlanNew.setStockNum(productionPlanNew.getStockNum().add(productionPlan.getStockNum()));
             productionPlanNew.setPlanTotalNum(productionPlanNew.getPlanTotalNum().add(productionPlan.getPlanTotalNum()));

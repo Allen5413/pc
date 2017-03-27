@@ -27,6 +27,7 @@ public class AddProductionPlanServiceImpl implements AddProductionPlanService {
             }
             oldProductionPlan.setActualProductionNum(oldProductionPlan.getActualProductionNum().add(productionPlan.getActualProductionNum()));
             oldProductionPlan.setProductionNum(oldProductionPlan.getProductionNum().add(productionPlan.getProductionNum()));
+            oldProductionPlan.setCapacity(oldProductionPlan.getCapacity().add(productionPlan.getCapacity()));
             productionPlanDao.save(oldProductionPlan);
         }else{
             productionPlanDao.save(productionPlan);
