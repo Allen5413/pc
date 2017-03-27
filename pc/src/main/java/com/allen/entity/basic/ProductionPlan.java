@@ -27,9 +27,10 @@ public class ProductionPlan implements Serializable{
     private BigDecimal demandNum;//需求量
     private BigDecimal productionNum;//生产量
     private BigDecimal planNum;//计划量
-    private BigDecimal stockNum;//库存量
-    private BigDecimal grossNum;//客户需求量
-    private BigDecimal planTotalNum;//计划总量
+    private BigDecimal stockNum = new BigDecimal(0);//库存量
+    private BigDecimal grossNum = new BigDecimal(0);//客户需求量
+    private BigDecimal planTotalNum = new BigDecimal(0);//计划总量
+    private BigDecimal actualProductionNum  = new BigDecimal(0);
     @Transient
     private Map<String,HashMap<String,Object>> plans = new HashMap<String, HashMap<String, Object>>();
     public long getId() {
@@ -134,5 +135,13 @@ public class ProductionPlan implements Serializable{
 
     public void setProductType(String productType) {
         this.productType = productType;
+    }
+
+    public BigDecimal getActualProductionNum() {
+        return actualProductionNum;
+    }
+
+    public void setActualProductionNum(BigDecimal actualProductionNum) {
+        this.actualProductionNum = actualProductionNum;
     }
 }

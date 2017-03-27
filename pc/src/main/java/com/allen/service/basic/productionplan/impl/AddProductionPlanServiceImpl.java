@@ -6,6 +6,7 @@ import com.allen.service.basic.productionplan.AddProductionPlanService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 
 /**
  * 包路径：com.allen.service.basic.productionplan.impl
@@ -19,11 +20,13 @@ public class AddProductionPlanServiceImpl implements AddProductionPlanService {
     private ProductionPlanDao productionPlanDao;
     @Override
     public void addProductionPlan(ProductionPlan productionPlan) {
-       ProductionPlan oldProductionPlan = null;//productionPlanDao.findByProductIdAndProductionDate(productionPlan.getProductId(),productionPlan.getProductionDate());
+       ProductionPlan oldProductionPlan = productionPlanDao.findByProductIdAndProductionDate(productionPlan.getProductId(),productionPlan.getProductionDate());
         if(oldProductionPlan!=null){
-            oldProductionPlan.setDemandNum(oldProductionPlan.getDemandNum().add(productionPlan.getDemandNum()));
+            if(oldProductionPlan.getDemandNum().compareTo(new BigDecimal(0))==0){
+                oldProductionPlan.setDemandNum(productionPlan.getDemandNum());
+            }
+            oldProductionPlan.setActualProductionNum(oldProductionPlan.getActualProductionNum().add(productionPlan.getActualProductionNum()));
             oldProductionPlan.setProductionNum(oldProductionPlan.getProductionNum().add(productionPlan.getProductionNum()));
-            oldProductionPlan.setPlanNum(oldProductionPlan.getPlanNum().add(productionPlan.getPlanNum()));
             productionPlanDao.save(oldProductionPlan);
         }else{
             productionPlanDao.save(productionPlan);

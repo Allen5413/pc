@@ -30,11 +30,9 @@ public class FindProductionPlanServiceImpl implements FindProductionPlanService 
         for (ProductionPlan productionPlan:productionPlans){
             if(fMaterialId==-1||fMaterialId!=productionPlan.getProductId()){
                 productionPlanNew = new ProductionPlan();
-                productionPlanNew.setStockNum(productionPlan.getStockNum());
                 productionPlanNew.setProductNo(productionPlan.getProductNo());
                 productionPlanNew.setProductName(productionPlan.getProductName());
                 productionPlanNew.setGrossNum(productionPlan.getGrossNum());
-                productionPlanNew.setPlanTotalNum(productionPlan.getPlanTotalNum());
                 plans = new HashMap<String, HashMap<String, Object>>();
                 productionPlanNew.setPlans(plans);
                 resultPlans.add(productionPlanNew);
@@ -44,6 +42,8 @@ public class FindProductionPlanServiceImpl implements FindProductionPlanService 
             demandDate.put("productionNum",productionPlan.getProductionNum());
             demandDate.put("planNum",productionPlan.getPlanNum());
             plans.put(DateUtil.getFormattedString(productionPlan.getProductionDate(),DateUtil.shortDatePattern),demandDate);
+            productionPlanNew.setStockNum(productionPlanNew.getStockNum().add(productionPlan.getStockNum()));
+            productionPlanNew.setPlanTotalNum(productionPlanNew.getPlanTotalNum().add(productionPlan.getPlanTotalNum()));
             fMaterialId = productionPlan.getProductId();
         }
         return resultPlans;
