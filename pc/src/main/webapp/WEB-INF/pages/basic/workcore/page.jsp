@@ -22,15 +22,6 @@
       <td><input type="text" id="code" name="code" value="${param.code}" /></td>
       <td align="right"><label >名称：</label></td>
       <td><input type="text" id="name" name="name" value="${param.name}" /></td>
-      <td align="right"><label >是否公用：</label></td>
-      <td>
-        <select id="isPublic" name="isPublic" onchange="app.changeSelect(this)">
-          <option value=""></option>
-          <option value="null">全部</option>
-          <option value="1" <c:if test="${param.isPublic eq '1'}">selected="selected" </c:if> >是</option>
-          <option value="0" <c:if test="${param.isPublic eq '2'}">selected="selected" </c:if> >否</option>
-        </select>
-      </td>
     </tr>
     <tr height="40">
       <td align="right"><label >工作组：</label></td>
@@ -78,7 +69,6 @@
     <th style="width: 4%;">序号</th>
     <th style="width: 8%;">编号</th>
     <th style="width: 14%;">名称</th>
-    <th style="width: 8%;">是否公用</th>
     <th style="width: 8%;">操作人</th>
     <th style="width: 15%;">操作时间</th>
     <th>操作</th>
@@ -93,7 +83,6 @@
       <td align="center">${status.index+1}</td>
       <td>${workCore.code}</td>
       <td>${workCore.name}</td>
-      <td>${workCore.isPublicStr}</td>
       <td>${workCore.operator}</td>
       <td><fmt:formatDate value="${workCore.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
