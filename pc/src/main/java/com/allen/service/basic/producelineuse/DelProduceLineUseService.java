@@ -7,5 +7,5 @@ package com.allen.service.basic.producelineuse;
  * 创建时间: 2017-03-18 16:05
  */
 public interface DelProduceLineUseService {
-    public void delProduceLineUse(String start,String end);
+    public void delProduceLineUse(String start,String end,long fMaterialId);
 }

@@ -16,7 +16,8 @@ public class PlanDayMaterial {
     private BigDecimal useQtyStock;//实际计划生产量（计算库存后的数量）
     private BigDecimal capacity;//实际生产量
     private BigDecimal balanceCapacity;//剩余产能
-    private boolean isFullWork;//是否已经满负荷生产
+    private BigDecimal storageNum = new BigDecimal(0);//当天入库量
+    private boolean isFullWork = false;//是否已经满负荷生产
     private boolean isLastProduction;//是否最后生产
     private long materialId;//产品id
     private long customerId;//客户id
@@ -144,5 +145,13 @@ public class PlanDayMaterial {
 
     public void setProductType(String productType) {
         this.productType = productType;
+    }
+
+    public BigDecimal getStorageNum() {
+        return storageNum;
+    }
+
+    public void setStorageNum(BigDecimal storageNum) {
+        this.storageNum = storageNum;
     }
 }

@@ -25,9 +25,9 @@ public class AddProductionPlanServiceImpl implements AddProductionPlanService {
             if(oldProductionPlan.getDemandNum().compareTo(new BigDecimal(0))==0){
                 oldProductionPlan.setDemandNum(productionPlan.getDemandNum());
             }
-            oldProductionPlan.setActualProductionNum(oldProductionPlan.getActualProductionNum().add(productionPlan.getActualProductionNum()));
-            oldProductionPlan.setProductionNum(oldProductionPlan.getProductionNum().add(productionPlan.getProductionNum()));
-            oldProductionPlan.setCapacity(oldProductionPlan.getCapacity().add(productionPlan.getCapacity()));
+            oldProductionPlan.setActualProductionNum(productionPlan.getActualProductionNum());
+            oldProductionPlan.setProductionNum(productionPlan.getProductionNum());
+            oldProductionPlan.setCapacity(productionPlan.getCapacity());
             productionPlanDao.save(oldProductionPlan);
         }else{
             productionPlanDao.save(productionPlan);

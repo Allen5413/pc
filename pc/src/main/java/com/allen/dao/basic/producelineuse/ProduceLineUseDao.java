@@ -15,4 +15,5 @@ import java.util.List;
  */
 public interface ProduceLineUseDao extends CrudRepository<ProduceLineUse,Long> {
     public List<ProduceLineUse> findByProductionDateBetween(Date start, Date end);
+    public List<ProduceLineUse> findByProductionDateAndProductId(Date start,long productId);
 }

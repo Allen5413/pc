@@ -20,10 +20,16 @@ public class DelProductionPlanServiceImpl implements DelProductionPlanService {
     @Resource
     private ProductionPlanDao productionPlanDao;
     @Override
-    public void delProductionPlan(String start, String end) {
-        List<ProductionPlan> productionPlans = productionPlanDao.findByProductionDateBetween(
-                DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
-                DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
+    public void delProductionPlan(String start, String end,long fMaterialId) {
+        List<ProductionPlan> productionPlans = null;
+        if(fMaterialId==0){
+            productionPlans = productionPlanDao.findByProductionDateBetween(
+                    DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
+                    DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
+        }else{
+            productionPlans = productionPlanDao.findByProductionDateAndProductId(
+                    DateUtil.getFormatDate(start,DateUtil.shortDatePattern),fMaterialId);
+        }
         if(productionPlans!=null&&productionPlans.size()>0){
             productionPlanDao.delete(productionPlans);
         }

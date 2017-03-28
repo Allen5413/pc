@@ -7,5 +7,5 @@ package com.allen.service.basic.productionplan;
  * 创建时间: 2017-03-21 22:03
  */
 public interface DelProductionPlanService {
-    public void delProductionPlan(String start,String end);
+    public void delProductionPlan(String start,String end,long fMaterialId);
 }

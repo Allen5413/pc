@@ -77,7 +77,7 @@
         <td>${planInfo.planTotalNum}</td>
         <td>${planInfo.stockNum}</td>
         <c:forEach items="${planCycle}" var="plans">
-          <td>${planInfo.plans[plans]['demandNum']}</td>
+          <td>${planInfo.plans[plans]['planNum']}</td>
           <td>${planInfo.plans[plans]['capacity']}</td>
           <td>${planInfo.plans[plans]['actualProductionNum']}</td>
         </c:forEach>
@@ -100,6 +100,8 @@
                            app.msg("请输入结束时间", 1);
                            return;
                      }
+                     $('#q_start').val(start);
+                     $('#q_end').val(end);
                      $.ajax({
                              type: "POST",
                              url:"${pageContext.request.contextPath}/calProPlan/cal.json",

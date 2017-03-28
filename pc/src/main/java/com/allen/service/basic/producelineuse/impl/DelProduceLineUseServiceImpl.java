@@ -20,10 +20,16 @@ public class DelProduceLineUseServiceImpl implements DelProduceLineUseService {
     @Resource
     private ProduceLineUseDao produceLineUseDao;
     @Override
-    public void delProduceLineUse(String start, String end) {
-        List<ProduceLineUse> produceLineUses = produceLineUseDao.findByProductionDateBetween(
-                DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
-                DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
+    public void delProduceLineUse(String start, String end,long fMaterialId) {
+        List<ProduceLineUse> produceLineUses = null;
+        if(fMaterialId==0){
+            produceLineUses = produceLineUseDao.findByProductionDateBetween(
+                    DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
+                    DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
+        }else{
+            produceLineUses = produceLineUseDao.findByProductionDateAndProductId(
+                    DateUtil.getFormatDate(start,DateUtil.shortDatePattern),fMaterialId);
+        }
         if(produceLineUses!=null&&produceLineUses.size()>0){
             produceLineUseDao.delete(produceLineUses);
         }
