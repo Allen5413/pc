@@ -34,8 +34,6 @@ public class AddProduceLineUseServiceImpl implements AddProduceLineUseService{
         params.put("productionDate",produceLineUse.getProductionDate());//生产日期
         params.put("produceLineId",produceLineUse.getProduceLineId());//生产线id
         params.put("workCoreId",produceLineUse.getWorkCoreId());//工作中心id
-        params.put("workTeamId",produceLineUse.getWorkTeamId());//班组id
-        params.put("customerId",produceLineUse.getCustomerId());//客户id
         params.put("productId",produceLineUse.getProductId());//产品id
         params.put("work_time_id",produceLineUse.getWorkTimeId());//产班次
         List<ProduceLineUse> produceLineUses = findProduceLineUseDao.findProduceLineUse(params);
@@ -43,8 +41,8 @@ public class AddProduceLineUseServiceImpl implements AddProduceLineUseService{
             produceLineUseDao.save(produceLineUse);
         }else{
             ProduceLineUse oldUse = produceLineUses.get(0);
-            oldUse.setCapacity(produceLineUse.getCapacity().add(oldUse.getCapacity()));
-            oldUse.setPlanQuantity(produceLineUse.getPlanQuantity().add(oldUse.getPlanQuantity()));
+            oldUse.setCapacity(produceLineUse.getCapacity());
+            oldUse.setPlanQuantity(produceLineUse.getPlanQuantity());
             oldUse.setBalanceCapacity(produceLineUse.getBalanceCapacity());
             oldUse.setBalanceTime(produceLineUse.getBalanceTime());
             oldUse.setAddTime(produceLineUse.getAddTime());

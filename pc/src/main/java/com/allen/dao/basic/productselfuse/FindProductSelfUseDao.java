@@ -38,19 +38,16 @@ public class FindProductSelfUseDao extends BaseQueryDao {
 
     /**
      * 功能：根据产品id查找产品组成明细
-     * @param products 产品集合
-     * @param productId 上级产品id
-     * @param parentProductNum 上级残片用量
-     * @param level 当前产品所在层级
+     * @param planOrder 生产计划
      * @return
      */
-    public void findProductChild(List<Map> products, long productId, BigDecimal parentProductNum, int level){
+
+    public void findProductChild(PlanOrder planOrder){
         Map<String,Object>  paramsMap = new HashMap<String, Object>();
         paramsMap.put("d.FDOCUMENTSTATUS","C");
         paramsMap.put("d.FFORBIDSTATUS","A");
-        paramsMap.put("d.FMATERIALID",Long.valueOf(productId));
-        String fields = "e.FNUMERATOR/e.FDENOMINATOR*"+parentProductNum.doubleValue()
-                +" useQty,e.FOFFSETTIME,e.FSEQ,d.FID,e.FMATERIALID,a.FCATEGORYID,b.FNUMBER,c.FNAME";
+        paramsMap.put("d.FMATERIALID",planOrder.getFMATERIALID());
+        String fields = "e.FNUMERATOR/e.FDENOMINATOR useQty,e.FOFFSETTIME,e.FSEQ,d.FID,e.FMATERIALID,a.FCATEGORYID,b.FNUMBER,c.FNAME";
         String[] tableNames = {"t_eng_bom d,t_eng_bomchild e,t_bd_materialbase a,t_bd_material b,t_bd_material_l c"};
         String defaultWhere = "d.FID = e.FID and e.FMATERIALID = a.FMATERIALID and a.FMATERIALID = b.FMATERIALID and b.FMATERIALID = c.FMATERIALID ";
         Map<String,Boolean> sortMap = new HashMap<String, Boolean>();
@@ -59,31 +56,14 @@ public class FindProductSelfUseDao extends BaseQueryDao {
         if(childProducts==null||childProducts.size()==0){
             return ;
         }
-        level++;
+        List<String> childs = new ArrayList<String>();
         for(Map childProduct:childProducts) {
-            if (products.get(products.size() - 1).get("childs") == null) {
-                if("239".equals(childProduct.get("FCATEGORYID").toString())||
-                        "241".equals(childProduct.get("FCATEGORYID").toString())){
-                    List<String> childs = new ArrayList<String>();
-                    childs.add(childProduct.get("FMATERIALID").toString()+","+childProduct.get("useQty").toString()
-                            +","+childProduct.get("FCATEGORYID").toString());
-                    products.get(products.size() - 1).put("childs", childs);
-                }
-            } else {
-                if ("239".equals(childProduct.get("FCATEGORYID").toString()) ||
-                        "241".equals(childProduct.get("FCATEGORYID").toString())) {
-                    List<String> childs = (List<String>) products.get(products.size() - 1).get("childs");
-                    childs.add(childProduct.get("FMATERIALID").toString() + "," + childProduct.get("useQty").toString()
-                            + "," + childProduct.get("FCATEGORYID").toString());
-                    products.get(products.size() - 1).put("childs", childs);
-                }
+            if ("239".equals(childProduct.get("FCATEGORYID").toString()) ||
+                    "241".equals(childProduct.get("FCATEGORYID").toString())) {
+                childs.add(childProduct.get("FMATERIALID").toString() + "," + childProduct.get("useQty").toString()
+                        + "," + childProduct.get("FCATEGORYID").toString());
             }
         }
-        for(Map childProduct:childProducts){
-            childProduct.put("level",level);
-            products.add(childProduct);
-            findProductChild(products,Long.parseLong(childProduct.get("FMATERIALID").toString()),
-                    new BigDecimal(childProduct.get("useQty").toString()),level);
-        }
+        planOrder.setChilds(childs);
     }
 }

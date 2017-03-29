@@ -32,23 +32,23 @@ public class FindProductByPlanServiceImpl implements FindProductByPlanService {
                 DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
                 DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
         //获取订单产品信息
-        Map<String,List<Map>> productMap = new HashMap<String, List<Map>>();
+        Map<String,PlanOrder> productMap = new LinkedHashMap<String, PlanOrder>();
         for(PlanOrder planOrder:planOrders){
-            Map<String,Object> product = new HashMap<String, Object>();
-            product.put("FMATERIALID",planOrder.getFMATERIALID());//产品id
-            product.put("useQty",1);//产品数量
-            product.put("level",1);//当前产品的层级
-
-            if(productMap.get(planOrder.getFMATERIALID()+"")==null){//同一个产品不用重新取产品组成
-                planOrder.getProducts().add(product);
-                //获取产品组成
-                findProductSelfUseDao.findProductChild(planOrder.getProducts(),planOrder.getFMATERIALID(),new BigDecimal(1),1);
-                productMap.put(planOrder.getFMATERIALID()+"",planOrder.getProducts());
+            if(productMap.get(planOrder.getFMATERIALID()+","+planOrder.getDemandDate())==null){
+                //查询产品第一级
+                findProductSelfUseDao.findProductChild(planOrder);
+                productMap.put(planOrder.getFMATERIALID()+","+planOrder.getDemandDate(),planOrder);
             }else{
-               List<Map> productMaps = productMap.get(planOrder.getFMATERIALID()+"");
-               planOrder.getProducts().addAll(productMaps);
+                PlanOrder planOrderOld = productMap.get(planOrder.getFMATERIALID()+","+planOrder.getDemandDate());
+                planOrderOld.setFFIRMQTY(planOrderOld.getFFIRMQTY().add(planOrder.getFFIRMQTY()));
+                productMap.put(planOrder.getFMATERIALID()+","+planOrder.getDemandDate(),planOrderOld);
             }
         }
-        return planOrders;
+        Set<String> keys = productMap.keySet();
+        List<PlanOrder> result = new ArrayList<PlanOrder>();
+        for (String key:keys){
+            result.add(productMap.get(key));
+        }
+        return result;
     }
 }

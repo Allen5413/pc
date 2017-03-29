@@ -9,6 +9,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -23,13 +24,14 @@ public class FindPlanOrderDao extends BaseQueryDao {
      * 功能：获取订单生产计划
      * @return
      */
+    @Transactional
     public List<PlanOrder> findPlanOrder(Date start, Date end){
         String sql = "select a.FNUMBER,b.FNAME,po.FBILLNO,po.FDOCUMENTSTATUS,po.FFIRMQTY,po.FRELEASETYPE,po.FMATERIALID," +
                 "po.FDEMANDDATE,c.FCUSTID,f.FCATEGORYID " +
                 "from T_BD_MATERIALBASE f,T_BD_MATERIAL a,T_BD_MATERIAL_L b,T_PLN_PLANORDER po left join T_PLN_PLANORDER_B pob on po.FID=pob.FID " +
                 "left join T_SAL_ORDER so on pob.FSALEORDERID=so.FID left join T_BD_CUSTOMER c on so.FCUSTID=c.FCUSTID " +
                 "where f.FMATERIALID = a.FMATERIALID AND a.FMATERIALID = b.FMATERIALID and b.FMATERIALID = po.FMATERIALID " +
-                "and po.FDOCUMENTSTATUS='A' and po.FRELEASETYPE=1 ORDER BY po.FMATERIALID,po.FDEMANDDATE";
+                "and po.FDOCUMENTSTATUS='A' and po.FRELEASETYPE=1 ORDER BY f.FSNO,po.FMATERIALID,po.FDEMANDDATE";
 
         Session session = super.entityManager.unwrap(Session.class);
         SQLQuery sqlQuery = session.createSQLQuery(sql);

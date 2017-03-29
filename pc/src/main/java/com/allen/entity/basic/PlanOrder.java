@@ -1,5 +1,7 @@
 package com.allen.entity.basic;
 
+import com.allen.util.DateUtil;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -34,7 +36,8 @@ public class PlanOrder implements Serializable {
     @Transient
     private String FCATEGORYID;
     @Transient
-    private List<Map> products = new ArrayList<Map>();//具体需要的产品列表信息，最底层排序下来
+    private List<String> childs = new ArrayList<String>();//记录子产品的
+
     public long getFID() {
         return FID;
     }
@@ -91,34 +94,12 @@ public class PlanOrder implements Serializable {
         this.FDEMANDDATE = FDEMANDDATE;
     }
 
-    public List<Map> getProducts() {
-        return products;
+    public List<String> getChilds() {
+        return childs;
     }
 
-    public List<Long> getProductIds(){
-        List<Long> productIds = new ArrayList<Long>();
-        if(products!=null&&products.size()>0){
-            for (Map product:products){
-                productIds.add(Long.valueOf(product.get("FMATERIALID").toString()));
-            }
-        }
-        return  productIds;
-    }
-    public List<Map> getSortProducts(){
-        if(products!=null){
-            Collections.sort(products, new Comparator<Map>() {
-                @Override
-                public int compare(Map obj1, Map obj2) {
-                    int level1 = Integer.parseInt(obj1.get("level").toString());
-                    int level2 = Integer.parseInt(obj2.get("level").toString());
-                    return level1<level2?1:-1;
-                }
-            });
-        }
-        return products;
-    }
-    public void setProducts(List<Map> products) {
-        this.products = products;
+    public void setChilds(List<String> childs) {
+        this.childs = childs;
     }
 
     public long getFCUSTID() {
@@ -151,5 +132,25 @@ public class PlanOrder implements Serializable {
 
     public void setFCATEGORYID(String FCATEGORYID) {
         this.FCATEGORYID = FCATEGORYID;
+    }
+
+    //获取当前产品的下级产品
+    public List<String[]> getSelfChilds(){
+        List<String[]> selfChids = null;
+        if(childs!=null&&childs.size()>0){
+            selfChids = new ArrayList<String[]>();
+            for(String str:childs){
+                String[] materialAttr = str.split(",");
+                //产品是自制半成品 产成品
+                if("239".equals(materialAttr[2])||"241".equals(materialAttr[2])){
+                    selfChids.add(materialAttr);
+                }
+            }
+        }
+        return  selfChids;
+    }
+
+    public String getDemandDate(){
+        return DateUtil.getFormattedString(this.FDEMANDDATE,DateUtil.shortDatePattern);
     }
 }

@@ -36,7 +36,7 @@ import java.util.*;
  * 创建人： ly
  * 创建时间: 2017-03-07 20:58
  */
-@Service
+
 public class CalculationServiceImpl implements CalculationService {
     @Resource
     private FindProductByPlanService findProductByPlanService;
@@ -61,8 +61,8 @@ public class CalculationServiceImpl implements CalculationService {
     @Resource
     private DelProductionPlanService delProductionPlanService;
     private static int SMALL_NUMBER= 4;
-    //格式为{客户ID，产品：[{生产日期:PlanDayMaterial},{生产日期:PlanDayMaterial｝]}
-    Map<String, LinkedHashMap<String, PlanDayMaterial>> produce = new LinkedHashMap<String, LinkedHashMap<String, PlanDayMaterial>>();
+    //格式为{产品ID：[{生产日期:PlanDayMaterial},{生产日期:PlanDayMaterial｝]}
+    Map<Long, LinkedHashMap<String, PlanDayMaterial>> produce = new LinkedHashMap<Long, LinkedHashMap<String, PlanDayMaterial>>();
     PlanDayMaterial planDayMaterial = null;
     String start = null;//计划开始时间
     String end = null;//计划结束时间
@@ -123,25 +123,21 @@ public class CalculationServiceImpl implements CalculationService {
         init();
         //获取生产计划的产品信息
         List<PlanOrder> planOrders = findProductByPlanService.findProductByPlan(start,end);
-        //格式为{客户ID，产品：[{生产日期:PlanDayMaterial},{生产日期:PlanDayMaterial｝]},返回产品id集合
+        //格式为{产品：[{生产日期:PlanDayMaterial},{生产日期:PlanDayMaterial｝]},返回产品id集合
         Set<Long> productIds = formatPlan(planOrders);
         //功能根据生产计划产品  获取库存信息 格式为Map<String,ProductInventory> 产品id 库存信息
         pInvMaps = findStockByFmaterialIdsService.find(productIds.toArray(new Long[productIds.size()]));
         //获取生产计划的keys
-        Set<String> keys = produce.keySet();
+        Set<Long> keys = produce.keySet();
         //生产计划的keys循环产品信息  key有客户id，产品id组成
-        for (String key : keys) {
-            //获取产品id
-            //String[] ids = key.split(",");
+        for (Long key : keys) {
             //产品id
-            fMaterialId = Long.valueOf(key);
-            //客户id
-            customerId = 0;
+            fMaterialId = key;
             //产品的每天生产计划信息
             materialDemandDate = produce.get(key).keySet();
             //初始化产品计划信息
             saveProPlan(key);
-
+            //计算排产信息
             calMaterialDateNew(key,null,true);
             //如果产品实际生产还不够  根据产品库存判断
             if(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))<0){
@@ -256,7 +252,7 @@ public class CalculationServiceImpl implements CalculationService {
                     //根据下级产品的产能，计算当前产品实际的产能数量
                     for (String[] childMaterial : childMaterials) {
                         //根据下级产能计算出当前级别的产品最多能生产好多个
-                        childMaterialCapacity = produce.get(customerId + "," + childMaterial[0]).get(demandDate)
+                        childMaterialCapacity = produce.get(childMaterial[0]).get(demandDate)
                                 .getUseQtyStock().divide(new BigDecimal(childMaterial[1]));
                         if (minChildMaterial.intValue() == 0) {
                             minChildMaterial = childMaterialCapacity;
@@ -552,49 +548,37 @@ public class CalculationServiceImpl implements CalculationService {
     }
     //格式化生产计划
     private  Set<Long> formatPlan(List<PlanOrder> planOrders){
-        String lastProductId = "-1";
+        long lastProductId = -1;
         LinkedHashMap<String, PlanDayMaterial> demandDatePlanQty = null;//每日计划产量
         String produceDate = null;
         Set<Long> productIds = new HashSet<Long>();
         for (PlanOrder planOrder : planOrders) {
-            //获取每个订单的产品信息
-            List<Map> products = planOrder.getSortProducts();
             //生产日期
-            produceDate = DateUtil.getFormattedString(planOrder.getFDEMANDDATE(), DateUtil.shortDatePattern);
-            for (Map product : products) {
-                if (product.get("FCATEGORYID") != null && !"239".equals(product.get("FCATEGORYID").toString()) &&
-                        !"241".equals(product.get("FCATEGORYID").toString())) {//产品不是自制半成品 产成品的不计算
-                    continue;
-                }
-                //planOrder.getFCUSTID() + "," +
-                productIds.add(Long.valueOf(product.get("FMATERIALID").toString()));
-                if ("-1".equals(lastProductId) || produce.get(product.get("FMATERIALID").toString()) == null) {
-                    demandDatePlanQty = new LinkedHashMap<String, PlanDayMaterial>();
-                    produce.put(product.get("FMATERIALID").toString(), demandDatePlanQty);
-                } else {
-                    demandDatePlanQty = produce.get(product.get("FMATERIALID").toString());
-                }
-                if (demandDatePlanQty.get(produceDate) == null) {
-                    planDayMaterial = new PlanDayMaterial();
-                    //计划产能
-                    planDayMaterial.setUseQty(planOrder.getFFIRMQTY().multiply(new BigDecimal(product.get("useQty").toString())));
-                    planDayMaterial.setCustomerId(Long.valueOf(planOrder.getFCUSTID()));
-                    planDayMaterial.setDemandDate(produceDate);
-                    planDayMaterial.setProductName(product.get("FNAME")==null?planOrder.getFNAME():product.get("FNAME").toString());
-                    planDayMaterial.setProductNo(product.get("FNUMBER")==null?planOrder.getFNUMBER():product.get("FNUMBER").toString());
-                    planDayMaterial.setProductType(product.get("FCATEGORYID")==null?planOrder.getFCATEGORYID():product.get("FCATEGORYID").toString());
-                    if (product.get("childs") != null) {
-                        planDayMaterial.setChilds((ArrayList) product.get("childs"));
-                    }
-                    demandDatePlanQty.put(produceDate, planDayMaterial);
-                } else {
-                    //同一产品 同一计划生产日期累加
-                    planDayMaterial = demandDatePlanQty.get(produceDate);
-                    BigDecimal useQty = planOrder.getFFIRMQTY().multiply(new BigDecimal(product.get("useQty").toString()));
-                    planDayMaterial.setUseQty(useQty.add(planDayMaterial.getUseQty()));
-                }
-                lastProductId = product.get("FMATERIALID").toString();
+            produceDate = planOrder.getDemandDate();
+            productIds.add(planOrder.getFMATERIALID());
+            if (lastProductId==-1 || produce.get(planOrder.getFMATERIALID()) == null) {
+                demandDatePlanQty = new LinkedHashMap<String, PlanDayMaterial>();
+                produce.put(planOrder.getFMATERIALID(), demandDatePlanQty);
+            } else {
+                demandDatePlanQty = produce.get(planOrder.getFMATERIALID());
             }
+            if (demandDatePlanQty.get(produceDate) == null) {
+                planDayMaterial = new PlanDayMaterial();
+                //计划产能
+                planDayMaterial.setUseQty(planOrder.getFFIRMQTY());
+                planDayMaterial.setCustomerId(Long.valueOf(planOrder.getFCUSTID()));
+                planDayMaterial.setDemandDate(produceDate);
+                planDayMaterial.setProductName(planOrder.getFNAME());
+                planDayMaterial.setProductNo(planOrder.getFNUMBER());
+                planDayMaterial.setProductType(planOrder.getFCATEGORYID());
+                planDayMaterial.setChilds(planOrder.getChilds());
+                demandDatePlanQty.put(produceDate, planDayMaterial);
+            } else {
+                //同一产品 同一计划生产日期累加
+                planDayMaterial = demandDatePlanQty.get(produceDate);
+                planDayMaterial.setUseQty(planOrder.getFFIRMQTY().add(planDayMaterial.getUseQty()));
+            }
+            lastProductId = planOrder.getFMATERIALID();
         }
         return  productIds;
     }
@@ -684,7 +668,7 @@ public class CalculationServiceImpl implements CalculationService {
         //删除计划时间已经存在的数据
         delProductionPlanService.delProductionPlan(start,end,0);
         delProduceLineUseService.delProduceLineUse(start,end,0);
-        produce = new LinkedHashMap<String, LinkedHashMap<String, PlanDayMaterial>>();
+        produce = new LinkedHashMap<Long, LinkedHashMap<String, PlanDayMaterial>>();
         planDayMaterial = null;
         pInvMaps = null;
         materialDemandDate = null;
@@ -721,7 +705,7 @@ public class CalculationServiceImpl implements CalculationService {
         workGroup = new HashMap<String, BigDecimal>();
     }
     //初始化生产计划产能信息
-    public void saveProPlan(String key){
+    public void saveProPlan(Long key){
         int first = 0;
         //循环生产计划时间
         for (String demandDate:materialDemandDate) {
@@ -756,7 +740,7 @@ public class CalculationServiceImpl implements CalculationService {
      * @return
      * @throws Exception
      */
-    private void calMaterialDateNew(String key,String lessDemandDate,boolean isBack) throws Exception {
+    private void calMaterialDateNew(Long key,String lessDemandDate,boolean isBack) throws Exception {
         //循环生产计划时间
         for (String demandDate : materialDemandDate) {
             //产品某天产能不够 重新循环的时候超过不够那天退出循环，返回还差的产能值
@@ -921,6 +905,8 @@ public class CalculationServiceImpl implements CalculationService {
             }
         }
     }
+
+
     /**
      * 计算排班信息
      * @param proNum
