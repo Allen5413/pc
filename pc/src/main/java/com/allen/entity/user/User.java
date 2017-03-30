@@ -7,7 +7,7 @@ import java.util.Date;
  * Created by Allen on 2016/12/12.
  */
 @Entity
-@Table(name = "user")
+@Table(name = "user_l")
 public class User {
     public static final int STATE_DELETE = 0;     //删除
     public static final int STATE_ENABLE = 1;     //启用
