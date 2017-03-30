@@ -59,7 +59,7 @@
       <td>${workTime.beginTimeStr}</td>
       <td>${workTime.endTimeStr}</td>
       <td>${workTime.sno}</td>
-      <td>${workTime.timeSub}</td>
+      <td>${workTime.timeSubStr}</td>
       <td>${workTime.operator}</td>
       <td><fmt:formatDate value="${workTime.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
