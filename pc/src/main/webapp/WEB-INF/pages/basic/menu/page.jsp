@@ -16,7 +16,7 @@
   <c:set var="isShowSetResourceBtn" value="${my:isPermission(requestScope.resourceId,'setResource',sessionScope.menuMap)}" />
 
   <label >菜单名称：</label>
-  <input type="text" id="name" name="name" value="${param.name}" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="text" id="name" name="name" style="height: 28px;" value="${param.name}" />&nbsp;&nbsp;&nbsp;&nbsp;
 
   <c:if test="${isShowAddBtn}">
     <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"

@@ -73,8 +73,9 @@ public class DelProduceLineCoreProductByIdServiceImpl implements DelProduceLineC
             throw new BusinessException("没有找到生产线信息");
         }
         if(null == product){
-            throw new BusinessException("没有找到产品信息");
-        }
+            //throw new BusinessException("没有找到产品信息");
+            return;
+       }
 
         //查找该生产线下面是否只有一个中心在关联该产品，是就要删除，有多个的话就不删除
         List<ProduceLineCoreProduct> produceLineCoreProductList = findProduceLineCoreProductDao.findByPlIdAndPId(plId, pId);

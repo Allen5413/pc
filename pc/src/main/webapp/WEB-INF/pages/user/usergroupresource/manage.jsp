@@ -36,7 +36,7 @@
       </div>
     </div>
   </div>
-  <div class="am-panel am-panel-primary no-margin-bottom" style="width:69%; float: left;margin-left: 10px;">
+  <div class="am-panel am-panel-primary no-margin-bottom" style="width:68%; float: left;margin-left: 10px;">
     <div class="am-panel-hd am-cf">菜单信息</div>
     <div id="notWith" class="am-in">
         <c:if test="${my:isPermission(requestScope.resourceId,'saveAuth',sessionScope.menuMap)}">

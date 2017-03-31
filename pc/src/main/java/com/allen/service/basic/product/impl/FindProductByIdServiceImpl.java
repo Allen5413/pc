@@ -31,7 +31,7 @@ public class FindProductByIdServiceImpl implements FindProductByIdService {
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("a.FMATERIALID",Long.valueOf(id));
         List<Map> products = findProductDao.findByMap(params,null);
-        if(products!=null){
+        if(products!=null&&products.size()>0){
             Map result = products.get(0);
             params.clear();
             params.put("d.FMATERIALID",Long.valueOf(id));

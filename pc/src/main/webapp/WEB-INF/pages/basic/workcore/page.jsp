@@ -16,14 +16,12 @@
   <c:set var="isShowSetWorkGroupBtn" value="${my:isPermission(requestScope.resourceId,'setWorkGroup',sessionScope.menuMap)}" />
   <c:set var="isShowSetProduceLineBtn" value="${my:isPermission(requestScope.resourceId,'setProduceLine',sessionScope.menuMap)}" />
 
-  <table width="90%">
+  <table width="97%">
     <tr height="40">
       <td align="right"><label >编码：</label></td>
-      <td><input type="text" id="code" name="code" value="${param.code}" /></td>
+      <td><input type="text" id="code" name="code" style="height: 28px;" value="${param.code}" /></td>
       <td align="right"><label >名称：</label></td>
-      <td><input type="text" id="name" name="name" value="${param.name}" /></td>
-    </tr>
-    <tr height="40">
+      <td><input type="text" id="name" name="name" style="height: 28px;" value="${param.name}" /></td>
       <td align="right"><label >工作组：</label></td>
       <td>
         <select id="wgId" name="wgId" data-am-selected="{maxHeight: 500, searchBox: 1}" onchange="app.changeSelect(this)">
@@ -44,16 +42,15 @@
           </c:forEach>
         </select>
       </td>
-    </tr>
-    <c:if test="${isShowFindBtn}">
-      <tr>
-        <td colspan="99" style="padding-left:20px;">
+      <c:if test="${isShowFindBtn}">
+        <td style="width:100px;">
           <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
                   data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
                   onclick="app.searchFormPage($('#pageForm'), $('#pageForm').attr('action'), this)"><span class="am-icon-search"></span> 查询</button>
         </td>
-      </tr>
-    </c:if>
+      </c:if>
+    </tr>
+
   </table>
 </form>
 <p /><p />

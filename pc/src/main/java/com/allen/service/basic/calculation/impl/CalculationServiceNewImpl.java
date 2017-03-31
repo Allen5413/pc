@@ -390,7 +390,9 @@ public class CalculationServiceNewImpl implements CalculationService {
                 }else {
                     workGroup.put(demandDate+","+classGroupId,workTime);
                 }
-                BigDecimal addTime = workGroup.get(demandDate+","+classGroupId).subtract(new BigDecimal(8));
+                BigDecimal currentWorkTime = getWorkTime(workTimeInfo.get("begin_time").toString(),
+                        workTimeInfo.get("end_time").toString());
+                BigDecimal addTime = workGroup.get(demandDate+","+classGroupId).subtract(currentWorkTime);
                 BigDecimal balanceTime = maxWorkTotalTime.subtract(workGroup.get(demandDate+","+classGroupId));
                 saveProduceLineUse(fMaterialId,workCoreId,pLineId,0,productionDate,
                         workTimeInfo.get("work_time_id").toString(),classGroupId,new Long(1),addTime.compareTo(new BigDecimal(0))>0?addTime:new BigDecimal(0),
@@ -567,6 +569,9 @@ public class CalculationServiceNewImpl implements CalculationService {
     public void saveProPlan(Long fMaterialId){
         int first = 0;
         //循环生产计划时间
+        if(pInvMaps==null){
+            pInvMaps = new HashMap<Long, MaterialStock>();
+        }
         for (String demandDate:materialDemandDate) {
             planDayMaterial = produce.get(fMaterialId).get(demandDate);
             //获取库存信息
@@ -630,4 +635,17 @@ public class CalculationServiceNewImpl implements CalculationService {
         }
         return pLines;
     }
+    /**
+     * 功能:获取最小工作时间
+     *
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    private BigDecimal getWorkTime(String startTime, String endTime) {
+        Date start = DateUtil.getFormatDate(startTime, DateUtil.longDatePattern);
+        Date end = DateUtil.getFormatDate(endTime, DateUtil.longDatePattern);
+        return new BigDecimal((float) (end.getTime() - start.getTime()) / 3600 / 1000).setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
+
 }
