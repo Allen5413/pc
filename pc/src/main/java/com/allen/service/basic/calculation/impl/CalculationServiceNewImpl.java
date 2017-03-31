@@ -254,12 +254,15 @@ public class CalculationServiceNewImpl implements CalculationService {
                     //根据下级产品的产能，计算当前产品实际的产能数量
                     for (String[] childMaterial : childMaterials) {
                         //根据下级产能计算出当前级别的产品最多能生产好多个
-                        childMaterialCapacity = produce.get(childMaterial[0]).get(demandDate)
-                                .getUseQtyStock().divide(new BigDecimal(childMaterial[1]));
-                        if (minChildMaterial.intValue() == 0) {
-                            minChildMaterial = childMaterialCapacity;
-                        } else {
-                            minChildMaterial = minChildMaterial.compareTo(childMaterialCapacity) > 0 ? childMaterialCapacity : minChildMaterial;
+                        if(produce.get(childMaterial[0])!=null&&produce.get(childMaterial[0]).get(demandDate)
+                                .getUseQtyStock()!=null){
+                            childMaterialCapacity = produce.get(childMaterial[0]).get(demandDate)
+                                    .getUseQtyStock().divide(new BigDecimal(childMaterial[1]));
+                            if (minChildMaterial.intValue() == 0) {
+                                minChildMaterial = childMaterialCapacity;
+                            } else {
+                                minChildMaterial = minChildMaterial.compareTo(childMaterialCapacity) > 0 ? childMaterialCapacity : minChildMaterial;
+                            }
                         }
                     }
                     //生产产品计划量 与下级产品的最小数量对比
@@ -568,6 +571,12 @@ public class CalculationServiceNewImpl implements CalculationService {
             planDayMaterial = produce.get(fMaterialId).get(demandDate);
             //获取库存信息
             materialStock = pInvMaps.get(fMaterialId);
+            if(materialStock==null){
+                materialStock = new MaterialStock();
+                materialStock.setFQTY(new BigDecimal(0));
+                materialStock.setFSAFESTOCK(new BigDecimal(0));
+                pInvMaps.put(fMaterialId,materialStock);
+            }
             productionPlan = new ProductionPlan();
             productionPlan.setProductId(fMaterialId);
             productionPlan.setProductionDate(DateUtil.getFormatDate(demandDate,DateUtil.shortDatePattern));
