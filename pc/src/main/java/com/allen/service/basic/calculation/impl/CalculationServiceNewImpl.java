@@ -19,6 +19,7 @@ import com.allen.service.basic.productinventory.EditProductInventoryService;
 import com.allen.service.basic.productinventory.FindProInvByPIdService;
 import com.allen.service.basic.productionplan.AddProductionPlanService;
 import com.allen.service.basic.productionplan.DelProductionPlanService;
+import com.allen.service.basic.productionplan.ReturnProductionPlanService;
 import com.allen.util.DateUtil;
 import com.allen.util.StringUtil;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,8 @@ public class CalculationServiceNewImpl implements CalculationService {
     private DelProduceLineUseService delProduceLineUseService;
     @Resource
     private DelProductionPlanService delProductionPlanService;
+    @Resource
+    private ReturnProductionPlanService returnProductionPlanService;
     //保留小数位数
     private static final int SMALL_NUMBER= 0;
     private static final BigDecimal ONE = new BigDecimal(1);
@@ -179,7 +182,10 @@ public class CalculationServiceNewImpl implements CalculationService {
                 }
             }
         }
-        return false;
+        //反写生产计划
+        returnProductionPlanService.returnPlan(DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
+                DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
+        return true;
     }
     /**
      * 功能：计算产品每天的产能
@@ -329,21 +335,23 @@ public class CalculationServiceNewImpl implements CalculationService {
             materialStock.setFQTY(lineTotalCapacity.subtract(useQty));
             pInvMaps.put(fMaterialId, materialStock);
             //所有生产线满负荷生产  不能满足生产计划
-            productionPlan = new ProductionPlan();
-            productionPlan.setProductId(fMaterialId);
-            productionPlan.setProductionDate(productionDate);
-            productionPlan.setDemandNum(useQty);
-            productionPlan.setProductionNum(lineTotalCapacity);
-            productionPlan.setPlanNum(planDayMaterial.getUseQty());
-            productionPlan.setGrossNum(new BigDecimal(0));
-            productionPlan.setPlanTotalNum(new BigDecimal(0));
-            productionPlan.setStockNum(new BigDecimal(0));
-            productionPlan.setProductType(planDayMaterial.getProductType());
-            productionPlan.setProductNo(planDayMaterial.getProductNo());
-            productionPlan.setProductName(planDayMaterial.getProductName());
-            productionPlan.setActualProductionNum(actualProductionNum);
-            productionPlan.setCapacity(totalEighthCapacity);
-            addProductionPlanService.addProductionPlan(productionPlan);
+            if(actualProductionNum.compareTo(BigDecimal.ZERO)>0){
+                productionPlan = new ProductionPlan();
+                productionPlan.setProductId(fMaterialId);
+                productionPlan.setProductionDate(productionDate);
+                productionPlan.setDemandNum(useQty);
+                productionPlan.setProductionNum(lineTotalCapacity);
+                productionPlan.setPlanNum(planDayMaterial.getUseQty());
+                productionPlan.setGrossNum(new BigDecimal(0));
+                productionPlan.setPlanTotalNum(new BigDecimal(0));
+                productionPlan.setStockNum(new BigDecimal(0));
+                productionPlan.setProductType(planDayMaterial.getProductType());
+                productionPlan.setProductNo(planDayMaterial.getProductNo());
+                productionPlan.setProductName(planDayMaterial.getProductName());
+                productionPlan.setActualProductionNum(actualProductionNum);
+                productionPlan.setCapacity(totalEighthCapacity);
+                addProductionPlanService.addProductionPlan(productionPlan);
+            }
             if (lineTotalCapacity.compareTo(useQty) < 0) {
                 if(isBack) {
                     calMaterialDate(fMaterialId, demandDate, true);

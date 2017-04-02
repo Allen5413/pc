@@ -3,6 +3,7 @@ package com.allen.dao.basic.planorder;
 import com.allen.dao.BaseQueryDao;
 import com.allen.dao.PageInfo;
 import com.allen.entity.basic.PlanOrder;
+import com.allen.entity.basic.ProduceLineUse;
 import com.allen.entity.basic.Product;
 import com.allen.util.DateUtil;
 import org.hibernate.SQLQuery;
@@ -24,7 +25,6 @@ public class FindPlanOrderDao extends BaseQueryDao {
      * 功能：获取订单生产计划
      * @return
      */
-    @Transactional
     public List<PlanOrder> findPlanOrder(Date start, Date end){
         String sql = "select a.FNUMBER,b.FNAME,po.FBILLNO,po.FDOCUMENTSTATUS,po.FFIRMQTY,po.FRELEASETYPE,po.FMATERIALID," +
                 "po.FDEMANDDATE,c.FCUSTID,f.FCATEGORYID " +
@@ -43,7 +43,7 @@ public class FindPlanOrderDao extends BaseQueryDao {
         if(results!=null&&results.size()>0){
             for(Map map:results){
                 planOrder = new PlanOrder();
-                planOrder.setFBILLNO(map.get("FBILLNO").toString());
+                planOrder.setFBILLNO(map.get("FBILLNO")==null?"":map.get("FBILLNO").toString());
                 planOrder.setFDOCUMENTSTATUS(map.get("FDOCUMENTSTATUS").toString());
                 planOrder.setFFIRMQTY(new BigDecimal(map.get("FFIRMQTY").toString()));
                 planOrder.setFRELEASETYPE(map.get("FRELEASETYPE").toString());
@@ -57,5 +57,22 @@ public class FindPlanOrderDao extends BaseQueryDao {
             }
         }
         return planOrders;
+    }
+
+    /**
+     * 查询生产计划
+     * @param fMaterialId
+     * @param demandDate
+     * @return
+     */
+    public List<PlanOrder> findPlanOrderByMaterIdAndDemandDate(long fMaterialId, Date demandDate){
+        String fields = "p";
+        String[] tableNames = {"PlanOrder p"};
+        Map<String,Object> params = new HashMap<String, Object>();
+        params.put("p.FMATERIALID",fMaterialId);
+        params.put("p.FDEMANDDATE",demandDate);
+        params.put("p.FRELEASETYPE","1");
+        params.put("p.FDOCUMENTSTATUS","A");
+        return super.findListByHql(tableNames,fields,params,null,PlanOrder.class);
     }
 }

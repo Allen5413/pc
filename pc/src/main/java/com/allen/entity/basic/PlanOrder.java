@@ -2,10 +2,7 @@ package com.allen.entity.basic;
 
 import com.allen.util.DateUtil;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
@@ -20,13 +17,22 @@ import java.util.*;
 @Table(name="t_pln_planorder")
 public class PlanOrder implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long FID;
     private String FBILLNO;//单据编号
     private String FDOCUMENTSTATUS;//单据状态 A为创建
     private BigDecimal FFIRMQTY;//确认订单量
-    private String FRELEASETYPE;//投放状态  1为生产订单
+    private String FRELEASETYPE;//数据类型  1为生产订单
     private long FMATERIALID;//产品id
     private Date FDEMANDDATE;//需求日期
+    private String FDATASOURCE;//数据来源
+    private BigDecimal FBASEDEMANDQTY;//基本单位需求量
+    private BigDecimal FBASEORDERQTY;//基本单位计划量
+    private BigDecimal FBASESUGQTY;//本单位建议量
+    private BigDecimal FORDERQTY;//计划订单量
+    private BigDecimal FDEMANDQTY;//需求数量
+    private BigDecimal FSUGQTY;//建议订单量
+    private BigDecimal FBASEFIRMQTY;//
     @Transient
     private long FCUSTID;//
     @Transient
@@ -134,6 +140,70 @@ public class PlanOrder implements Serializable {
         this.FCATEGORYID = FCATEGORYID;
     }
 
+    public String getFDATASOURCE() {
+        return FDATASOURCE;
+    }
+
+    public void setFDATASOURCE(String FDATASOURCE) {
+        this.FDATASOURCE = FDATASOURCE;
+    }
+
+    public BigDecimal getFBASEDEMANDQTY() {
+        return FBASEDEMANDQTY;
+    }
+
+    public void setFBASEDEMANDQTY(BigDecimal FBASEDEMANDQTY) {
+        this.FBASEDEMANDQTY = FBASEDEMANDQTY;
+    }
+
+    public BigDecimal getFBASEORDERQTY() {
+        return FBASEORDERQTY;
+    }
+
+    public void setFBASEORDERQTY(BigDecimal FBASEORDERQTY) {
+        this.FBASEORDERQTY = FBASEORDERQTY;
+    }
+
+    public BigDecimal getFBASESUGQTY() {
+        return FBASESUGQTY;
+    }
+
+    public void setFBASESUGQTY(BigDecimal FBASESUGQTY) {
+        this.FBASESUGQTY = FBASESUGQTY;
+    }
+
+    public BigDecimal getFORDERQTY() {
+        return FORDERQTY;
+    }
+
+    public void setFORDERQTY(BigDecimal FORDERQTY) {
+        this.FORDERQTY = FORDERQTY;
+    }
+
+    public BigDecimal getFDEMANDQTY() {
+        return FDEMANDQTY;
+    }
+
+    public void setFDEMANDQTY(BigDecimal FDEMANDQTY) {
+        this.FDEMANDQTY = FDEMANDQTY;
+    }
+
+    public BigDecimal getFSUGQTY() {
+        return FSUGQTY;
+    }
+
+    public void setFSUGQTY(BigDecimal FSUGQTY) {
+        this.FSUGQTY = FSUGQTY;
+    }
+
+    public BigDecimal getFBASEFIRMQTY() {
+        return FBASEFIRMQTY;
+    }
+
+    public void setFBASEFIRMQTY(BigDecimal FBASEFIRMQTY) {
+        this.FBASEFIRMQTY = FBASEFIRMQTY;
+    }
+
     //获取当前产品的下级产品
     public List<String[]> getSelfChilds(){
         List<String[]> selfChids = null;
@@ -153,4 +223,5 @@ public class PlanOrder implements Serializable {
     public String getDemandDate(){
         return DateUtil.getFormattedString(this.FDEMANDDATE,DateUtil.shortDatePattern);
     }
+
 }
