@@ -17,7 +17,6 @@ import java.util.*;
 @Table(name="t_pln_planorder")
 public class PlanOrder implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long FID;
     private String FBILLNO;//单据编号
     private String FDOCUMENTSTATUS;//单据状态 A为创建

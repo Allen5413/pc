@@ -75,4 +75,5 @@ public class FindPlanOrderDao extends BaseQueryDao {
         params.put("p.FDOCUMENTSTATUS","A");
         return super.findListByHql(tableNames,fields,params,null,PlanOrder.class);
     }
+
 }
