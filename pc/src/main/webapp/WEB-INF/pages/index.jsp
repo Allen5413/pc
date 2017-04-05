@@ -35,7 +35,7 @@
 
 <header class="am-topbar am-topbar-inverse admin-header">
   <div class="am-topbar-brand">
-    <strong style="font-size: 20px;">Allen管理系统</strong>
+    <strong style="font-size: 20px;">高级排程系统</strong>
   </div>
 
   <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
@@ -89,7 +89,7 @@
 
       <div class="am-tabs-bd" style="height:100%; overflow-y:auto;">
         <div class="am-tab-panel am-fade am-in am-active" id="contentPage">
-          欢迎使用Allen的后台管理系统
+          欢迎使用高级排程系统
         </div>
       </div>
       <footer data-am-widget="footer" class="am-footer am-footer-default no-padding" style="padding: 0 !important;" data-am-footer="{  }">
