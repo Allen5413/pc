@@ -21,8 +21,8 @@ public class PlanOrderA implements Serializable {
     private String FMRPNOTE;    //计划标签
     private BigDecimal FYIELDRATE;//成品率
     private BigDecimal FBASEYIELDQTY;//基本单位成品数量
-    private int FExtendControl; //净需求扩展属性
-    private String FReleaseBillType;//投放单据类型
+    private int FEXTENDCONTROL; //净需求扩展属性
+    private String FRELEASEBILLTYPE;//投放单据类型
 
     public long getFENTRYID() {
         return FENTRYID;
@@ -72,19 +72,19 @@ public class PlanOrderA implements Serializable {
         this.FBASEYIELDQTY = FBASEYIELDQTY;
     }
 
-    public int getFExtendControl() {
-        return FExtendControl;
+    public int getFEXTENDCONTROL() {
+        return FEXTENDCONTROL;
     }
 
-    public void setFExtendControl(int FExtendControl) {
-        this.FExtendControl = FExtendControl;
+    public void setFEXTENDCONTROL(int FEXTENDCONTROL) {
+        this.FEXTENDCONTROL = FEXTENDCONTROL;
     }
 
-    public String getFReleaseBillType() {
-        return FReleaseBillType;
+    public String getFRELEASEBILLTYPE() {
+        return FRELEASEBILLTYPE;
     }
 
-    public void setFReleaseBillType(String FReleaseBillType) {
-        this.FReleaseBillType = FReleaseBillType;
+    public void setFRELEASEBILLTYPE(String FRELEASEBILLTYPE) {
+        this.FRELEASEBILLTYPE = FRELEASEBILLTYPE;
     }
 }

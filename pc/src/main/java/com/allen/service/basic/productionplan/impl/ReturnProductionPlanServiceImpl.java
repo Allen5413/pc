@@ -49,7 +49,11 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
                 if(productionPlan.getActualProductionNum().compareTo(ZERO)<=0){
                     continue;
                 }
-
+                if(planOrders!=null&&planOrders.size()>0){
+                    for (PlanOrder planOrderOld:planOrders){
+                        planOrderDao.delete(planOrderOld);
+                    }
+                }
                 zPlanOrder = new ZPlanOrder();
                 zPlanOrder.setColumn1(1);
                 zPlanOrder = zPlnPlanOrderDao.save(zPlanOrder);
@@ -69,13 +73,13 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
                 planOrder.setFBASEFIRMQTY(productionPlan.getActualProductionNum());
                 planOrder.setFSUGQTY(productionPlan.getActualProductionNum());
                 planOrder.setFFORMID("PLN_PLANORDER");
-                planOrder.setFBILLTYPEID("77ddfb5c4daa44d288b4e9efbd768e94");
+                planOrder.setFBILLTYPEID("4c1b07214adb4651aa2437ef48738af9");
                 planOrder.setFDEMANDORGID(100001);
                 planOrder.setFSUPPLYORGID(100001);
                 planOrder.setFINSTOCKORGID(100001);
                 planOrder.setFSUPPLIERID(0);
                 planOrder.setFPLANERID(0);
-                planOrder.setFOWNERTYPEID("");
+                planOrder.setFOWNERTYPEID("BD_OwnerOrg");
                 planOrder.setFOWNERID(100001);
                 planOrder.setFBASEUNITID(10101);
                 planOrder.setFUNITID(10101);
@@ -92,6 +96,7 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
                 planOrder.setFCOMPUTERNO("MPS000004");
                 planOrder.setFSUPPLYMATERIALID(productionPlan.getProductId());
                 planOrder.setFCOMPUTEID("00155db9091bab2411e7155132858b4f");
+                planOrder.setFBILLNO("MPS"+findPlanOrderDao.findMaxBillNo());
                 zPlnPlanOrderDao.delete(zPlanOrder);
 
                 planOrderDao.save(planOrder);

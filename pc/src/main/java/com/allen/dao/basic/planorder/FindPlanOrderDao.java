@@ -6,6 +6,7 @@ import com.allen.entity.basic.PlanOrder;
 import com.allen.entity.basic.ProduceLineUse;
 import com.allen.entity.basic.Product;
 import com.allen.util.DateUtil;
+import com.allen.util.StringUtil;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
@@ -76,4 +77,11 @@ public class FindPlanOrderDao extends BaseQueryDao {
         return super.findListByHql(tableNames,fields,params,null,PlanOrder.class);
     }
 
+    public String findMaxBillNo(){
+        String sql = "select max(SUBSTRING(FBillno,4,len(FBillno))) as a from t_pln_planorder";
+        Session session = super.entityManager.unwrap(Session.class);
+        SQLQuery sqlQuery = session.createSQLQuery(sql);
+        Object billNo = sqlQuery.uniqueResult();
+        return StringUtil.haoAddOne_2(Long.valueOf(billNo.toString())+"");
+    }
 }

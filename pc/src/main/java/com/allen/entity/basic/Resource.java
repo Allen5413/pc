@@ -1,6 +1,7 @@
 package com.allen.entity.basic;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -8,7 +9,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "resource")
-public class Resource {
+public class Resource implements Serializable{
     public static final int MENU = 1;     //删除
     public static final int BUTTON = 2;     //启用
 

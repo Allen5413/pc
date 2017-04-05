@@ -35,7 +35,7 @@ public class AddPlanOrderAServiceImpl implements AddPlanOrderAService {
         planOrderA.setFISSKIP('0');
         planOrderA.setFYIELDRATE(new BigDecimal(100));
         planOrderA.setFBASEYIELDQTY(FBASEYIELDQTY);
-        planOrderA.setFExtendControl(0);
+        planOrderA.setFEXTENDCONTROL(0);
         planOrderADao.save(planOrderA);
 
         zPlnPlanOrderADao.delete(zPlanOrderA);
