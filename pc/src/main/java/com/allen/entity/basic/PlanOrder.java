@@ -32,6 +32,31 @@ public class PlanOrder implements Serializable {
     private BigDecimal FDEMANDQTY;//需求数量
     private BigDecimal FSUGQTY;//建议订单量
     private BigDecimal FBASEFIRMQTY;//
+    private String FFORMID;//事物类型
+    private String FBILLTYPEID;//单据类型
+    private long FDEMANDORGID;//需求组织
+    private long FSUPPLYORGID;//供应组织
+    private long FINSTOCKORGID;//入库组织
+    private long FBOMID;//bom编号
+    private long FSUPPLIERID;//供应商
+    private long FPLANERID;//计划员
+    private String FOWNERTYPEID;//货主类型
+    private long FOWNERID;//货主id
+    private String FCOMPUTERNO;//运行号
+    private long FBASEUNITID;//基本单位
+    private long FUNITID;//单位
+    private Date FPLANSTARTDATE;//建议采购或开工时间
+    private Date FPLANFINISHDATE;//建议到货或完成时间
+    private Date FFIRMSTARTDATE;//确认采购或开工时间
+    private Date FFIRMFINISHDATE;//确认到货或完成时间
+    private long FCREATORID;
+    private Date FCREATEDATE;
+    private long FMODIFIERID;
+    private Date FMODIFYDATE;
+    private long FAPPROVERID;
+    private long FAUXPROPID;
+    private long FSUPPLYMATERIALID;
+    private String FCOMPUTEID;
     @Transient
     private long FCUSTID;//
     @Transient
@@ -201,6 +226,206 @@ public class PlanOrder implements Serializable {
 
     public void setFBASEFIRMQTY(BigDecimal FBASEFIRMQTY) {
         this.FBASEFIRMQTY = FBASEFIRMQTY;
+    }
+
+    public String getFFORMID() {
+        return FFORMID;
+    }
+
+    public void setFFORMID(String FFORMID) {
+        this.FFORMID = FFORMID;
+    }
+
+    public String getFBILLTYPEID() {
+        return FBILLTYPEID;
+    }
+
+    public void setFBILLTYPEID(String FBILLTYPEID) {
+        this.FBILLTYPEID = FBILLTYPEID;
+    }
+
+    public long getFDEMANDORGID() {
+        return FDEMANDORGID;
+    }
+
+    public void setFDEMANDORGID(long FDEMANDORGID) {
+        this.FDEMANDORGID = FDEMANDORGID;
+    }
+
+    public long getFSUPPLYORGID() {
+        return FSUPPLYORGID;
+    }
+
+    public void setFSUPPLYORGID(long FSUPPLYORGID) {
+        this.FSUPPLYORGID = FSUPPLYORGID;
+    }
+
+    public long getFINSTOCKORGID() {
+        return FINSTOCKORGID;
+    }
+
+    public void setFINSTOCKORGID(long FINSTOCKORGID) {
+        this.FINSTOCKORGID = FINSTOCKORGID;
+    }
+
+    public long getFBOMID() {
+        return FBOMID;
+    }
+
+    public void setFBOMID(long FBOMID) {
+        this.FBOMID = FBOMID;
+    }
+
+    public long getFSUPPLIERID() {
+        return FSUPPLIERID;
+    }
+
+    public void setFSUPPLIERID(long FSUPPLIERID) {
+        this.FSUPPLIERID = FSUPPLIERID;
+    }
+
+    public long getFPLANERID() {
+        return FPLANERID;
+    }
+
+    public void setFPLANERID(long FPLANERID) {
+        this.FPLANERID = FPLANERID;
+    }
+
+    public String getFOWNERTYPEID() {
+        return FOWNERTYPEID;
+    }
+
+    public void setFOWNERTYPEID(String FOWNERTYPEID) {
+        this.FOWNERTYPEID = FOWNERTYPEID;
+    }
+
+    public long getFOWNERID() {
+        return FOWNERID;
+    }
+
+    public void setFOWNERID(long FOWNERID) {
+        this.FOWNERID = FOWNERID;
+    }
+
+    public String getFCOMPUTERNO() {
+        return FCOMPUTERNO;
+    }
+
+    public void setFCOMPUTERNO(String FCOMPUTERNO) {
+        this.FCOMPUTERNO = FCOMPUTERNO;
+    }
+
+    public long getFBASEUNITID() {
+        return FBASEUNITID;
+    }
+
+    public void setFBASEUNITID(long FBASEUNITID) {
+        this.FBASEUNITID = FBASEUNITID;
+    }
+
+    public long getFUNITID() {
+        return FUNITID;
+    }
+
+    public void setFUNITID(long FUNITID) {
+        this.FUNITID = FUNITID;
+    }
+
+    public Date getFPLANSTARTDATE() {
+        return FPLANSTARTDATE;
+    }
+
+    public void setFPLANSTARTDATE(Date FPLANSTARTDATE) {
+        this.FPLANSTARTDATE = FPLANSTARTDATE;
+    }
+
+    public Date getFPLANFINISHDATE() {
+        return FPLANFINISHDATE;
+    }
+
+    public void setFPLANFINISHDATE(Date FPLANFINISHDATE) {
+        this.FPLANFINISHDATE = FPLANFINISHDATE;
+    }
+
+    public Date getFFIRMSTARTDATE() {
+        return FFIRMSTARTDATE;
+    }
+
+    public void setFFIRMSTARTDATE(Date FFIRMSTARTDATE) {
+        this.FFIRMSTARTDATE = FFIRMSTARTDATE;
+    }
+
+    public Date getFFIRMFINISHDATE() {
+        return FFIRMFINISHDATE;
+    }
+
+    public void setFFIRMFINISHDATE(Date FFIRMFINISHDATE) {
+        this.FFIRMFINISHDATE = FFIRMFINISHDATE;
+    }
+
+    public long getFCREATORID() {
+        return FCREATORID;
+    }
+
+    public void setFCREATORID(long FCREATORID) {
+        this.FCREATORID = FCREATORID;
+    }
+
+    public Date getFCREATEDATE() {
+        return FCREATEDATE;
+    }
+
+    public void setFCREATEDATE(Date FCREATEDATE) {
+        this.FCREATEDATE = FCREATEDATE;
+    }
+
+    public long getFMODIFIERID() {
+        return FMODIFIERID;
+    }
+
+    public void setFMODIFIERID(long FMODIFIERID) {
+        this.FMODIFIERID = FMODIFIERID;
+    }
+
+    public Date getFMODIFYDATE() {
+        return FMODIFYDATE;
+    }
+
+    public void setFMODIFYDATE(Date FMODIFYDATE) {
+        this.FMODIFYDATE = FMODIFYDATE;
+    }
+
+    public long getFAPPROVERID() {
+        return FAPPROVERID;
+    }
+
+    public void setFAPPROVERID(long FAPPROVERID) {
+        this.FAPPROVERID = FAPPROVERID;
+    }
+
+    public long getFAUXPROPID() {
+        return FAUXPROPID;
+    }
+
+    public void setFAUXPROPID(long FAUXPROPID) {
+        this.FAUXPROPID = FAUXPROPID;
+    }
+
+    public long getFSUPPLYMATERIALID() {
+        return FSUPPLYMATERIALID;
+    }
+
+    public void setFSUPPLYMATERIALID(long FSUPPLYMATERIALID) {
+        this.FSUPPLYMATERIALID = FSUPPLYMATERIALID;
+    }
+
+    public String getFCOMPUTEID() {
+        return FCOMPUTEID;
+    }
+
+    public void setFCOMPUTEID(String FCOMPUTEID) {
+        this.FCOMPUTEID = FCOMPUTEID;
     }
 
     //获取当前产品的下级产品
