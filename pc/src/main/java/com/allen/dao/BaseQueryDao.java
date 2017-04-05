@@ -429,12 +429,16 @@ public class BaseQueryDao extends JapDynamicQueryDao {
     }
 
     private long queryCount(boolean nativeSql, String ql, Object... args) {
+        String countSql = ql;
+        if(ql.toLowerCase().indexOf("order by") >= 0){
+            countSql = countSql.substring(0, countSql.indexOf("order by"));
+        }
         Query query = null;
         if(nativeSql) {
-            String countQueryString = "select count(1) from (select 1 " + ql + ") tempAlias";
+            String countQueryString = "select count(1) from (select 1 as a " + countSql + ") tempAlias";
             query = super.entityManager.createNativeQuery(countQueryString);
         } else {
-            String countQueryString = "select count(*) " + removeSelect(removeOrders(ql));
+            String countQueryString = "select count(*) " + removeSelect(removeOrders(countSql));
             query = super.entityManager.createQuery(countQueryString);
         }
 
@@ -444,8 +448,7 @@ public class BaseQueryDao extends JapDynamicQueryDao {
             }
         }
         if(nativeSql) {
-            BigInteger result = (BigInteger)(query.getSingleResult());
-            return Long.valueOf(result.toString());
+            return Long.valueOf(null == query.getSingleResult() ? "0" : query.getSingleResult().toString());
         } else {
             return ((Long)query.getSingleResult()).longValue();
         }
