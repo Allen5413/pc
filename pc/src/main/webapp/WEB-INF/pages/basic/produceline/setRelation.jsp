@@ -14,7 +14,7 @@
       <div style="background-color: #fFF;width: 100%;padding: 0.7rem;border-bottom: solid 1px #ddd;">
         <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="setProduceLineCore()"><span class="am-icon-cog"></span> 关联生产中心</button>
       </div>
-      <div id="zTreeDiv" style="overflow: auto;">
+      <div id="zTreeDiv" style="overflow:auto; height: 400px;">
         <ul id="plTree" class="ztree"></ul>
       </div>
     </div>
