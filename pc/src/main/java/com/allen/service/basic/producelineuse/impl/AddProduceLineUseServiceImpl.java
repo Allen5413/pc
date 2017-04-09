@@ -46,6 +46,7 @@ public class AddProduceLineUseServiceImpl implements AddProduceLineUseService{
             oldUse.setBalanceCapacity(produceLineUse.getBalanceCapacity());
             oldUse.setBalanceTime(produceLineUse.getBalanceTime());
             oldUse.setAddTime(produceLineUse.getAddTime());
+            oldUse.setWorkTime(produceLineUse.getWorkTime().add(oldUse.getWorkTime()));
             produceLineUseDao.save(oldUse);
         }
 

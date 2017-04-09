@@ -24,6 +24,7 @@ public class PlanDayMaterial {
     private String productNo;//产品编号
     private String productName;//产品名称
     private String productType;//产品类型
+    private Long bomId;//标准系统中的bomId
     private List<String> childs = new ArrayList<String>();//记录子产品的
 
     public String getDemandDate() {
@@ -153,5 +154,13 @@ public class PlanDayMaterial {
 
     public void setStorageNum(BigDecimal storageNum) {
         this.storageNum = storageNum;
+    }
+
+    public Long getBomId() {
+        return bomId;
+    }
+
+    public void setBomId(Long bomId) {
+        this.bomId = bomId;
     }
 }

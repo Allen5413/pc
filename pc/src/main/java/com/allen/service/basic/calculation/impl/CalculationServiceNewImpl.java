@@ -113,15 +113,6 @@ public class CalculationServiceNewImpl implements CalculationService {
     public boolean calculation(String start, String end) throws Exception {
         this.start = start;
         this.end = end;
-        Set<String> planCycle = new LinkedHashSet<String>();
-        String endNow = start;
-        while (true){
-            planCycle.add(endNow);
-            endNow = DateUtil.afterDay(endNow);
-            if(DateUtil.compareDate(end,endNow)<0){
-                break;
-            }
-        }
         //重新初始化
         init();
         //获取生产计划的产品信息
@@ -147,6 +138,15 @@ public class CalculationServiceNewImpl implements CalculationService {
             calMaterialDate(fMaterialId,null,true);
             //如果产品实际生产还不够  根据产品库存判断
             if(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))<0){
+                Set<String> planCycle = new LinkedHashSet<String>();
+                String endNow = start;
+                while (true){
+                    planCycle.add(endNow);
+                    endNow = DateUtil.afterDay(endNow);
+                    if(DateUtil.compareDate(end,endNow)<0){
+                        break;
+                    }
+                }
                 Set<String> unPlanDate = planCycle;
                 //查找是否有未安排生产计划的时间的
                 for(String demandDate:materialDemandDate){
@@ -175,6 +175,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                         planDayMaterialNew.setProductNo(planDayMaterial.getProductNo());
                         planDayMaterialNew.setProductName(planDayMaterial.getProductName());
                         planDayMaterialNew.setProductType(planDayMaterial.getProductType());
+                        planDayMaterialNew.setBomId(planDayMaterial.getBomId());
                         playDayMaterials.put(demandDate,planDayMaterialNew);
                     }
                     produce.put(fMaterialId,playDayMaterials);
@@ -184,7 +185,7 @@ public class CalculationServiceNewImpl implements CalculationService {
         }
         //反写生产计划
         returnProductionPlanService.returnPlan(DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
-                DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
+               DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
         return true;
     }
     /**
@@ -222,7 +223,10 @@ public class CalculationServiceNewImpl implements CalculationService {
                 continue;
             }
             //库存够用
-            if (materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(useQty) > 0) {
+            if (materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(useQty) >= 0) {
+                if(useQty.compareTo(BigDecimal.ZERO)==0){
+                    continue;
+                }
                 //临时库存这个不需要表存 直接数据结构存
                 materialStock.setFQTY(materialStock.getFQTY().subtract(useQty));
                 pInvMaps.put(fMaterialId, materialStock);
@@ -242,6 +246,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                 productionPlan.setProductNo(planDayMaterial.getProductNo());
                 productionPlan.setProductName(planDayMaterial.getProductName());
                 productionPlan.setProductType(planDayMaterial.getProductType());
+                productionPlan.setBomId(planDayMaterial.getBomId());
                 productionPlan.setActualProductionNum(new BigDecimal(0));
                 addProductionPlanService.addProductionPlan(productionPlan);
                 continue;
@@ -295,7 +300,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                 //计划量除以合格率 实际计划量
                 lineUseQty = (useQty.divide(pRate,2,BigDecimal.ROUND_UP)).multiply(ONE_HUNDRED);
                 //计划产能除以最小批量  不整除时候
-                if (maxWorkCorePro.divideAndRemainder(minBatch)[1].compareTo(new BigDecimal(0)) != 0) {
+                if (maxWorkCorePro.divideAndRemainder(minBatch)[1].compareTo(BigDecimal.ZERO) != 0) {
                     //不整除 加1 乘以最小批量
                     maxWorkCorePro = (maxWorkCorePro.divideAndRemainder(minBatch)[0]).multiply(minBatch);
                 }
@@ -307,7 +312,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                     calScheduling(maxWorkCorePro,pLines.get(pLineId),demandDate,pLineId,fMaterialId);
                 }else{
                     //计划产能除以最小批量  不整除时候
-                    if (lineUseQty.divideAndRemainder(minBatch)[1].compareTo(new BigDecimal(0)) != 0) {
+                    if (lineUseQty.divideAndRemainder(minBatch)[1].compareTo(BigDecimal.ZERO) != 0) {
                         //不整除 加1 乘以最小批量
                         lineUseQty = (lineUseQty.divideAndRemainder(minBatch)[0]).add(ONE).multiply(minBatch);
                     }
@@ -324,7 +329,7 @@ public class CalculationServiceNewImpl implements CalculationService {
             //记录当天产品的实际产能
             produce.get(fMaterialId).get(demandDate).setCapacity(lineTotalCapacity);
             //如果库存有多余的 当天实际有的产品数量要加上库存
-            if(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))>=0){
+            if(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(BigDecimal.ZERO)>=0){
                 produce.get(fMaterialId).get(demandDate).setUseQtyStock(lineTotalCapacity.add(
                         materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK())));
             }else{
@@ -349,6 +354,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                 productionPlan.setProductNo(planDayMaterial.getProductNo());
                 productionPlan.setProductName(planDayMaterial.getProductName());
                 productionPlan.setActualProductionNum(actualProductionNum);
+                productionPlan.setBomId(planDayMaterial.getBomId());
                 productionPlan.setCapacity(totalEighthCapacity);
                 addProductionPlanService.addProductionPlan(productionPlan);
             }
@@ -379,7 +385,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                 minBatch = new BigDecimal(workTimeInfo.get("min_batch").toString());
                 BigDecimal workQty = proNum;
                 //计划产能除以最小批量  不整除时候
-                if (proNum.divideAndRemainder(minBatch)[1].compareTo(new BigDecimal(0)) != 0) {
+                if (proNum.divideAndRemainder(minBatch)[1].compareTo(BigDecimal.ZERO) != 0) {
                     //不整除 加1 乘以最小批量
                     workQty = ((proNum.divideAndRemainder(minBatch)[0]).add(ONE)).multiply(minBatch);
                 }
@@ -403,9 +409,10 @@ public class CalculationServiceNewImpl implements CalculationService {
                 BigDecimal addTime = workGroup.get(demandDate+","+classGroupId).subtract(currentWorkTime);
                 BigDecimal balanceTime = maxWorkTotalTime.subtract(workGroup.get(demandDate+","+classGroupId));
                 saveProduceLineUse(fMaterialId,workCoreId,pLineId,0,productionDate,
-                        workTimeInfo.get("work_time_id").toString(),classGroupId,new Long(1),addTime.compareTo(new BigDecimal(0))>0?addTime:new BigDecimal(0),
+                        workTimeInfo.get("work_time_id").toString(),classGroupId,new Long(1),
+                        addTime.compareTo(BigDecimal.ZERO)>0?addTime:BigDecimal.ZERO,
                         balanceTime,balanceTime.multiply(unitWorkProduct),
-                        proNum,workQty);
+                        proNum,workQty,workTime);
             }
         }
     }
@@ -429,7 +436,7 @@ public class CalculationServiceNewImpl implements CalculationService {
     private void saveProduceLineUse(Long fMaterialId,String workCoreId,String pLineId,int isFull,Date productionDate,
                                     String workTimeId,String classGroupId,Long customerId,BigDecimal addWorkTime,
                                     BigDecimal balanceTime,BigDecimal balanceCapacity,BigDecimal planQuantity,
-                                    BigDecimal capacity){
+                                    BigDecimal capacity,BigDecimal workTime){
         ProduceLineUse produceLineUse = new ProduceLineUse();
         produceLineUse.setIsFull(0);
         produceLineUse.setWorkCoreId(Long.valueOf(workCoreId));
@@ -455,6 +462,7 @@ public class CalculationServiceNewImpl implements CalculationService {
         produceLineUse.setPlanQuantity(planQuantity);
         //实际产量
         produceLineUse.setCapacity(capacity);
+        produceLineUse.setWorkTime(workTime);
         addProduceLineUseService.addProduceLineUse(produceLineUse);
     }
     BigDecimal lineMaxPro = null;
@@ -470,6 +478,25 @@ public class CalculationServiceNewImpl implements CalculationService {
         workCoreIds = workCores.keySet();
         lineMaxPro = new BigDecimal(0);
         maxWorkCorePro = new BigDecimal(Integer.MAX_VALUE);
+        //key 为生产线id classGroupId
+        Map<String,BigDecimal> lineSameClassGroup = new HashMap<String, BigDecimal>();
+        //循环生产中心
+        for (String workCoreId : workCoreIds) {
+            classGroups = workCores.get(workCoreId);//班组信息
+            classGroupIds = classGroups.keySet();
+            //循环班组
+            for (String classGroupId :classGroupIds) {
+                workTimeInfo = classGroups.get(classGroupId);//班组对应班次信息
+                //单位时间产能，数据库存的是秒的产能
+                unitWorkProduct = new BigDecimal(workTimeInfo.get("unit_time_capacity").toString()).divide(new BigDecimal(3600));
+                if(lineSameClassGroup.get(pLineId+","+classGroupId)==null){
+                    lineSameClassGroup.put(pLineId+","+classGroupId,ONE.divide(unitWorkProduct,8,BigDecimal.ROUND_HALF_EVEN));
+                }else{
+                    lineSameClassGroup.put(pLineId+","+classGroupId,(ONE.divide(unitWorkProduct,8,
+                            BigDecimal.ROUND_HALF_EVEN)).add(lineSameClassGroup.get(pLineId+","+classGroupId)));
+                }
+            }
+        }
         //循环生产中心
         for (String workCoreId : workCoreIds) {
             classGroups = workCores.get(workCoreId);//班组信息
@@ -478,12 +505,13 @@ public class CalculationServiceNewImpl implements CalculationService {
             //循环班组
             for (String classGroupId :classGroupIds) {
                 workTimeInfo = classGroups.get(classGroupId);//班组对应班次信息
-                //单位时间产能，数据库存的是秒的产能
-                unitWorkProduct = new BigDecimal(workTimeInfo.get("unit_time_capacity").toString()).divide(new BigDecimal(3600));
-                workCoreBalanceTotalPro = workCoreBalanceTotalPro.add(maxWorkTotalTime.multiply(unitWorkProduct));                ;
+                //每个产品需要的时间
+                unitWorkProduct = lineSameClassGroup.get(pLineId+","+classGroupId);
+                workCoreBalanceTotalPro = workCoreBalanceTotalPro.add(maxWorkTotalTime.divide(unitWorkProduct,2,BigDecimal.ROUND_HALF_EVEN));                ;
                 //判断当天的班组是否使用
                 if(workGroup!=null&&workGroup.get(demandDate+","+classGroupId)!=null){
-                    workCoreBalanceTotalPro = workCoreBalanceTotalPro.subtract(workGroup.get(demandDate+","+classGroupId).multiply(unitWorkProduct));
+                    workCoreBalanceTotalPro = workCoreBalanceTotalPro.subtract(
+                            workGroup.get(demandDate+","+classGroupId).divide(unitWorkProduct,2,BigDecimal.ROUND_HALF_EVEN));
                 }
             }
             boolean comare = maxWorkCorePro.compareTo(workCoreBalanceTotalPro)>=0;
@@ -491,9 +519,10 @@ public class CalculationServiceNewImpl implements CalculationService {
             if (comare) {
                 pRate = new BigDecimal(workTimeInfo.get("qualified_rate").toString());
                 minBatch = new BigDecimal(workTimeInfo.get("min_batch").toString());
-                unitWorkProduct = new BigDecimal(workTimeInfo.get("unit_time_capacity").toString()).divide(new BigDecimal(3600));
-                eighthCapacity = unitWorkProduct.multiply(new BigDecimal(8));
                 classGroupId = workTimeInfo.get("class_group_id").toString();
+                unitWorkProduct = lineSameClassGroup.get(pLineId+","+classGroupId);;
+                eighthCapacity = (new BigDecimal(8)).divide(unitWorkProduct,0,BigDecimal.ROUND_HALF_EVEN);
+
             }
         }
         return maxWorkCorePro;
@@ -562,6 +591,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                 planDayMaterial.setProductNo(planOrder.getFNUMBER());
                 planDayMaterial.setProductType(planOrder.getFCATEGORYID());
                 planDayMaterial.setChilds(planOrder.getChilds());
+                planDayMaterial.setBomId(planOrder.getFBOMID());
                 demandDatePlanQty.put(produceDate, planDayMaterial);
             } else {
                 //同一产品 同一计划生产日期累加
@@ -598,6 +628,7 @@ public class CalculationServiceNewImpl implements CalculationService {
             productionPlan.setPlanNum(planDayMaterial.getUseQty());
             productionPlan.setGrossNum(new BigDecimal(0));
             productionPlan.setPlanTotalNum(planDayMaterial.getUseQty());
+            productionPlan.setBomId(planDayMaterial.getBomId());
             productionPlan.setStockNum(first==0?materialStock.getFQTY():new BigDecimal(0));
             if(first==0){
                 materialStock.setFQTY(materialStock.getFSAFESTOCK());

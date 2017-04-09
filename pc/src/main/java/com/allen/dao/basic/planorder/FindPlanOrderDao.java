@@ -28,7 +28,7 @@ public class FindPlanOrderDao extends BaseQueryDao {
      */
     public List<PlanOrder> findPlanOrder(Date start, Date end){
         String sql = "select a.FNUMBER,b.FNAME,po.FBILLNO,po.FDOCUMENTSTATUS,po.FFIRMQTY,po.FRELEASETYPE,po.FMATERIALID," +
-                "po.FDEMANDDATE,c.FCUSTID,f.FCATEGORYID " +
+                "po.FDEMANDDATE,c.FCUSTID,f.FCATEGORYID,po.FBOMID " +
                 "from T_BD_MATERIALBASE f,T_BD_MATERIAL a,T_BD_MATERIAL_L b,T_PLN_PLANORDER po left join T_PLN_PLANORDER_B pob on po.FID=pob.FID " +
                 "left join T_SAL_ORDER so on pob.FSALEORDERID=so.FID left join T_BD_CUSTOMER c on so.FCUSTID=c.FCUSTID " +
                 "where f.FMATERIALID = a.FMATERIALID AND a.FMATERIALID = b.FMATERIALID and b.FMATERIALID = po.FMATERIALID " +
@@ -54,6 +54,7 @@ public class FindPlanOrderDao extends BaseQueryDao {
                 planOrder.setFNUMBER(map.get("FNUMBER").toString());
                 planOrder.setFNAME(map.get("FNAME").toString());
                 planOrder.setFCATEGORYID(map.get("FCATEGORYID").toString());
+                planOrder.setFBOMID(map.get("FBOMID")==null?0:Long.parseLong(map.get("FBOMID").toString()));
                 planOrders.add(planOrder);
             }
         }

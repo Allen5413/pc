@@ -32,6 +32,7 @@ public class ProductionPlan implements Serializable{
     private BigDecimal planTotalNum = new BigDecimal(0);//计划总量
     private BigDecimal actualProductionNum  = new BigDecimal(0);
     private BigDecimal capacity = new BigDecimal(0);//8小时产能
+    private Long bomId;//标准系统中的bomId
     @Transient
     private Map<String,HashMap<String,Object>> plans = new HashMap<String, HashMap<String, Object>>();
     public long getId() {
@@ -152,5 +153,13 @@ public class ProductionPlan implements Serializable{
 
     public void setCapacity(BigDecimal capacity) {
         this.capacity = capacity;
+    }
+
+    public Long getBomId() {
+        return bomId;
+    }
+
+    public void setBomId(Long bomId) {
+        this.bomId = bomId;
     }
 }

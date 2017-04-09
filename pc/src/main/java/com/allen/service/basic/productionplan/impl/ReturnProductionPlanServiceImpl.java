@@ -69,7 +69,7 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
                 planOrder.setFBASEORDERQTY(productionPlan.getActualProductionNum());
                 planOrder.setFBASESUGQTY(productionPlan.getActualProductionNum());
                 planOrder.setFDEMANDQTY(productionPlan.getActualProductionNum());
-                planOrder.setFORDERQTY(productionPlan.getActualProductionNum());
+                planOrder.setFORDERQTY(productionPlan.getPlanNum());
                 planOrder.setFBASEFIRMQTY(productionPlan.getActualProductionNum());
                 planOrder.setFSUGQTY(productionPlan.getActualProductionNum());
                 planOrder.setFFORMID("PLN_PLANORDER");
@@ -97,6 +97,7 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
                 planOrder.setFSUPPLYMATERIALID(productionPlan.getProductId());
                 planOrder.setFCOMPUTEID("00155db9091bab2411e7155132858b4f");
                 planOrder.setFBILLNO("MPS"+findPlanOrderDao.findMaxBillNo());
+                planOrder.setFBOMID(productionPlan.getBomId());
                 zPlnPlanOrderDao.delete(zPlanOrder);
 
                 planOrderDao.save(planOrder);
