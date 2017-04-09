@@ -79,7 +79,7 @@ public class FindPlanOrderDao extends BaseQueryDao {
     }
 
     public String findMaxBillNo(){
-        String sql = "select max(SUBSTRING(FBillno,4,len(FBillno))) as a from t_pln_planorder";
+        String sql = "select max(SUBSTRING(FBillno,4,LENGTH (FBillno))) as a from t_pln_planorder";
         Session session = super.entityManager.unwrap(Session.class);
         SQLQuery sqlQuery = session.createSQLQuery(sql);
         Object billNo = sqlQuery.uniqueResult();

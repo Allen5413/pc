@@ -66,6 +66,8 @@ public class PlanOrder implements Serializable {
     @Transient
     private String FCATEGORYID;
     @Transient
+    private int level;
+    @Transient
     private List<String> childs = new ArrayList<String>();//记录子产品的
 
     public long getFID() {
@@ -448,4 +450,11 @@ public class PlanOrder implements Serializable {
         return DateUtil.getFormattedString(this.FDEMANDDATE,DateUtil.shortDatePattern);
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
 }

@@ -8,6 +8,9 @@ import com.allen.entity.basic.PlanOrder;
 import com.allen.entity.basic.ProductionPlan;
 import com.allen.entity.basic.ZPlanOrder;
 import com.allen.service.basic.planordera.AddPlanOrderAService;
+import com.allen.service.basic.plnplbomentry.AddPlnPlbomentryService;
+import com.allen.service.basic.plnplbomentryc.AddPlnPlbomentryCService;
+import com.allen.service.basic.plnplbomentryc.impl.AddPlnPlbomentryCServiceImpl;
 import com.allen.service.basic.productionplan.ReturnProductionPlanService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +36,10 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
     private ZPlnPlanOrderDao zPlnPlanOrderDao;
     @Resource
     private AddPlanOrderAService addPlanOrderAService;
+    @Resource
+    private AddPlnPlbomentryService addPlnPlbomentryService;
+    @Resource
+    private AddPlnPlbomentryCService addPlnPlbomentryCService;
 
     @Transactional
     @Override
@@ -102,7 +109,13 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
 
                 planOrderDao.save(planOrder);
 
-                addPlanOrderAService.add(planOrder.getFID(), planOrder.getFBASEDEMANDQTY());
+                addPlanOrderAService.add(planOrder.getFID(), planOrder.getFFIRMQTY());
+
+                addPlnPlbomentryService.add(planOrder.getFID(),planOrder.getFDEMANDDATE(),
+                        planOrder.getFFIRMQTY(),planOrder.getFBOMID());
+
+                addPlnPlbomentryCService.add(planOrder.getFID(),planOrder.getFDEMANDDATE(),
+                        planOrder.getFFIRMQTY(),planOrder.getFBOMID());
             }
         }
     }
