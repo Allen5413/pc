@@ -10,9 +10,8 @@ import com.allen.util.StringUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by Allen on 2017/3/21.
@@ -44,6 +43,15 @@ public class FindCapacityServiceImpl implements FindCapacityService {
                 String endTime = null == map.get("end_time") ? "" : map.get("end_time").toString();
                 String addTime = null == map.get("add_time") ? "" : map.get("add_time").toString();
                 String capacity = null == map.get("capacity") ? "" : map.get("capacity").toString();
+                String workTime = null == map.get("work_time") ? "" : map.get("work_time").toString();
+
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                Date beginDate = df.parse(beginTime);
+                long beginTimeMM = beginDate.getTime();
+                long workTimeMM = (long) (Double.parseDouble(workTime)*60*60*1000);
+                long endTimeMM = beginTimeMM + workTimeMM;
+                Date endDate = new Date(endTimeMM);
+                endTime = endDate.toString();
 
                 ClassGroupForCapacityBean classGroup = new ClassGroupForCapacityBean();
                 classGroup.setCgName(cgName);

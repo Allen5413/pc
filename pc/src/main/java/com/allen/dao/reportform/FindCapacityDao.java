@@ -20,7 +20,7 @@ public class FindCapacityDao extends BaseQueryDao {
         String cgId = param.get("cgId");
         String wcId = param.get("wcId");
 
-        String sql = "select wg.name as wgName, wc.name as wcName, cg.name as cgName, wt.name as wtName, plu.production_date, wt.begin_time, wt.end_time, plu.add_time, plu.capacity ";
+        String sql = "select wg.name as wgName, wc.name as wcName, cg.name as cgName, wt.name as wtName, plu.production_date, wt.begin_time, wt.end_time, plu.add_time, plu.capacity, plu.work_time ";
         sql += "from produce_line_use plu, work_group_core wgc, work_group wg, work_core wc, class_group cg, work_time wt ";
         sql += "where plu.work_core_id = wgc.work_core_id and wgc.work_group_id = wg.id and wgc.work_core_id = wc.id and plu.work_team_id = cg.id and plu.work_time_id = wt.id ";
         if(!StringUtil.isEmpty(wgId)){
