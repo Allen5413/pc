@@ -5,6 +5,7 @@ import com.allen.dao.basic.planorder.PlanOrderDao;
 import com.allen.dao.basic.productionplan.ProductionPlanDao;
 import com.allen.dao.basic.zplanorder.ZPlnPlanOrderDao;
 import com.allen.entity.basic.PlanOrder;
+import com.allen.entity.basic.PlnPlbomentry;
 import com.allen.entity.basic.ProductionPlan;
 import com.allen.entity.basic.ZPlanOrder;
 import com.allen.service.basic.planordera.AddPlanOrderAService;
@@ -105,17 +106,20 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
                 planOrder.setFCOMPUTEID("00155db9091bab2411e7155132858b4f");
                 planOrder.setFBILLNO("MPS"+findPlanOrderDao.findMaxBillNo());
                 planOrder.setFBOMID(productionPlan.getBomId());
+                planOrder.setFMTONO("");
+                planOrder.setFPROJECTNO("");
+
                 zPlnPlanOrderDao.delete(zPlanOrder);
 
                 planOrderDao.save(planOrder);
 
                 addPlanOrderAService.add(planOrder.getFID(), planOrder.getFFIRMQTY());
 
-                addPlnPlbomentryService.add(planOrder.getFID(),planOrder.getFDEMANDDATE(),
-                        planOrder.getFFIRMQTY(),planOrder.getFBOMID());
+                PlnPlbomentry plnPlbomentry = addPlnPlbomentryService.add(planOrder.getFID(),planOrder.getFDEMANDDATE(),
+                        planOrder.getFFIRMQTY(),planOrder.getFBOMID(),planOrder.getFMATERIALID());
 
                 addPlnPlbomentryCService.add(planOrder.getFID(),planOrder.getFDEMANDDATE(),
-                        planOrder.getFFIRMQTY(),planOrder.getFBOMID());
+                        planOrder.getFFIRMQTY(),planOrder.getFBOMID(),plnPlbomentry.getFENTRYID());
             }
         }
     }

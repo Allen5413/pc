@@ -10,5 +10,5 @@ import java.util.Date;
  * 创建时间: 2017-04-09 23:43
  */
 public interface AddPlnPlbomentryCService {
-    public void add(long fId, Date demandDate, BigDecimal FBASEYIELDQTY,long fBomId)throws Exception;
+    public void add(long fId, Date demandDate, BigDecimal FBASEYIELDQTY,long fBomId,long entryId)throws Exception;
 }

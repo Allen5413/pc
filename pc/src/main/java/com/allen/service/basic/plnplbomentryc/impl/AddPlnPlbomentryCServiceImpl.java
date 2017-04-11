@@ -20,16 +20,10 @@ import java.util.Date;
 public class AddPlnPlbomentryCServiceImpl implements AddPlnPlbomentryCService {
     @Resource
     private PlnPlbomentryCDao plnPlbomentryCDao;
-    @Resource
-    private ZPlnPlbomentryCDao zPlnPlbomentryCDao;
     @Override
-    public void add(long fId, Date demandDate, BigDecimal FBASEYIELDQTY,long fBomId) throws Exception {
-        ZPlnPlbomentryC zPlnPlbomentryC = new ZPlnPlbomentryC();
-        zPlnPlbomentryC.setColumn1(1);
-        zPlnPlbomentryC = zPlnPlbomentryCDao.save(zPlnPlbomentryC);
-
+    public void add(long fId, Date demandDate, BigDecimal FBASEYIELDQTY,long fBomId,long entryId) throws Exception {
         PlnPlbomentryC plnPlbomentryC = new PlnPlbomentryC();
-        plnPlbomentryC.setFENTRYID(zPlnPlbomentryC.getId());
+        plnPlbomentryC.setFENTRYID(entryId);
         plnPlbomentryC.setFID(fId);
         plnPlbomentryC.setFISSKIP("1");
         plnPlbomentryC.setFISSUEORGID(0);
@@ -39,7 +33,6 @@ public class AddPlnPlbomentryCServiceImpl implements AddPlnPlbomentryCService {
         plnPlbomentryC.setFISOVER("0");
         plnPlbomentryC.setFISKITTING("0");
         plnPlbomentryC.setFOWNERTYPEID("BD_OwnerOrg");
-        plnPlbomentryC.setFOWNERTYPEID("0");
         plnPlbomentryC.setFRESERVETYPE("1");
         plnPlbomentryC.setFOPERID(10);
         plnPlbomentryC.setFPROCESSID(0);
@@ -62,8 +55,14 @@ public class AddPlnPlbomentryCServiceImpl implements AddPlnPlbomentryCService {
         plnPlbomentryC.setFBKFLTIME("0");
         plnPlbomentryC.setFISSUETYPE("1");
         plnPlbomentryC.setFSUPPLYMODE("0");
+        plnPlbomentryC.setFMTONO("");
+        plnPlbomentryC.setFPROJECTNO("");
+        plnPlbomentryC.setFPOSITIONNO("");
+        plnPlbomentryC.setFLOT_TEXT("");
+        plnPlbomentryC.setFREPLACEPOLICY("");
+        plnPlbomentryC.setFREPLACETYPE("");
+        plnPlbomentryC.setFOPTQUEUE("");
+        plnPlbomentryC.setFSUPPLYGROUP(0);
         plnPlbomentryCDao.save(plnPlbomentryC);
-
-        zPlnPlbomentryCDao.delete(zPlnPlbomentryC.getId());
     }
 }

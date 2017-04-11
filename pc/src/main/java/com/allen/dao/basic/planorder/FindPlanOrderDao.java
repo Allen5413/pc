@@ -79,10 +79,26 @@ public class FindPlanOrderDao extends BaseQueryDao {
     }
 
     public String findMaxBillNo(){
-        String sql = "select max(SUBSTRING(FBillno,4,LENGTH (FBillno))) as a from t_pln_planorder";
+        String sql = "select max(SUBSTRING(FBillno,4,len(FBillno))) as a from t_pln_planorder";
         Session session = super.entityManager.unwrap(Session.class);
         SQLQuery sqlQuery = session.createSQLQuery(sql);
         Object billNo = sqlQuery.uniqueResult();
         return StringUtil.haoAddOne_2(Long.valueOf(billNo.toString())+"");
+    }
+
+    public long findBomChildEntryId(long fMaterialId){
+        String sql = "select FENTRYID from t_eng_bomchild where FMATERIALID="+fMaterialId;
+        Session session = super.entityManager.unwrap(Session.class);
+        SQLQuery sqlQuery = session.createSQLQuery(sql);
+        Object fEntryId = sqlQuery.uniqueResult();
+        return fEntryId==null?0:Long.valueOf(fEntryId.toString());
+    }
+
+    public long findBaseUnitId(long fMaterialId){
+        String sql = "select FBASEUNITID from t_bd_materialbase where FMATERIALID="+fMaterialId;
+        Session session = super.entityManager.unwrap(Session.class);
+        SQLQuery sqlQuery = session.createSQLQuery(sql);
+        Object fBaseUnitId = sqlQuery.uniqueResult();
+        return fBaseUnitId==null?0:Long.valueOf(fBaseUnitId.toString());
     }
 }

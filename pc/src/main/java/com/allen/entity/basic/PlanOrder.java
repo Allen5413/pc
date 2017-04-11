@@ -57,6 +57,8 @@ public class PlanOrder implements Serializable {
     private long FAUXPROPID;
     private long FSUPPLYMATERIALID;
     private String FCOMPUTEID;
+    private String FMTONO;
+    private String FPROJECTNO;
     @Transient
     private long FCUSTID;//
     @Transient
@@ -456,5 +458,21 @@ public class PlanOrder implements Serializable {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public String getFMTONO() {
+        return FMTONO;
+    }
+
+    public void setFMTONO(String FMTONO) {
+        this.FMTONO = FMTONO;
+    }
+
+    public String getFPROJECTNO() {
+        return FPROJECTNO;
+    }
+
+    public void setFPROJECTNO(String FPROJECTNO) {
+        this.FPROJECTNO = FPROJECTNO;
     }
 }

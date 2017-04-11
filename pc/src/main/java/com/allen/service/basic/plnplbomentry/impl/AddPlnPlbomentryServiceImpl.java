@@ -1,12 +1,9 @@
 package com.allen.service.basic.plnplbomentry.impl;
 
-import com.allen.dao.basic.planordera.PlanOrderADao;
+import com.allen.dao.basic.planorder.FindPlanOrderDao;
 import com.allen.dao.basic.plnplbomentry.PlnPlbomentryDao;
-import com.allen.dao.basic.zplanordera.ZPlnPlanOrderADao;
 import com.allen.dao.basic.zplnplbomentry.ZPlnPlbomentryDao;
-import com.allen.entity.basic.PlanOrderA;
 import com.allen.entity.basic.PlnPlbomentry;
-import com.allen.entity.basic.ZPlanOrderA;
 import com.allen.entity.basic.ZPlnPlbomentry;
 import com.allen.service.basic.plnplbomentry.AddPlnPlbomentryService;
 import org.springframework.stereotype.Service;
@@ -26,9 +23,11 @@ public class AddPlnPlbomentryServiceImpl implements AddPlnPlbomentryService {
     @Resource
     private PlnPlbomentryDao plnPlbomentryDao;
     @Resource
+    private FindPlanOrderDao findPlanOrderDao;
+    @Resource
     private ZPlnPlbomentryDao zPlnPlbomentryDao;
     @Override
-    public void add(long fId, Date demandDate,BigDecimal FBASEYIELDQTY,long fBomId) throws Exception {
+    public PlnPlbomentry add(long fId, Date demandDate,BigDecimal FBASEYIELDQTY,long fBomId,long fMaterialId) throws Exception {
         ZPlnPlbomentry zPlnPlbomentry = new ZPlnPlbomentry();
         zPlnPlbomentry.setColumn1(1);
         zPlnPlbomentry = zPlnPlbomentryDao.save(zPlnPlbomentry);
@@ -37,6 +36,7 @@ public class AddPlnPlbomentryServiceImpl implements AddPlnPlbomentryService {
         plnPlbomentry.setFENTRYID(zPlnPlbomentry.getId());
         plnPlbomentry.setFID(fId);
         plnPlbomentry.setFSEQ(1);
+        plnPlbomentry.setFMATERIALID(fMaterialId);
         plnPlbomentry.setFMATERIALTYPE("1");
         plnPlbomentry.setFDOSAGETYPE("2");
         plnPlbomentry.setFAUXPROPID(0);
@@ -51,10 +51,21 @@ public class AddPlnPlbomentryServiceImpl implements AddPlnPlbomentryService {
         plnPlbomentry.setFSTOCKID(0);
         plnPlbomentry.setFSTOCKLOCID(0);
         plnPlbomentry.setFEXTENDCONTROL(0);
-        plnPlbomentry.setFDENOMINATOR(FBASEYIELDQTY);
-        plnPlbomentry.setFNUMERATOR(FBASEYIELDQTY);
+        plnPlbomentry.setFDENOMINATOR(new BigDecimal(1));
+        plnPlbomentry.setFNUMERATOR(new BigDecimal(1));
+        plnPlbomentry.setFBASESTDQTY(FBASEYIELDQTY);
+        plnPlbomentry.setFBASENEEDQTY(FBASEYIELDQTY);
+        plnPlbomentry.setFBASEMUSTQTY(FBASEYIELDQTY);
+        plnPlbomentry.setFBASEFIXSCRAPQTY(FBASEYIELDQTY);
+        plnPlbomentry.setFBASENUMERATOR(new BigDecimal(1));
+        plnPlbomentry.setFBASEDENOMINATOR(new BigDecimal(1));
+        plnPlbomentry.setFISSUBSITEM("0");
+        plnPlbomentry.setFUNITID(findPlanOrderDao.findBaseUnitId(fMaterialId));
+        plnPlbomentry.setFBOMENTRYID(findPlanOrderDao.findBomChildEntryId(fMaterialId));
+        plnPlbomentry.setFBASEUNITID(findPlanOrderDao.findBaseUnitId(fMaterialId));
         plnPlbomentryDao.save(plnPlbomentry);
 
         zPlnPlbomentryDao.delete(zPlnPlbomentry.getId());
+        return plnPlbomentry;
     }
 }
