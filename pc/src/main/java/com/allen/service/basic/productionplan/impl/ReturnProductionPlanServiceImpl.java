@@ -57,6 +57,9 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
                 if(productionPlan.getActualProductionNum().compareTo(ZERO)<=0){
                     continue;
                 }
+                if(productionPlan.getActualProductionNum().compareTo(ZERO)<=0){
+                    continue;
+                }
                 if(planOrders!=null&&planOrders.size()>0){
                     for (PlanOrder planOrderOld:planOrders){
                         planOrderDao.delete(planOrderOld);

@@ -48,7 +48,7 @@ public class FindCapacityServiceImpl implements FindCapacityService {
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                 Date beginDate = df.parse(beginTime);
                 long beginTimeMM = beginDate.getTime();
-                long workTimeMM = (long) (Double.parseDouble(workTime)*60*60*1000);
+                long workTimeMM = (long) (Double.parseDouble(StringUtil.isEmpty(workTime)?"0":workTime)*60*60*1000);
                 long endTimeMM = beginTimeMM + workTimeMM;
                 Date endDate = new Date(endTimeMM);
                 endTime = endDate.toString();

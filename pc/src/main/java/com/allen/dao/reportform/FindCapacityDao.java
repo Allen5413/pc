@@ -35,8 +35,8 @@ public class FindCapacityDao extends BaseQueryDao {
             sql += "and cg.id = ? ";
             paramsList.add(Long.parseLong(cgId));
         }
-        sql += "GROUP BY wg.name, wc.name, cg.name, wt.name, plu.production_date, begin_time, end_time, add_time, capacity ";
-        sql += "order by wg.name, wc.name, cg.name, wt.name, plu.production_date, wt.begin_time";
+        sql += "GROUP BY wg.name, wc.name, cg.name, wt.name, plu.production_date, begin_time, end_time, add_time, capacity,plu.work_time  ";
+        sql += "order by wg.name, wc.name, cg.name, wt.name, plu.production_date, wt.begin_time,plu.work_time ";
 
         List<Map> list = super.sqlQueryByNativeSqlToMap(sql.toString(), paramsList.toArray());
         return list;
