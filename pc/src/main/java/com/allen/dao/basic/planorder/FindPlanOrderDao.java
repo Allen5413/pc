@@ -87,7 +87,8 @@ public class FindPlanOrderDao extends BaseQueryDao {
     }
 
     public long findBomChildEntryId(long fMaterialId){
-        String sql = "select max(FENTRYID) from t_eng_bomchild where FMATERIALID="+fMaterialId;
+        //top(1)
+        String sql = "select FENTRYID from T_ENG_BOMCHILD where FID in(select top(1)fid from t_eng_bom where FMATERIALID="+fMaterialId+" order by FNUMBER desc)";
         Session session = super.entityManager.unwrap(Session.class);
         SQLQuery sqlQuery = session.createSQLQuery(sql);
         Object fEntryId = sqlQuery.uniqueResult();
@@ -95,7 +96,7 @@ public class FindPlanOrderDao extends BaseQueryDao {
     }
 
     public long findBaseUnitId(long fMaterialId){
-        String sql = "select max(FBASEUNITID) from t_bd_materialbase where FMATERIALID="+fMaterialId;
+        String sql = "select FBASEUNITID from t_bd_materialbase where FMATERIALID="+fMaterialId;
         Session session = super.entityManager.unwrap(Session.class);
         SQLQuery sqlQuery = session.createSQLQuery(sql);
         Object fBaseUnitId = sqlQuery.uniqueResult();

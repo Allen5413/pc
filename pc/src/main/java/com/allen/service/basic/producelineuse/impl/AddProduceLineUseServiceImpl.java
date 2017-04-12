@@ -36,6 +36,7 @@ public class AddProduceLineUseServiceImpl implements AddProduceLineUseService{
         params.put("workCoreId",produceLineUse.getWorkCoreId());//工作中心id
         params.put("productId",produceLineUse.getProductId());//产品id
         params.put("work_time_id",produceLineUse.getWorkTimeId());//产班次
+        params.put("work_team_id",produceLineUse.getWorkTeamId());//班组id
         List<ProduceLineUse> produceLineUses = findProduceLineUseDao.findProduceLineUse(params);
         if(produceLineUses==null||produceLineUses.size()==0){
             produceLineUseDao.save(produceLineUse);
