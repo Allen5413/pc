@@ -34,7 +34,7 @@
   <select id="q_type" name="type"  onchange="app.changeSelect(this)"
           data-am-selected="{maxHeight: 300,btnWidth:'120px'}">
     <option value=""></option>
-    <option value="null">全部</option>
+    <option value="">全部</option>
     <c:forEach items="${productTypes}" var="productType">
       <option value="${productType.FCATEGORYID}" <c:if test="${param.type==productType.FCATEGORYID}"> selected </c:if>>${productType.FNAME}</option>
     </c:forEach>

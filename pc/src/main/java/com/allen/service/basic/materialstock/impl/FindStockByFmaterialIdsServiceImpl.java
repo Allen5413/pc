@@ -4,6 +4,7 @@ import com.allen.dao.basic.materialstock.FindMaterialStockDao;
 import com.allen.entity.basic.MaterialStock;
 import com.allen.service.basic.materialstock.FindStockByFmaterialIdsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -19,7 +20,7 @@ public class FindStockByFmaterialIdsServiceImpl implements FindStockByFmaterialI
 
     @Resource
     private FindMaterialStockDao findMaterialStockDao;
-
+    @Transactional
     @Override
     public Map<Long, MaterialStock> find(Long... fmaterialIds) throws Exception {
         Map<Long, MaterialStock> returnMap = null;

@@ -42,9 +42,9 @@ public class FindProPlanController extends BaseController {
             }
         }
         Map<String,Object> params = new HashMap<String,Object>();
-        params.put("p.productionDate",new Object[]{DateUtil.getFormatDate(start,DateUtil.shortDatePattern),">="});
-        params.put("p.productionDate",new Object[]{DateUtil.getFormatDate(end,DateUtil.shortDatePattern),"<="});
-        params.put("p.productName", new Object[]{StringUtil.isEmpty(name) ? "" : "%"+name+"%", "like"});
+        params.put("p.productionDateStart",DateUtil.getFormatDate(start,DateUtil.shortDatePattern));
+        params.put("p.productionDateEnd",DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
+        params.put("p.productName", StringUtil.isEmpty(name) ? "" : "%"+name+"%");
         params.put("p.productType",type);
         request.setAttribute("planCycle",planCycle);
         request.setAttribute("proPlanInfo",findProductionPlanService.find(params));

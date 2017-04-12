@@ -8,6 +8,7 @@ import com.allen.service.basic.product.FindProductByPlanService;
 import com.allen.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -25,6 +26,7 @@ public class FindProductByPlanServiceImpl implements FindProductByPlanService {
     private FindPlanOrderDao findPlanOrderDao;
     @Autowired
     private FindProductSelfUseDao findProductSelfUseDao;
+    @Transactional
     @Override
     public List<PlanOrder> findProductByPlan(String start,String end) {
         //获取生产计划信息

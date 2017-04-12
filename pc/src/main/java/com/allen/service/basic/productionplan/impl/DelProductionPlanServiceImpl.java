@@ -19,6 +19,7 @@ import java.util.List;
 public class DelProductionPlanServiceImpl implements DelProductionPlanService {
     @Resource
     private ProductionPlanDao productionPlanDao;
+
     @Override
     public void delProductionPlan(String start, String end,long fMaterialId) {
         List<ProductionPlan> productionPlans = null;
