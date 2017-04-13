@@ -12,7 +12,7 @@
     <div class="am-panel-hd am-cf">生产线信息</div>
     <div id="notWith" class="am-in">
       <div style="background-color: #fFF;width: 100%;padding: 0.7rem;border-bottom: solid 1px #ddd;">
-        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="setProduceLineCore()"><span class="am-icon-cog"></span> 关联生产中心</button>
+        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="setProduceLineCore()"><span class="am-icon-cog"></span> 关联工艺路线</button>
       </div>
       <div id="zTreeDiv" style="overflow:auto; height: 400px;">
         <ul id="plTree" class="ztree"></ul>
@@ -49,18 +49,18 @@
     </div>
   </div>
   <div class="am-panel am-panel-primary no-margin-bottom" style="width:38%; height: 480px; float: left; margin-left: 5px;">
-    <div class="am-panel-hd am-cf">关联的班组信息</div>
+    <div class="am-panel-hd am-cf">关联的工作中心信息</div>
     <div class="am-in">
       <div class="table-head">
         <table class="am-table am-table-bordered am-table-striped am-table-hover no-margin-bottom" style="width:100%;">
           <tr>
             <td colspan="99">
-              <button class="am-btn am-btn-primary am-btn-sm" type="button" onclick="setProductCg()"><span class="am-icon-cog"></span> 关联班组</button>
+              <button class="am-btn am-btn-primary am-btn-sm" type="button" onclick="setProductCg()"><span class="am-icon-cog"></span> 关联工作中心</button>
             </td>
           </tr>
           <tr class="am-primary" style="border-right: 0px;">
             <th style="width:10%;">序号</th>
-            <th style="width:18%;">班组</th>
+            <th style="width:18%;">工作中心</th>
             <th style="width:20%;">班次</th>
             <th style="width:20%;">产能（小时）</th>
             <th style="width:15%;">最小批量</th>
