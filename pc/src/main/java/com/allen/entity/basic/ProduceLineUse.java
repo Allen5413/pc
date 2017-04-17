@@ -36,7 +36,7 @@ public class ProduceLineUse implements Serializable{
     private int isFull;//生产线是否已经排满
     private long customerId;//客户id
     private BigDecimal workTime;//工作时间
-
+    private BigDecimal workStart;//工作开始时间
     public long getcId() {
         return cId;
     }
@@ -154,5 +154,13 @@ public class ProduceLineUse implements Serializable{
 
     public void setWorkTime(BigDecimal workTime) {
         this.workTime = workTime;
+    }
+
+    public BigDecimal getWorkStart() {
+        return workStart;
+    }
+
+    public void setWorkStart(BigDecimal workStart) {
+        this.workStart = workStart;
     }
 }

@@ -75,7 +75,7 @@ public class CalculationServiceNewImpl implements CalculationService {
     Set<String> materialDemandDate = null;
     String start = null;//计划开始时间
     String end = null;//计划结束时间
-    BigDecimal maxWorkTotalTime = new BigDecimal(23);//最高连续工作时间
+    BigDecimal maxWorkTotalTime = new BigDecimal(24);//最高连续工作时间
     MaterialStock materialStock = null;//单个产品库存信息
     ProductionPlan productionPlan = null;//产品排班信息
     BigDecimal useQty = null;//生产计划量
@@ -107,7 +107,7 @@ public class CalculationServiceNewImpl implements CalculationService {
     BigDecimal minBatch = null;//最小批量
     BigDecimal workTime = new BigDecimal(0);//工作时间
     BigDecimal eighthCapacity = null;
-    Integer[] addTimeStep = new Integer[]{4,3,8};
+    Integer[] addTimeStep = new Integer[]{4,4,4,4};
     Map<String,Integer> classGroupTimeStep = null;
     String minProCoreId = null;
     @Override
@@ -514,7 +514,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                             workTimeInfo.get("work_time_id").toString(),classGroupId,new Long(1),
                             addTime.compareTo(BigDecimal.ZERO)>0?addTime:BigDecimal.ZERO,
                             balanceTime,balanceTime.multiply(unitWorkProduct),
-                            proNum,coreClassPro,workTime);
+                            proNum,coreClassPro,workTime,workGroup.put(demandDate+","+classGroupId,workTime).subtract(workTime));
                     if(workCoreUse.compareTo(proNum)>=0){
                         flag = true;
                         break;
@@ -550,7 +550,7 @@ public class CalculationServiceNewImpl implements CalculationService {
     private void saveProduceLineUse(Long fMaterialId,String workCoreId,String pLineId,int isFull,Date productionDate,
                                     String workTimeId,String classGroupId,Long customerId,BigDecimal addWorkTime,
                                     BigDecimal balanceTime,BigDecimal balanceCapacity,BigDecimal planQuantity,
-                                    BigDecimal capacity,BigDecimal workTime){
+                                    BigDecimal capacity,BigDecimal workTime,BigDecimal workStart){
         ProduceLineUse produceLineUse = new ProduceLineUse();
         produceLineUse.setIsFull(0);
         produceLineUse.setWorkCoreId(Long.valueOf(workCoreId));
@@ -842,9 +842,10 @@ public class CalculationServiceNewImpl implements CalculationService {
      * @return
      */
     private BigDecimal getWorkTime(String startTime, String endTime) {
-        Date start = DateUtil.getFormatDate(startTime, DateUtil.longDatePattern);
+        /*Date start = DateUtil.getFormatDate(startTime, DateUtil.longDatePattern);
         Date end = DateUtil.getFormatDate(endTime, DateUtil.longDatePattern);
-        return new BigDecimal((float) (end.getTime() - start.getTime()) / 3600 / 1000).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return new BigDecimal((float) (end.getTime() - start.getTime()) / 3600 / 1000).setScale(2, BigDecimal.ROUND_HALF_UP);*/
+        return new BigDecimal(8);
     }
 
 }
