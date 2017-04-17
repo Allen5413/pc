@@ -717,8 +717,8 @@ public class CalculationServiceNewImpl implements CalculationService {
             }
         }
         //反写生产计划
-        returnProductionPlanService.returnPlan(DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
-               DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
+        //returnProductionPlanService.returnPlan(DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
+          //     DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
     }
 
     /**
