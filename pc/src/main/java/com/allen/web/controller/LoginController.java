@@ -17,10 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 系统登录
@@ -108,6 +105,16 @@ public class LoginController {
                     menuResourceMap.put(menu.getName(), resourceList2);
                 }
             }
+        }
+        //排序
+        Set<String> keys = menuResourceMap.keySet();
+        for (String key:keys){
+            List<Resource> resources = menuResourceMap.get(key);
+            Collections.sort(resources,new Comparator<Resource>(){
+                public int compare(Resource arg0, Resource arg1) {
+                    return arg0.getSno()>=arg1.getSno()?1:-1;
+                }
+            });
         }
         return menuResourceMap;
     }

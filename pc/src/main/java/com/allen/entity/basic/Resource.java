@@ -27,6 +27,7 @@ public class Resource implements Serializable{
     private long parentId=0;//上级资源id
     private int isButton = MENU;//1菜单 2按钮
     private String buttonCode="";//按钮编码
+    private int sno;//排序号
     @Version
     private int version;
 
@@ -132,5 +133,13 @@ public class Resource implements Serializable{
 
     public void setButtonCode(String buttonCode) {
         this.buttonCode = buttonCode;
+    }
+
+    public int getSno() {
+        return sno;
+    }
+
+    public void setSno(int sno) {
+        this.sno = sno;
     }
 }

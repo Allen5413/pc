@@ -65,7 +65,8 @@
       <td>
         <a class="am-badge am-badge-primary am-radius am-text-lg" onClick="detailProduct(${product['FMATERIALID']})"><span class="am-icon-th-list"></span> 详细</a>
         <c:if test="${isShowEditBtn}">
-          <a class="am-badge am-badge-secondary am-radius am-text-lg" onClick="productSno(${product['FMATERIALID']},${product['FSNO']})"><span class="am-icon-edit"></span> 顺序号</a>
+          <a class="am-badge am-badge-secondary am-radius am-text-lg"
+             data-fmaterialid="${product['FMATERIALID']}" data-fsno="${product['FSNO']}" name="showEditFSNO"><span class="am-icon-edit"></span> 顺序号</a>
         </c:if>
       </td>
     </tr>
@@ -73,12 +74,18 @@
 </table>
 <%@ include file="../../common/page.jsp"%>
 <script>
-
+ $(function(){
+       $("a[name='showEditFSNO']").on('click',function(){
+               var id = $(this).attr("data-fmaterialid");
+               var fsno = $(this).attr("data-fsno");
+               app.openDialog("${pageContext.request.contextPath}/editProduct/open.html?id="+id+"&fsno="+fsno, '设置产品顺序号', 300,180, function(index){
+                   app.edit("${pageContext.request.contextPath}/editProduct/editor.json",$('#eidtProductSnoForm').serialize(), index);
+               });
+       });
+ });
   function productSno(id,fsno){
-    var url = '${pageContext.request.contextPath}/editProduct/open.html?id='+id+"&fsno="+fsno;
-      app.openDialog(url, '设置产品顺序号', 300,180, function(index){
-      app.edit("${pageContext.request.contextPath}/editProduct/editor.json",$('#eidtProductSnoForm').serialize(), index);
-    });
+          console.log("${pageContext.request.contextPath}/editProduct/open.html?id="+id+"&fsno="+fsno);
+
   }
 
   function addProduct(){
