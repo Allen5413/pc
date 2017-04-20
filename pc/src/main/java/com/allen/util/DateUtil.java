@@ -170,14 +170,6 @@ public class DateUtil {
 
     }
 
-    public static void main(String[] args) {
-        SimpleDateFormat sd = new SimpleDateFormat("yyyyMMdd");
-
-        String date = "20110202";
-        // System.out.println(sd.parse(date, new java.text.ParsePosition(0)));
-        // System.out.println(getBefore2HourDate());
-        System.out.println(beforeDay("2017-03-01"));
-    }
     /**
      * 将long转换成日期格式
      * @param dateFormat
@@ -258,7 +250,7 @@ public class DateUtil {
         return dayBefore;
     }
     /**
-     * 功能计算前一天
+     * 功能计算后一天
      * @param specifiedDay
      * @return
      */
@@ -273,8 +265,8 @@ public class DateUtil {
         }
         c.setTime(date);
         c.add(Calendar.DAY_OF_MONTH, 1);
-        String dayBefore = new SimpleDateFormat(shortDatePattern).format(c.getTime());
-        return dayBefore;
+        String dayAfter= new SimpleDateFormat(shortDatePattern).format(c.getTime());
+        return dayAfter;
     }
     /**
      * 功能：比较时间大小
@@ -289,5 +281,16 @@ public class DateUtil {
         return sourceDate.compareTo(targetDate);
     }
 
+    public static void main(String[] args) {
+        SimpleDateFormat sd = new SimpleDateFormat("yyyyMMdd");
 
+        String date = "20110202";
+        // System.out.println(sd.parse(date, new java.text.ParsePosition(0)));
+        // System.out.println(getBefore2HourDate());
+        try {
+            System.out.println(compareDate("2017-03-01", "2017-03-01"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
