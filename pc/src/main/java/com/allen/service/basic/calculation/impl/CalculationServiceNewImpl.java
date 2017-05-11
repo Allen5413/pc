@@ -577,6 +577,7 @@ public class CalculationServiceNewImpl implements CalculationService {
         //实际产量
         produceLineUse.setCapacity(capacity);
         produceLineUse.setWorkTime(workTime);
+        produceLineUse.setWorkStart(workStart);
         addProduceLineUseService.addProduceLineUse(produceLineUse);
     }
     BigDecimal lineMaxPro = null;
