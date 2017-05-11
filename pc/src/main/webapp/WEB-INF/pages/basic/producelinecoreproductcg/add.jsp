@@ -40,7 +40,7 @@
           <input name="snos" value="${plcpcg.sno}" style='width:50px;'/>
         </td>
         <td>
-          <input name="unitTimeCapacitys" value="${plcpcg.unit_time_capacity / 3600}" style='width:60px;'/>
+          <input name="unitTimeCapacitys" value="${plcpcg.hour}" style='width:60px;'/>
         </td>
         <td>
           <input name="minBatchs" value="${plcpcg.min_batch}" style='width:60px;'/>
