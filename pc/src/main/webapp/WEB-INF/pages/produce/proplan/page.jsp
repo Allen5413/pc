@@ -42,13 +42,12 @@
   <c:if test="${isShowFindBtn}">
     <button type="button" id="searchBtn" class="am-btn am-btn-primary btn-loading-example"
             data-am-loading="{spinner: 'circle-o-notch', loadingText: '查询中...', resetText: '查询超时'}"
-            onclick="app.searchFormPage($('#pageForm'), $('#pageForm').attr('action'), this)"><span class="am-icon-search"></span> 查询</button>
+            onclick="app.searchFormPage($('#pageForm'), '${pageContext.request.contextPath}/findProPlan/find.html', this)"><span class="am-icon-search"></span> 查询</button>
     </c:if>
   <c:if test="${my:isPermission(requestScope.resourceId,'cal',sessionScope.menuMap)}">
-    <button type="button" id="calBtn" class="am-btn am-btn-primary btn-loading-example"
-            data-am-loading="{spinner: 'circle-o-notch', loadingText: '计算中...', resetText: '计算错误'}"
-            onclick=""><span class="am-icon-search"></span> 计算</button>
+    <button type="button" id="calBtn" class="am-btn am-btn-primary"><span class="am-icon-search"></span> 计算</button>
   </c:if>
+  <button type="button" id="exportBtn" class="am-btn am-btn-primary"><span class="am-icon-file-excel-o"></span> 导出</button>
 </form>
 <p /><p />
 <div style="overflow: auto; width: 100%;">
@@ -137,5 +136,9 @@
                      });
              });
      });
+      $('#exportBtn').on('click',function(){
+              $('#pageForm').attr('action','${pageContext.request.contextPath}/exportProPlan/export.html');
+              $('#pageForm').submit();
+      });
   });
 </script>

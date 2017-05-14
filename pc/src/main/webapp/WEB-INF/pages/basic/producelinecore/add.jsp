@@ -8,7 +8,7 @@
     <input type="hidden" name="plId" value="${param.plId}" />
     <tr>
       <td colspan="999" style="background-color:#FFF">
-        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="addCore()"><span class="am-icon-plus"></span> 新增工作中心</button>
+        <button class="am-btn am-btn-primary am-btn-sm" type="button" onClick="addCore()"><span class="am-icon-plus"></span> 新增工序</button>
       </td>
     </tr>
     <tr class="am-primary" style="border-right: 0px;">
