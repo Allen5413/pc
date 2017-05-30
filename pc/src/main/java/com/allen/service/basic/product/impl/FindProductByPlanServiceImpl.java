@@ -36,12 +36,17 @@ public class FindProductByPlanServiceImpl implements FindProductByPlanService {
         //获取订单产品信息
         Map<String,PlanOrder> productMap = new LinkedHashMap<String, PlanOrder>();
         Map<Long,Integer> materialLevel = new HashMap<Long, Integer>();
+        Map<Long,Boolean> isSelectLevel = new HashMap<Long, Boolean>();
         for(PlanOrder planOrder:planOrders){
-            if(materialLevel.get(planOrder.getFMATERIALID())==null){
-                materialLevel.put(planOrder.getFMATERIALID(),1);
+            if(isSelectLevel.get(planOrder.getFMATERIALID())==null||isSelectLevel.get(planOrder.getFMATERIALID())==false){
+                if(materialLevel.get(planOrder.getFMATERIALID())==null){
+                    materialLevel.put(planOrder.getFMATERIALID(),1);
+                }
+                //获取产品组成
+                findProductSelfUseDao.findProductChildLevel(planOrder.getFMATERIALID(),1,materialLevel);
+                isSelectLevel.put(planOrder.getFMATERIALID(),true);
             }
-            //获取产品组成
-            findProductSelfUseDao.findProductChildLevel(planOrder.getFMATERIALID(),1,materialLevel);
+
             if(productMap.get(planOrder.getFMATERIALID()+","+planOrder.getDemandDate())==null){
                 //查询产品第一级
                 findProductSelfUseDao.findProductChild(planOrder);
@@ -63,6 +68,9 @@ public class FindProductByPlanServiceImpl implements FindProductByPlanService {
             public int compare(PlanOrder obj1, PlanOrder obj2) {
                 int level1 = obj1.getLevel();
                 int level2 = obj2.getLevel();
+                if(level1==level2){
+                    return 0;
+                }
                 return level1<level2?1:-1;
             }
         });

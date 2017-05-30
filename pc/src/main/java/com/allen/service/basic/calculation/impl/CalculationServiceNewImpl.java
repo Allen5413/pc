@@ -369,8 +369,9 @@ public class CalculationServiceNewImpl implements CalculationService {
                     break;
                 }
             }
-            if(lineTotalCapacity.compareTo(useQty)<=0){//生产线的总数量小于计划量
-                planDayMaterial.setFullWork(true);
+            if(lineTotalCapacity.compareTo(useQty)<0){//生产线的总数量小于计划量
+                //planDayMaterial.setFullWork(true);
+                produce.get(fMaterialId).get(demandDate).setFullWork(true);
             }
             //记录当天产品的实际产能
             produce.get(fMaterialId).get(demandDate).setCapacity(lineTotalCapacity);
@@ -433,9 +434,11 @@ public class CalculationServiceNewImpl implements CalculationService {
                 boolean flag = false;
                 for (String classGroupId :classGroupIds) {
                     key = fMaterialId+","+demandDate+","+classGroupId;
+                    //判断当天的工作组是否使用
                     if(workGroup.get(demandDate+","+classGroupId)!=null){
                         useWorkTime = workGroup.get(demandDate+","+classGroupId);
                     }
+                    //获取当天产品工作组使用时间
                     if(demandMaterialWorkGroup.get(key)!=null){
                         useWorkTime = useWorkTime.subtract(demandMaterialWorkGroup.get(key));
                     }
@@ -495,15 +498,10 @@ public class CalculationServiceNewImpl implements CalculationService {
                     workTime = coreClassPro.multiply(unitWorkProduct);
                     key = fMaterialId+","+demandDate+","+classGroupId;
                     //产品当天使用班组时间情况
-                    if(demandMaterialWorkGroup!=null&&demandMaterialWorkGroup.get(key)!=null){
-                        workTime = workTime.subtract(demandMaterialWorkGroup.get(key));
-                        demandMaterialWorkGroup.put(key,workTime.add(demandMaterialWorkGroup.get(key)));
-                    }else{
-                        demandMaterialWorkGroup.put(key,workTime);
-                    }
+                    demandMaterialWorkGroup.put(key,workTime);
                     //判断当天的班组是否使用
                     if(workGroup!=null&&workGroup.get(demandDate+","+classGroupId)!=null){
-                        workGroup.put(demandDate+","+classGroupId,workTime.add(workGroup.get(demandDate+","+classGroupId)));
+                        workGroup.put(demandDate+","+classGroupId,workTime.add(useWorkTime));
                     }else {
                         workGroup.put(demandDate+","+classGroupId,workTime);
                     }
@@ -514,7 +512,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                             workTimeInfo.get("work_time_id").toString(),classGroupId,new Long(1),
                             addTime.compareTo(BigDecimal.ZERO)>0?addTime:BigDecimal.ZERO,
                             balanceTime,balanceTime.multiply(unitWorkProduct),
-                            proNum,coreClassPro,workTime,workGroup.put(demandDate+","+classGroupId,workTime).subtract(workTime));
+                            proNum,coreClassPro,workTime,useWorkTime);
                     if(workCoreUse.compareTo(proNum)>=0){
                         flag = true;
                         break;
@@ -718,8 +716,8 @@ public class CalculationServiceNewImpl implements CalculationService {
             }
         }
         //反写生产计划
-        //returnProductionPlanService.returnPlan(DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
-          //     DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
+        returnProductionPlanService.returnPlan(DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
+             DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
     }
 
     /**
