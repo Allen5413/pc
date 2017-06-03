@@ -14,6 +14,7 @@ import com.allen.service.basic.factorydate.FindIsWorkByDateService;
 import com.allen.service.basic.materialstock.FindStockByFmaterialIdsService;
 import com.allen.service.basic.producelineuse.AddProduceLineUseService;
 import com.allen.service.basic.producelineuse.DelProduceLineUseService;
+import com.allen.service.basic.producelineuse.SplitProduceLineUseService;
 import com.allen.service.basic.product.FindProductByPlanService;
 import com.allen.service.basic.productinventory.EditProductInventoryService;
 import com.allen.service.basic.productinventory.FindProInvByPIdService;
@@ -61,6 +62,8 @@ public class CalculationServiceNewImpl implements CalculationService {
     private DelProductionPlanService delProductionPlanService;
     @Resource
     private ReturnProductionPlanService returnProductionPlanService;
+    @Resource
+    private SplitProduceLineUseService splitProduceLineUseService;
     //保留小数位数
     private static final int SMALL_NUMBER= 0;
     private static final BigDecimal ONE = new BigDecimal(1);
@@ -155,6 +158,9 @@ public class CalculationServiceNewImpl implements CalculationService {
         classGroupTimeStep = new HashMap<String, Integer>();
         //计算
         calProPlan();
+        //拆分班次
+        splitProduceLineUseService.splitProduceLineUserService(DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
+                DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
         return true;
     }
     /**
@@ -306,7 +312,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                             if (currentWorkTime.compareTo(useWorkTime)<=0){
                                 continue;
                             }else{
-                                coreClassPro = (currentWorkTime.subtract(useWorkTime)).divide(unitWorkProduct,8,BigDecimal.ROUND_HALF_EVEN);
+                                coreClassPro = (currentWorkTime.subtract(useWorkTime)).divide(unitWorkProduct,8,BigDecimal.ROUND_HALF_EVEN).setScale(0,BigDecimal.ROUND_HALF_EVEN);
                                 maxCoreClassGroupPro = lineUseQty.subtract(workCoreUse);
                                 //计划产能除以最小批量  不整除时候
                                 if (maxCoreClassGroupPro.divideAndRemainder(minBatch)[1].compareTo(BigDecimal.ZERO) != 0) {
@@ -330,7 +336,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                             if (currentWorkTime.compareTo(useWorkTime)<=0){
                                 continue;
                             }else{
-                                coreClassPro = (currentWorkTime.subtract(useWorkTime)).divide(unitWorkProduct,8,BigDecimal.ROUND_HALF_EVEN);
+                                coreClassPro = (currentWorkTime.subtract(useWorkTime)).divide(unitWorkProduct,8,BigDecimal.ROUND_HALF_EVEN).setScale(0,BigDecimal.ROUND_HALF_EVEN);;
                                 maxCoreClassGroupPro = lineUseQty.subtract(workCoreUse);
                                 //计划产能除以最小批量  不整除时候
                                 if (maxCoreClassGroupPro.divideAndRemainder(minBatch)[1].compareTo(BigDecimal.ZERO) != 0) {
@@ -452,7 +458,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                         if (currentWorkTime.compareTo(useWorkTime)<=0){
                             continue;
                         }else{
-                            coreClassPro = (currentWorkTime.subtract(useWorkTime)).divide(unitWorkProduct,8,BigDecimal.ROUND_HALF_EVEN);
+                            coreClassPro = (currentWorkTime.subtract(useWorkTime)).divide(unitWorkProduct,2,BigDecimal.ROUND_HALF_EVEN);
                             maxCoreClassGroupPro = proNum.subtract(workCoreUse);
                             //计划产能除以最小批量  不整除时候
                             if (maxCoreClassGroupPro.divideAndRemainder(minBatch)[1].compareTo(BigDecimal.ZERO) != 0) {
@@ -476,7 +482,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                         if (currentWorkTime.compareTo(useWorkTime)<=0){
                             continue;
                         }else{
-                            coreClassPro = (currentWorkTime.subtract(useWorkTime)).divide(unitWorkProduct,8,BigDecimal.ROUND_HALF_EVEN);
+                            coreClassPro = (currentWorkTime.subtract(useWorkTime)).divide(unitWorkProduct,2,BigDecimal.ROUND_HALF_EVEN);
                             maxCoreClassGroupPro = proNum.subtract(workCoreUse);
                             //计划产能除以最小批量  不整除时候
                             if (maxCoreClassGroupPro.divideAndRemainder(minBatch)[1].compareTo(BigDecimal.ZERO) != 0) {
@@ -601,10 +607,10 @@ public class CalculationServiceNewImpl implements CalculationService {
                 //单位时间产能，数据库存的是秒的产能
                 unitWorkProduct = new BigDecimal(workTimeInfo.get("unit_time_capacity").toString()).divide(new BigDecimal(3600));
                 if(lineSameClassGroup.get(pLineId+","+classGroupId)==null){
-                    lineSameClassGroup.put(pLineId+","+classGroupId,ONE.divide(unitWorkProduct,8,BigDecimal.ROUND_HALF_EVEN));
+                    lineSameClassGroup.put(pLineId+","+classGroupId,ONE.divide(unitWorkProduct,8,BigDecimal.ROUND_UP));
                 }else{
                     lineSameClassGroup.put(pLineId+","+classGroupId,(ONE.divide(unitWorkProduct,8,
-                            BigDecimal.ROUND_HALF_EVEN)).add(lineSameClassGroup.get(pLineId+","+classGroupId)));
+                            BigDecimal.ROUND_UP)).add(lineSameClassGroup.get(pLineId+","+classGroupId)));
                 }
             }
         }
@@ -643,6 +649,7 @@ public class CalculationServiceNewImpl implements CalculationService {
             workCoreTotalPro = workCoreTotalPro.multiply(new BigDecimal(workTimeInfo.get("qualified_rate").toString()));
             maxWorkCorePro = maxWorkCorePro.compareTo(workCoreBalanceTotalPro)>=0?workCoreBalanceTotalPro:maxWorkCorePro;
             if (workCoreTotalPro.compareTo(minWorkCoreTotalPro)<=0) {
+                minWorkCoreTotalPro = workCoreTotalPro;
                 pRate = new BigDecimal(workTimeInfo.get("qualified_rate").toString());
                 eighthCapacity = (new BigDecimal(8)).multiply(coreTotalPro);
                 minProCoreId = workCoreId;

@@ -61,9 +61,14 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
                     continue;
                 }
                 if(planOrders!=null&&planOrders.size()>0){
-                    for (PlanOrder planOrderOld:planOrders){
-                        planOrderDao.delete(planOrderOld);
+                    if(planOrders.size()>1){
+                        for (int i=1;i<planOrders.size();i++){
+                            planOrderDao.delete(planOrders.get(i));
+                        }
                     }
+                    planOrders.get(0).setFFIRMQTY(productionPlan.getActualProductionNum());
+                    planOrderDao.save(planOrders.get(0));
+                    continue;
                 }
                 zPlanOrder = new ZPlanOrder();
                 zPlanOrder.setColumn1(1);
@@ -111,6 +116,7 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
                 planOrder.setFBOMID(productionPlan.getBomId());
                 planOrder.setFMTONO("");
                 planOrder.setFPROJECTNO("");
+                planOrder.setFPC("1");
 
                 zPlnPlanOrderDao.delete(zPlanOrder);
 

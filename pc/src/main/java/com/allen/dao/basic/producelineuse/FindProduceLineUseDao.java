@@ -69,4 +69,24 @@ public class FindProduceLineUseDao extends BaseQueryDao {
         String[] tableNames = {"ProduceLineUse p"};
         return super.findListByHql(tableNames,fields,params,null,ProduceLineUse.class);
     }
+
+    /**
+     * 功能：查询排班信信息总和详细信息
+     * @param start
+     * @param end
+     * @return
+     */
+    public List<Map<String,Object>> findProduceLineUseDetail(Date start,Date end){
+        String sql = "select bname.FNAME,bnum.FNUMBER,a.plan_quantity,a.capacity,a.production_date,wcore.name as wname,cg.name as cgName," +
+                "wt.name as wtName,wt.sno,a.work_start,a.work_time " +
+                "from produce_line_use a,t_bd_material bnum,t_bd_material_l bname,work_core wcore,class_group cg,work_time wt " +
+                "where a.product_id = bnum.FMATERIALID and a.product_id = bname.FMATERIALID and a.work_core_id = wcore.id " +
+                "and cg.id = a.work_team_id and a.work_time_id = wt.id and a.production_date>=? and a.production_date<=? " +
+                " and work_time>0 order by a.product_id,a.production_date,a.work_team_id";
+        Session session = super.entityManager.unwrap(Session.class);
+        SQLQuery sqlQuery = session.createSQLQuery(sql);
+        sqlQuery.setParameter(0,start);
+        sqlQuery.setParameter(1,end);
+        return sqlQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+    }
 }

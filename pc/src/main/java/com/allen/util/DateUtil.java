@@ -280,7 +280,51 @@ public class DateUtil {
         Date targetDate = new SimpleDateFormat(shortDatePattern).parse(target);
         return sourceDate.compareTo(targetDate);
     }
-
+    /**
+     * 功能：比较时间大小
+     * @param source
+     * @param target
+     * @return
+     * @throws Exception
+     */
+    public static int compareFullDate(String source,String target) throws Exception {
+        Date sourceDate = new SimpleDateFormat(longDatePattern).parse(source);
+        Date targetDate = new SimpleDateFormat(longDatePattern).parse(target);
+        return sourceDate.compareTo(targetDate);
+    }
+    /**
+     * 根据当前日期计算新小时后日期
+     * @param calDate
+     * @param modify
+     * @return
+     */
+    public static String calSecondNewDate(String calDate,int modify ){
+        Calendar c = Calendar.getInstance();
+        Date date = null;
+        try{
+            date = new SimpleDateFormat(longDatePattern).parse(calDate);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        c.setTime(date);
+        c.add(Calendar.SECOND, modify);
+        String dayBefore = new SimpleDateFormat(longDatePattern).format(c.getTime());
+        return dayBefore;
+    }
+    /**
+     * 根据当前日期计算新小时后日期
+     * @param calDate
+     * @param modify
+     * @return
+     */
+    public static String calSecondNewDate(Date calDate,int modify ){
+        Calendar c = Calendar.getInstance();
+        c.setTime(calDate);
+        c.add(Calendar.SECOND, modify);
+        String dayBefore = new SimpleDateFormat(longDatePattern).format(c.getTime());
+        return dayBefore;
+    }
     public static void main(String[] args) {
         SimpleDateFormat sd = new SimpleDateFormat("yyyyMMdd");
 
@@ -288,7 +332,7 @@ public class DateUtil {
         // System.out.println(sd.parse(date, new java.text.ParsePosition(0)));
         // System.out.println(getBefore2HourDate());
         try {
-            System.out.println(compareDate("2017-03-01", "2017-03-01"));
+           // System.out.println(DateUtil.calSecondNewDate(new Date(),-5472));
         } catch (Exception e) {
             e.printStackTrace();
         }

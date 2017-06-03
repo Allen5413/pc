@@ -59,6 +59,7 @@ public class PlanOrder implements Serializable {
     private String FCOMPUTEID;
     private String FMTONO;
     private String FPROJECTNO;
+    private String FPC;//反写排产信息
     @Transient
     private long FCUSTID;//
     @Transient
@@ -474,5 +475,13 @@ public class PlanOrder implements Serializable {
 
     public void setFPROJECTNO(String FPROJECTNO) {
         this.FPROJECTNO = FPROJECTNO;
+    }
+
+    public String getFPC() {
+        return FPC;
+    }
+
+    public void setFPC(String FPC) {
+        this.FPC = FPC;
     }
 }
