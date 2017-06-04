@@ -106,6 +106,7 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
                     newClassOne.putAll(produceLineUseMap);
                     newClassOne.put("workTime",totalTime.subtract(eightHour));
                     newClassOne.put("wtName",startWorkTime.getName());
+                    newClassOne.put("wtCode",startWorkTime.getCode());
                     newClassOne.put("newCapacity",hourCapacity.multiply(totalTime.subtract(eightHour))
                             .setScale(0,BigDecimal.ROUND_HALF_UP));//生产数量 8小时减去已经上班的时间
                     newClassOne.put("start",productionDate+" "+startWorkTime.getBeginTimeStr()+":00");//工作开始日期
@@ -128,6 +129,7 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
                     newClassOne.putAll(produceLineUseMap);
                     newClassOne.put("workTime",eightHour);
                     newClassOne.put("wtName",startWorkTime.getName());
+                    newClassOne.put("wtCode",startWorkTime.getCode());
                     newClassOne.put("newCapacity",hourCapacity.multiply(eightHour)
                             .setScale(0,BigDecimal.ROUND_HALF_UP));//生产数量 8小时减去已经上班的时间
                     newClassOne.put("start", productionDate+" "+startWorkTime.getBeginTimeStr()+":00");//工作开始日期
@@ -140,6 +142,7 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
                     startWorkTime =  workTimeMap.get(workSno+"");
                     HashMap<String,Object> newClassTwo = new HashMap<String, Object>();
                     newClassTwo.putAll(produceLineUseMap);
+                    newClassTwo.put("wtCode",startWorkTime.getCode());
                     newClassTwo.put("workTime",totalTime.subtract(sixteenHour));
                     newClassTwo.put("wtName",startWorkTime.getName());
                     newClassTwo.put("newCapacity",hourCapacity.multiply(totalTime.subtract(sixteenHour))
@@ -155,6 +158,7 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
                     startWorkTime =  workTimeMap.get(workSno+"");
                     produceLineUseMap.put("workTime",workTime);
                     produceLineUseMap.put("wtName",startWorkTime.getName());
+                    produceLineUseMap.put("wtCode",startWorkTime.getCode());
                     produceLineUseMap.put("newCapacity",capacity);//生产数量 8小时减去已经上班的时间
                     produceLineUseMap.put("start",DateUtil.calSecondNewDate(productionDate+" "+startWorkTime.getBeginTimeStr()+":00",
                             (wortStart.subtract(eightHour)).multiply(new BigDecimal(3600)).intValue()));//工作开始日期
@@ -167,6 +171,7 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
                     workSno=workSno+1;//第二个班次开始时间
                     startWorkTime =  workTimeMap.get(workSno+"");
                     produceLineUseMap.put("wtName",startWorkTime.getName());
+                    produceLineUseMap.put("wtCode",startWorkTime.getCode());
                     produceLineUseMap.put("workTime",sixteenHour.subtract(wortStart));
                     produceLineUseMap.put("newCapacity",hourCapacity.multiply(sixteenHour.subtract(wortStart))
                             .setScale(0,BigDecimal.ROUND_HALF_UP));//生产数量 8小时减去已经上班的时间
@@ -183,6 +188,7 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
                     newClassTwo.putAll(produceLineUseMap);
                     newClassTwo.put("workTime",totalTime.subtract(sixteenHour));
                     newClassTwo.put("wtName",startWorkTime.getName());
+                    newClassTwo.put("wtCode",startWorkTime.getCode());
                     newClassTwo.put("newCapacity",hourCapacity.multiply(totalTime.subtract(sixteenHour))
                             .setScale(0,BigDecimal.ROUND_HALF_UP));//生产数量 8小时减去已经上班的时间
                     newClassTwo.put("start",productionDate+" "+startWorkTime.getBeginTimeStr()+":00");//工作开始日期
@@ -198,6 +204,7 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
                     newClassTwo.putAll(produceLineUseMap);
                     newClassTwo.put("workTime",workTime);
                     newClassTwo.put("wtName",startWorkTime.getName());
+                    newClassTwo.put("wtCode",startWorkTime.getCode());
                     newClassTwo.put("newCapacity",capacity);//生产数量
                     newClassTwo.put("start",DateUtil.calSecondNewDate(productionDate+" "+startWorkTime.getBeginTimeStr()+":00",
                             (wortStart.subtract(sixteenHour)).multiply(new BigDecimal(3600)).intValue()));//工作开始日期

@@ -31,6 +31,10 @@ public class ProductScheduling {
     private String workCoreName;//工作中心名称
     private BigDecimal planCapacity;//客户需求量
     private BigDecimal stockNum;//库存量
+    private String workClassCode;//班次编码
+    private String workCoreCode;//工作中心编码
+    private String procName;//工序名称
+    private String procCode;//工序编码
 
     public long getId() {
         return id;
@@ -127,13 +131,46 @@ public class ProductScheduling {
     public void setStockNum(BigDecimal stockNum) {
         this.stockNum = stockNum;
     }
+
+    public String getWorkClassCode() {
+        return workClassCode;
+    }
+
+    public void setWorkClassCode(String workClassCode) {
+        this.workClassCode = workClassCode;
+    }
+
+    public String getWorkCoreCode() {
+        return workCoreCode;
+    }
+
+    public void setWorkCoreCode(String workCoreCode) {
+        this.workCoreCode = workCoreCode;
+    }
+
+    public String getProcName() {
+        return procName;
+    }
+
+    public void setProcName(String procName) {
+        this.procName = procName;
+    }
+
+    public String getProcCode() {
+        return procCode;
+    }
+
+    public void setProcCode(String procCode) {
+        this.procCode = procCode;
+    }
+
     public static ProductScheduling mapToProductScheduling(Map<String,Object> params){
         ProductScheduling productScheduling = new ProductScheduling();
         productScheduling.setCapacity(new BigDecimal(params.get("newCapacity").toString()));
         productScheduling.setPlanCapacity(new BigDecimal(params.get("plan_quantity").toString()));
         productScheduling.setProductName(params.get("FNAME").toString());
         productScheduling.setProductNo(params.get("FNUMBER").toString());
-        productScheduling.setWorkCoreName(params.get("wname").toString());
+        productScheduling.setWorkCoreName(params.get("cgName").toString());
         productScheduling.setWorkClassName(params.get("wtName").toString());
         productScheduling.setProductionDate(DateUtil.getFormatDate(params.get("production_date").toString(),
                 DateUtil.shortDatePattern));
@@ -141,6 +178,10 @@ public class ProductScheduling {
         productScheduling.setWorkTimeStart(DateUtil.getFormatDate(params.get("start").toString(),DateUtil.longDatePattern));
         productScheduling.setWorkTimeEnd(DateUtil.getFormatDate(params.get("end").toString(),DateUtil.longDatePattern));
         productScheduling.setStockNum(new BigDecimal(0));
+        productScheduling.setWorkClassCode(params.get("wtCode").toString());
+        productScheduling.setWorkCoreCode(params.get("cgCode").toString());
+        productScheduling.setProcCode(params.get("wCode").toString());
+        productScheduling.setProcName(params.get("wName").toString());
         return productScheduling;
     }
 }
