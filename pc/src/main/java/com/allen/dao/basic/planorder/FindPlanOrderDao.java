@@ -31,7 +31,7 @@ public class FindPlanOrderDao extends BaseQueryDao {
                 "po.FDEMANDDATE,c.FCUSTID,f.FCATEGORYID,po.FBOMID " +
                 "from T_BD_MATERIALBASE f,T_BD_MATERIAL a,T_BD_MATERIAL_L b,T_PLN_PLANORDER po left join T_PLN_PLANORDER_B pob on po.FID=pob.FID " +
                 "left join T_SAL_ORDER so on pob.FSALEORDERID=so.FID left join T_BD_CUSTOMER c on so.FCUSTID=c.FCUSTID " +
-                "where f.FMATERIALID = a.FMATERIALID AND a.FMATERIALID = b.FMATERIALID and b.FMATERIALID = po.FMATERIALID " +
+                "where f.FMATERIALID = a.FMATERIALID AND a.FMATERIALID = b.FMATERIALID and b.FMATERIALID = po.FMATERIALID and a.FUSEORGID=100001 " +
                 "and po.FDOCUMENTSTATUS='A' and po.FRELEASETYPE=1 AND po.FDEMANDDATE>=? and po.FDEMANDDATE<=? AND ISNULL(po.FPC,'2')!='1' " +
                 " ORDER BY f.FSNO,po.FMATERIALID,po.FDEMANDDATE";
 
