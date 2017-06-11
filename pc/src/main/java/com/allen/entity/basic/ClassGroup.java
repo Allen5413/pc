@@ -1,9 +1,7 @@
 package com.allen.entity.basic;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -22,6 +20,8 @@ public class ClassGroup {
     private Date createTime = new Date();
     private String operator;
     private Date operateTime = new Date();
+    @Column(name = "max_produce_time",columnDefinition = "decimal(5,2) default '24'")
+    private BigDecimal maxProduceTime;//最大生产时间
 
     public long getId() {
         return id;
@@ -77,5 +77,13 @@ public class ClassGroup {
 
     public void setOperateTime(Date operateTime) {
         this.operateTime = operateTime;
+    }
+
+    public BigDecimal getMaxProduceTime() {
+        return maxProduceTime;
+    }
+
+    public void setMaxProduceTime(BigDecimal maxProduceTime) {
+        this.maxProduceTime = maxProduceTime;
     }
 }

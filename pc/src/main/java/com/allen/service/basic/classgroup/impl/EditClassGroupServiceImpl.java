@@ -32,6 +32,7 @@ public class EditClassGroupServiceImpl implements EditClassGroupService {
 
         oldClassGroup.setCode(classGroup.getCode());
         oldClassGroup.setName(classGroup.getName());
+        oldClassGroup.setMaxProduceTime(classGroup.getMaxProduceTime());
         oldClassGroup.setOperator(classGroup.getOperator());
         oldClassGroup.setOperateTime(classGroup.getOperateTime());
         classGroupDao.save(oldClassGroup);

@@ -182,6 +182,7 @@ public class ProductScheduling {
         productScheduling.setWorkCoreCode(params.get("cgCode").toString());
         productScheduling.setProcCode(params.get("wCode").toString());
         productScheduling.setProcName(params.get("wName").toString());
+        productScheduling.setStockNum(params.get("stockNum")==null?new BigDecimal(0):new BigDecimal(params.get("stockNum").toString()));
         return productScheduling;
     }
 }

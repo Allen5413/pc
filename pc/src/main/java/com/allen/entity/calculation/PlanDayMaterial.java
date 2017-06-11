@@ -2,6 +2,7 @@ package com.allen.entity.calculation;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,6 +26,25 @@ public class PlanDayMaterial {
     private String productName;//产品名称
     private String productType;//产品类型
     private Long bomId;//标准系统中的bomId
+    private Date requireTime;//需求时间
+    private int level;
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public Date getRequireTime() {
+        return requireTime;
+    }
+
+    public void setRequireTime(Date requireTime) {
+        this.requireTime = requireTime;
+    }
+
     private List<String> childs = new ArrayList<String>();//记录子产品的
 
     public String getDemandDate() {

@@ -4,12 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.allen.dao.basic.producelinecoreproduct.FindProduceLineCoreProductDao;
 import com.allen.dao.basic.producelineuse.FindProduceLineUseDao;
-import com.allen.entity.basic.MaterialStock;
-import com.allen.entity.basic.PlanOrder;
-import com.allen.entity.basic.ProduceLineUse;
-import com.allen.entity.basic.ProductionPlan;
+import com.allen.entity.basic.*;
 import com.allen.entity.calculation.PlanDayMaterial;
 import com.allen.service.basic.calculation.CalculationService;
+import com.allen.service.basic.classgroup.FindClassGroupForAllService;
 import com.allen.service.basic.factorydate.FindIsWorkByDateService;
 import com.allen.service.basic.materialstock.FindStockByFmaterialIdsService;
 import com.allen.service.basic.producelineuse.AddProduceLineUseService;
@@ -64,6 +62,8 @@ public class CalculationServiceNewImpl implements CalculationService {
     private ReturnProductionPlanService returnProductionPlanService;
     @Resource
     private SplitProduceLineUseService splitProduceLineUseService;
+    @Resource
+    private FindClassGroupForAllService findClassGroupForAllService;
     //保留小数位数
     private static final int SMALL_NUMBER= 0;
     private static final BigDecimal ONE = new BigDecimal(1);
@@ -113,8 +113,12 @@ public class CalculationServiceNewImpl implements CalculationService {
     Integer[] addTimeStep = new Integer[]{4,4,4,4};
     Map<String,Integer> classGroupTimeStep = null;
     String minProCoreId = null;
+    Map<String,ClassGroup> mapClassGroup = null;
+    Set<String> planCycle = null;
+    Map<String,Boolean> exitProduct = new HashMap<String, Boolean>();
     @Override
     public boolean calculation(String start, String end) throws Exception {
+        exitProduct.put("16.CF002A.A100C",true);
         this.start = start;
         this.end = end;
         //删除计划时间已经存在的数据
@@ -146,8 +150,15 @@ public class CalculationServiceNewImpl implements CalculationService {
         minBatch = null;
         classGroupId = null;
         minProCoreId = null;
+        planCycle = null;
         demandMaterialWorkGroup = new HashMap<String, BigDecimal>();
         workGroup = new HashMap<String, BigDecimal>();
+        mapClassGroup = new HashMap<String, ClassGroup>();
+        //获取所有工作中心信息
+        List<ClassGroup> classGroupList = findClassGroupForAllService.find();
+        for(ClassGroup classGroup:classGroupList){
+            mapClassGroup.put(classGroup.getId()+"",classGroup);
+        }
         //获取生产计划的产品信息
         List<PlanOrder> planOrders = findProductByPlanService.findProductByPlan(start,end);
         //格式为{产品：[{生产日期:PlanDayMaterial},{生产日期:PlanDayMaterial｝]},返回产品id集合
@@ -172,15 +183,22 @@ public class CalculationServiceNewImpl implements CalculationService {
      * @throws Exception
      */
     private void calMaterialDate(Long fMaterialId,String lessDemandDate,boolean isBack) throws Exception {
+        String lastDemandDate = null;
         //循环生产计划时间
-        for (String demandDate : materialDemandDate) {
+        for (String demandDate : planCycle) {
             //产品某天产能不够 重新循环的时候超过不够那天退出循环，返回还差的产能值
-            if(!StringUtil.isEmpty(lessDemandDate)&&DateUtil.compareDate(demandDate,lessDemandDate)>=0){
+            if(!StringUtil.isEmpty(lessDemandDate)&&DateUtil.compareDate(demandDate,lessDemandDate)>0){
                 return ;
+            }
+            //产品某天产能不够 重新循环的时候超过不够那天退出循环，返回还差的产能值
+            if(!StringUtil.isEmpty(lessDemandDate)&&DateUtil.compareDate(demandDate,lessDemandDate)<0){
+                lastDemandDate = demandDate;
+                continue;
             }
             //产品计划产
             planDayMaterial = produce.get(fMaterialId).get(demandDate);
             if(planDayMaterial.isFullWork()){
+                lastDemandDate = demandDate;
                 continue;
             }
             productionDate = DateUtil.getFormatDate(demandDate, DateUtil.shortDatePattern);
@@ -193,13 +211,15 @@ public class CalculationServiceNewImpl implements CalculationService {
                 materialStock.setFQTY(materialStock.getFQTY().subtract(useQty));
                 pInvMaps.put(fMaterialId, materialStock);
                 if (DateUtil.compareDate(demandDate, start) != 0) {//不是计划第一天
-                    calMaterialDate(fMaterialId,demandDate,true);
+                    calMaterialDate(fMaterialId,lastDemandDate,true);
                 }
+                lastDemandDate = demandDate;
                 continue;
             }
             //库存够用
             if (materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(useQty) >= 0) {
                 if(useQty.compareTo(BigDecimal.ZERO)==0){
+                    lastDemandDate = demandDate;
                     continue;
                 }
                 //临时库存这个不需要表存 直接数据结构存
@@ -231,28 +251,32 @@ public class CalculationServiceNewImpl implements CalculationService {
                     useQty = useQty.add(planDayMaterial.getStorageNum());
                 }
                 if(useQty.compareTo(new BigDecimal(0))==0){
+                    lastDemandDate = demandDate;
                     continue;
                 }
                 //判断产品是否有下级产品
                 childMaterials = planDayMaterial.getSelfChilds();
-                if (childMaterials != null && childMaterials.size() > 0) {
+                if (childMaterials != null && childMaterials.size() > 0&&exitProduct.get(planDayMaterial.getProductNo())==null) {
                     minChildMaterial = new BigDecimal(0);
                     //根据下级产品的产能，计算当前产品实际的产能数量
                     for (String[] childMaterial : childMaterials) {
                         //根据下级产能计算出当前级别的产品最多能生产好多个
-                        if(produce.get(childMaterial[0])!=null&&produce.get(childMaterial[0]).get(demandDate)
-                                .getUseQtyStock()!=null){
-                            childMaterialCapacity = produce.get(childMaterial[0]).get(demandDate)
-                                    .getUseQtyStock().divide(new BigDecimal(childMaterial[1]));
-                            if (minChildMaterial.intValue() == 0) {
-                                minChildMaterial = childMaterialCapacity;
-                            } else {
-                                minChildMaterial = minChildMaterial.compareTo(childMaterialCapacity) > 0 ? childMaterialCapacity : minChildMaterial;
+                        if(produce.get(Long.valueOf(childMaterial[0]))!=null&&produce.get(Long.valueOf(childMaterial[0])).get(demandDate)!=null){
+                            PlanDayMaterial planDayMaterialLevel = produce.get(Long.valueOf(childMaterial[0])).get(demandDate);
+                            if(planDayMaterialLevel!=null&&planDayMaterialLevel.getUseQtyStock()!=null){
+                                childMaterialCapacity = produce.get(Long.valueOf(childMaterial[0])).get(demandDate)
+                                        .getUseQtyStock().divide(new BigDecimal(childMaterial[1]));
+                                if (minChildMaterial.intValue() == 0) {
+                                    minChildMaterial = childMaterialCapacity;
+                                } else {
+                                    minChildMaterial = minChildMaterial.compareTo(childMaterialCapacity) > 0 ? childMaterialCapacity : minChildMaterial;
+                                }
                             }
+
                         }
                     }
                     //生产产品计划量 与下级产品的最小数量对比
-                    useQty = useQty.compareTo(minChildMaterial) > 0 ? useQty : minChildMaterial;
+                    useQty = useQty.compareTo(minChildMaterial) > 0 ?minChildMaterial: useQty;
                 }
             }
             workCores = null;//生产线工作中心
@@ -299,6 +323,10 @@ public class CalculationServiceNewImpl implements CalculationService {
                         if(workGroup.get(demandDate+","+classGroupId)!=null){
                             useWorkTime = workGroup.get(demandDate+","+classGroupId);
                         }
+                        //工作时间大于等于最大工作时间
+                        if(useWorkTime.compareTo(mapClassGroup.get(classGroupId).getMaxProduceTime())>=0){
+                            continue;
+                        }
                         if(demandMaterialWorkGroup.get(key)!=null){
                             useWorkTime = useWorkTime.subtract(demandMaterialWorkGroup.get(key));
                         }
@@ -332,6 +360,10 @@ public class CalculationServiceNewImpl implements CalculationService {
                         }else{
                             for(int i=0;i<index;i++){
                                 currentWorkTime = currentWorkTime.add(new BigDecimal(addTimeStep[i]));
+                            }
+                            //实际工作时间操作最大工作时间
+                            if(currentWorkTime.compareTo(mapClassGroup.get(classGroupId).getMaxProduceTime())>0){
+                                currentWorkTime = mapClassGroup.get(classGroupId).getMaxProduceTime();
                             }
                             if (currentWorkTime.compareTo(useWorkTime)<=0){
                                 continue;
@@ -408,14 +440,15 @@ public class CalculationServiceNewImpl implements CalculationService {
                 productionPlan.setProductName(planDayMaterial.getProductName());
                 productionPlan.setActualProductionNum(actualProductionNum);
                 productionPlan.setBomId(planDayMaterial.getBomId());
-                productionPlan.setCapacity(totalEighthCapacity);
+                productionPlan.setCapacity(totalEighthCapacity.divide(new BigDecimal(1000)));
                 addProductionPlanService.addProductionPlan(productionPlan);
             }
             if (lineTotalCapacity.compareTo(useQty) < 0) {
-                if(isBack) {
-                    calMaterialDate(fMaterialId, demandDate, true);
+                if(isBack&&lastDemandDate!=null) {
+                    calMaterialDate(fMaterialId, lastDemandDate, true);
                 }
             }
+            lastDemandDate = demandDate;
         }
     }
     /**
@@ -443,6 +476,10 @@ public class CalculationServiceNewImpl implements CalculationService {
                     //判断当天的工作组是否使用
                     if(workGroup.get(demandDate+","+classGroupId)!=null){
                         useWorkTime = workGroup.get(demandDate+","+classGroupId);
+                    }
+                    //实际工作时间操作最大工作时间
+                    if(useWorkTime.compareTo(mapClassGroup.get(classGroupId).getMaxProduceTime())>=0){
+                        continue;
                     }
                     //获取当天产品工作组使用时间
                     if(demandMaterialWorkGroup.get(key)!=null){
@@ -479,6 +516,10 @@ public class CalculationServiceNewImpl implements CalculationService {
                         for(int i=0;i<index;i++){
                             currentWorkTime = currentWorkTime.add(new BigDecimal(addTimeStep[i]));
                         }
+                        //实际工作时间操作最大工作时间
+                        if(currentWorkTime.compareTo(mapClassGroup.get(classGroupId).getMaxProduceTime())>0){
+                            currentWorkTime = mapClassGroup.get(classGroupId).getMaxProduceTime();
+                        }
                         if (currentWorkTime.compareTo(useWorkTime)<=0){
                             continue;
                         }else{
@@ -513,7 +554,8 @@ public class CalculationServiceNewImpl implements CalculationService {
                     }
                     BigDecimal addTime = (workGroup.get(demandDate+","+classGroupId)).subtract(getWorkTime(workTimeInfo.get("begin_time").toString(),
                             workTimeInfo.get("end_time").toString()));
-                    BigDecimal balanceTime = maxWorkTotalTime.subtract(workGroup.get(demandDate+","+classGroupId));
+                    BigDecimal balanceTime = mapClassGroup.get(classGroupId).getMaxProduceTime()
+                            .subtract(workGroup.get(demandDate+","+classGroupId));
                     saveProduceLineUse(fMaterialId,workCoreId,pLineId,0,productionDate,
                             workTimeInfo.get("work_time_id").toString(),classGroupId,new Long(1),
                             addTime.compareTo(BigDecimal.ZERO)>0?addTime:BigDecimal.ZERO,
@@ -607,9 +649,9 @@ public class CalculationServiceNewImpl implements CalculationService {
                 //单位时间产能，数据库存的是秒的产能
                 unitWorkProduct = new BigDecimal(workTimeInfo.get("unit_time_capacity").toString()).divide(new BigDecimal(3600));
                 if(lineSameClassGroup.get(pLineId+","+classGroupId)==null){
-                    lineSameClassGroup.put(pLineId+","+classGroupId,ONE.divide(unitWorkProduct,8,BigDecimal.ROUND_UP));
+                    lineSameClassGroup.put(pLineId+","+classGroupId,ONE.divide(unitWorkProduct,12,BigDecimal.ROUND_UP));
                 }else{
-                    lineSameClassGroup.put(pLineId+","+classGroupId,(ONE.divide(unitWorkProduct,8,
+                    lineSameClassGroup.put(pLineId+","+classGroupId,(ONE.divide(unitWorkProduct,12,
                             BigDecimal.ROUND_UP)).add(lineSameClassGroup.get(pLineId+","+classGroupId)));
                 }
             }
@@ -638,8 +680,10 @@ public class CalculationServiceNewImpl implements CalculationService {
                     useWorkTime = useWorkTime.subtract(demandMaterialWorkGroup.get(key));
                 }
                 coreTotalPro = coreTotalPro.add(ONE.divide(unitWorkProduct,2,BigDecimal.ROUND_HALF_EVEN));
-                workCoreTotalPro = workCoreTotalPro.add((maxWorkTotalTime.subtract(useWorkTime)).divide(unitWorkProduct,2,BigDecimal.ROUND_HALF_EVEN));
-                workCoreBalanceTotalPro = workCoreBalanceTotalPro.add(maxWorkTotalTime.divide(unitWorkProduct,2,BigDecimal.ROUND_HALF_EVEN));                ;
+                workCoreTotalPro = workCoreTotalPro.add((mapClassGroup.get(classGroupId).getMaxProduceTime()
+                        .subtract(useWorkTime)).divide(unitWorkProduct,2,BigDecimal.ROUND_HALF_EVEN));
+                workCoreBalanceTotalPro = workCoreBalanceTotalPro.add(mapClassGroup.get(classGroupId).getMaxProduceTime()
+                        .divide(unitWorkProduct,2,BigDecimal.ROUND_HALF_EVEN));                ;
                 //判断当天的班组是否使用
                 if(workGroup!=null&&workGroup.get(demandDate+","+classGroupId)!=null){
                     workCoreBalanceTotalPro = workCoreBalanceTotalPro.subtract(
@@ -662,10 +706,46 @@ public class CalculationServiceNewImpl implements CalculationService {
     public void calProPlan() throws Exception {
         //获取生产计划的keys
         Set<Long> keys = produce.keySet();
+         planCycle = new LinkedHashSet<String>();
+        String endNow = start;
+        while (true){
+            planCycle.add(endNow);
+            endNow = DateUtil.afterDay(endNow);
+            if(DateUtil.compareDate(end,endNow)<0){
+                break;
+            }
+        }
+        Set<String> unWorkDate = new HashSet<String>();
+        for(String planDate:planCycle){
+            if(!findIsWorkByDateService.isWork(planDate, start, end)){
+                planCycle.remove(planDate);
+                unWorkDate.add(planDate);
+            }
+        }
         //生产计划的keys循环产品信息 fMaterialId
         for (Long fMaterialId : keys) {
+            PlanDayMaterial planDayMaterialNew = null;
             //产品的每天生产计划信息
             materialDemandDate = produce.get(fMaterialId).keySet();
+            for (String demandDate:materialDemandDate) {
+                planDayMaterial = produce.get(fMaterialId).get(demandDate);
+            }
+            for(String planDate:planCycle){
+                if(produce.get(fMaterialId).get(planDate)!=null){
+                    continue;
+                }
+                planDayMaterialNew = new PlanDayMaterial();
+                planDayMaterialNew.setMaterialId(fMaterialId);
+                planDayMaterialNew.setCustomerId(0);
+                planDayMaterialNew.setDemandDate(planDate);
+                planDayMaterialNew.setUseQty(new BigDecimal(0));
+                planDayMaterialNew.setProductNo(planDayMaterial.getProductNo());
+                planDayMaterialNew.setProductName(planDayMaterial.getProductName());
+                planDayMaterialNew.setProductType(planDayMaterial.getProductType());
+                planDayMaterialNew.setBomId(planDayMaterial.getBomId());
+                produce.get(fMaterialId).put(planDate,planDayMaterialNew);
+            }
+
             //初始化产品计划信息
             saveProPlan(fMaterialId);
             //获取产品的生产线 生产中心 工作租 班次信息
@@ -677,35 +757,10 @@ public class CalculationServiceNewImpl implements CalculationService {
             calMaterialDate(fMaterialId,null,true);
             //如果产品实际生产还不够  根据产品库存判断
             if(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))<0){
-                Set<String> planCycle = new LinkedHashSet<String>();
-                String endNow = start;
-                while (true){
-                    planCycle.add(endNow);
-                    endNow = DateUtil.afterDay(endNow);
-                    if(DateUtil.compareDate(end,endNow)<0){
-                        break;
-                    }
-                }
-                Set<String> unPlanDate = planCycle;
-                //查找是否有未安排生产计划的时间的
-                for(String demandDate:materialDemandDate){
-                    if(!planCycle.add(demandDate)){
-                        unPlanDate.remove(demandDate);
-                    }
-                }
-                for(String demandDate:planCycle){
-                    if(!findIsWorkByDateService.isWork(demandDate, start, end)){
-                        if(!unPlanDate.add(demandDate)){
-                            unPlanDate.remove(demandDate);
-                            unPlanDate.add(demandDate);
-                        }
-                    }
-                }
-                if(unPlanDate.size()>0){
-                    materialDemandDate = unPlanDate;
+                if(unWorkDate.size()>0){
+                    materialDemandDate = unWorkDate;
                     LinkedHashMap<String, PlanDayMaterial> playDayMaterials = produce.get(fMaterialId);
-                    PlanDayMaterial planDayMaterialNew = null;
-                    for(String demandDate:unPlanDate){
+                    for(String demandDate:unWorkDate){
                         planDayMaterialNew = new PlanDayMaterial();
                         planDayMaterialNew.setMaterialId(fMaterialId);
                         planDayMaterialNew.setCustomerId(0);
@@ -723,8 +778,8 @@ public class CalculationServiceNewImpl implements CalculationService {
             }
         }
         //反写生产计划
-        returnProductionPlanService.returnPlan(DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
-             DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
+        //returnProductionPlanService.returnPlan(DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
+          //   DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
     }
 
     /**
@@ -851,6 +906,8 @@ public class CalculationServiceNewImpl implements CalculationService {
         /*Date start = DateUtil.getFormatDate(startTime, DateUtil.longDatePattern);
         Date end = DateUtil.getFormatDate(endTime, DateUtil.longDatePattern);
         return new BigDecimal((float) (end.getTime() - start.getTime()) / 3600 / 1000).setScale(2, BigDecimal.ROUND_HALF_UP);*/
+        Set<String> test = new HashSet<String>();
+
         return new BigDecimal(8);
     }
 

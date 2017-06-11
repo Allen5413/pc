@@ -1,6 +1,7 @@
 package com.allen.service.basic.producelineuse.impl;
 
 import com.allen.dao.basic.producelineuse.FindProduceLineUseDao;
+import com.allen.dao.basic.productscheduling.FindProductSchedulingDao;
 import com.allen.dao.basic.productscheduling.ProductSchedulingDao;
 import com.allen.entity.basic.ProductScheduling;
 import com.allen.entity.basic.WorkTime;
@@ -29,6 +30,8 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
     private FindWorkTimeAllService findWorkTimeAllService;
     @Resource
     private ProductSchedulingDao productSchedulingDao;
+    @Resource
+    private FindProductSchedulingDao findProductSchedulingDao;
     @Transactional
     @Override
     public void splitProduceLineUserService(Date start, Date end) throws Exception {
@@ -116,7 +119,8 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
                     newClassOne.put("end",DateUtil.compareFullDate(endWorkTime,endTime)>=0?endTime:endWorkTime);//工作结束日期
                     newScheduling.add(newClassOne);
                 } else if((startDivideInt<1&&workDivideInt<=2&&totalDivideInt==2)||
-                        (startDivideInt<1&&workDivideInt==3)) {//在第一个班次中加工了一部分时间 第三个班次未上满的情况
+                        (startDivideInt<1&&workDivideInt==3)||
+                        (startDivideInt<1&&totalDivideInt==3)) {//在第一个班次中加工了一部分时间 第三个班次未上满的情况
                     produceLineUseMap.put("workTime",eightHour.subtract(wortStart));
                     produceLineUseMap.put("newCapacity",hourCapacity.multiply(eightHour.subtract(wortStart))
                             .setScale(0,BigDecimal.ROUND_HALF_UP));//生产数量 8小时减去已经上班的时间
@@ -149,9 +153,9 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
                             .setScale(0,BigDecimal.ROUND_HALF_UP));//生产数量 8小时减去已经上班的时间
                     newClassTwo.put("start",productionDate+" "+startWorkTime.getBeginTimeStr()+":00");//工作开始日期
                     endWorkTime = productionDate+" "+startWorkTime.getEndTimeStr()+":00";//实际工作结束日期
-                    endTime =  DateUtil.calSecondNewDate(newClassOne.get("start").toString(),
+                    endTime =  DateUtil.calSecondNewDate(newClassTwo.get("start").toString(),
                             (totalTime.subtract(sixteenHour)).multiply(new BigDecimal(3600)).intValue());
-                    newClassTwo.put("end",DateUtil.compareFullDate(endWorkTime,endTime)>=0?endTime:endWorkTime);//工作结束日期
+                    newClassTwo.put("end",endTime);//工作结束日期
                     newScheduling.add(newClassTwo);
                 }else if(startDivideInt==1&&workDivideInt<=1&&totalDivideInt==1) {//开始时间在第二个班次  结束时间都在第二个班次中
                     workSno=workSno+1;//第二个班次开始时间
@@ -167,7 +171,8 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
                             workTime.multiply(new BigDecimal(3600)).intValue());
                     produceLineUseMap.put("end",DateUtil.compareFullDate(endWorkTime,endTime)>=0?endTime:endWorkTime);//工作结束日期
                     newScheduling.add(produceLineUseMap);
-                }else if(startDivideInt==1&&workDivideInt<=2&&totalDivideInt==2) {//开始时间在第二个班次  结束时间都在第三个班次中
+                }else if((startDivideInt==1&&workDivideInt<=2&&totalDivideInt==2)
+                        ||(startDivideInt==1&&totalDivideInt==3)) {//开始时间在第二个班次  结束时间在第三个班次中
                     workSno=workSno+1;//第二个班次开始时间
                     startWorkTime =  workTimeMap.get(workSno+"");
                     produceLineUseMap.put("wtName",startWorkTime.getName());
@@ -192,10 +197,9 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
                     newClassTwo.put("newCapacity",hourCapacity.multiply(totalTime.subtract(sixteenHour))
                             .setScale(0,BigDecimal.ROUND_HALF_UP));//生产数量 8小时减去已经上班的时间
                     newClassTwo.put("start",productionDate+" "+startWorkTime.getBeginTimeStr()+":00");//工作开始日期
-                    endWorkTime = productionDate+" "+startWorkTime.getEndTimeStr()+":00";//实际工作结束日期
                     endTime =  DateUtil.calSecondNewDate(newClassTwo.get("start").toString(),
                             (totalTime.subtract(sixteenHour)).multiply(new BigDecimal(3600)).intValue());
-                    newClassTwo.put("end",DateUtil.compareFullDate(endWorkTime,endTime)>=0?endTime:endWorkTime);//工作结束日期
+                    newClassTwo.put("end",endTime);//工作结束日期
                     newScheduling.add(newClassTwo);
                 }else{//开始时间在第三个班次  结束时间都在第三个班次中
                     workSno=workSno+2;//第三个班次开始时间
@@ -211,12 +215,12 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
                     endWorkTime = productionDate+" "+startWorkTime.getEndTimeStr()+":00";//实际工作结束日期
                     endTime =  DateUtil.calSecondNewDate(newClassTwo.get("start").toString(),
                             workTime.multiply(new BigDecimal(3600)).intValue());
-                    newClassTwo.put("end",DateUtil.compareFullDate(endWorkTime,endTime)>=0?endTime:endWorkTime);//工作结束日期
+                    newClassTwo.put("end",endTime);//工作结束日期
                     newScheduling.add(newClassTwo);
                 }
             }
        }
-       List<ProductScheduling> productSchedulings = productSchedulingDao.findByProductionDateBetween(start,end);
+       List<ProductScheduling> productSchedulings = findProductSchedulingDao.find(start,end);
         if(productSchedulings!=null&&productSchedulings.size()>0){
             productSchedulingDao.delete(productSchedulings);
         }
@@ -226,8 +230,8 @@ public class SplitProduceLineUseServiceImpl implements SplitProduceLineUseServic
     }
 
     public static void main(String[] args) {
-        BigDecimal a= new BigDecimal(7.99);
+        BigDecimal a= new BigDecimal(24);
         BigDecimal b= new BigDecimal(8);
-        System.out.println(a.divideAndRemainder(b)[1].setScale(2,BigDecimal.ROUND_HALF_EVEN).floatValue());
+        System.out.println(a.divideToIntegralValue(b).intValue());
     }
 }

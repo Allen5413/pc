@@ -23,7 +23,7 @@ import java.util.Map;
 public class FindProductionPlanDao extends BaseQueryDao {
     @Transactional
     public List<ProductionPlan> find(Map<String,Object> params){
-        String sql = "select p from ProductionPlan p where 1=1 ";
+        String sql = "select p from ProductionPlan p where 1=1 and (p.demandNum>=1 or p.planNum>=1 or p.capacity>=1) ";
         List args = new ArrayList();
         if(params!=null){
             if(params.get("p.productionDateStart")!=null){

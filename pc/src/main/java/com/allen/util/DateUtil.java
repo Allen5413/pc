@@ -327,12 +327,13 @@ public class DateUtil {
     }
     public static void main(String[] args) {
         SimpleDateFormat sd = new SimpleDateFormat("yyyyMMdd");
-
+        String str = DateUtil.calSecondNewDate("2017-06-10 23:00:00",
+                (new BigDecimal(8)).multiply(new BigDecimal(3600)).intValue());
         String date = "20110202";
         // System.out.println(sd.parse(date, new java.text.ParsePosition(0)));
         // System.out.println(getBefore2HourDate());
         try {
-           // System.out.println(DateUtil.calSecondNewDate(new Date(),-5472));
+           System.out.println(str);
         } catch (Exception e) {
             e.printStackTrace();
         }

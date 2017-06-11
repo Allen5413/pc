@@ -60,6 +60,7 @@ public class PlanOrder implements Serializable {
     private String FMTONO;
     private String FPROJECTNO;
     private String FPC;//反写排产信息
+    private BigDecimal FRTQTY;//反写计划数量
     @Transient
     private long FCUSTID;//
     @Transient
@@ -483,5 +484,13 @@ public class PlanOrder implements Serializable {
 
     public void setFPC(String FPC) {
         this.FPC = FPC;
+    }
+
+    public BigDecimal getFRTQTY() {
+        return FRTQTY;
+    }
+
+    public void setFRTQTY(BigDecimal FRTQTY) {
+        this.FRTQTY = FRTQTY;
     }
 }

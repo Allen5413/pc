@@ -27,12 +27,15 @@ public class FindPlanOrderDao extends BaseQueryDao {
      * @return
      */
     public List<PlanOrder> findPlanOrder(Date start, Date end){
-        String sql = "select a.FNUMBER,b.FNAME,po.FBILLNO,po.FDOCUMENTSTATUS,po.FDEMANDQTY as FFIRMQTY,po.FRELEASETYPE,po.FMATERIALID," +
-                "po.FDEMANDDATE,c.FCUSTID,f.FCATEGORYID,po.FBOMID " +
+        String sql = "select a.FNUMBER,b.FNAME,po.FBILLNO,po.FDOCUMENTSTATUS,po.FDEMANDQTY as FDEMANDQTY,po.FFIRMQTY as FFIRMQTY,po.FRELEASETYPE,po.FMATERIALID," +
+                " case WHEN po.FDEMANDDATE is null then po.FFIRMFINISHDATE " +
+                " when DATEDIFF(day,po.FDEMANDDATE,po.FFIRMFINISHDATE)!=0 AND DATEDIFF(day,po.FDEMANDDATE,cast('"+DateUtil.getFormattedString(start,"yyyy-MM-dd")+"' as datetime))>0 " +
+                " THEN cast('"+DateUtil.getFormattedString(start,"yyyy-MM-dd")+"' as datetime)"+
+                " when  DATEDIFF(day,po.FDEMANDDATE,po.FFIRMFINISHDATE)!=0 then po.FDEMANDDATE else po.FFIRMFINISHDATE END as FDEMANDDATE,c.FCUSTID,f.FCATEGORYID,po.FBOMID,po.FID,po.FRTQTY " +
                 "from T_BD_MATERIALBASE f,T_BD_MATERIAL a,T_BD_MATERIAL_L b,T_PLN_PLANORDER po left join T_PLN_PLANORDER_B pob on po.FID=pob.FID " +
                 "left join T_SAL_ORDER so on pob.FSALEORDERID=so.FID left join T_BD_CUSTOMER c on so.FCUSTID=c.FCUSTID " +
                 "where f.FMATERIALID = a.FMATERIALID AND a.FMATERIALID = b.FMATERIALID and b.FMATERIALID = po.FMATERIALID and a.FUSEORGID=100001 " +
-                "and po.FDOCUMENTSTATUS='A' and po.FRELEASETYPE=1 AND po.FDEMANDDATE>=? and po.FDEMANDDATE<=? AND ISNULL(po.FPC,'2')!='1' " +
+                " and po.FDOCUMENTSTATUS='A' and po.FRELEASETYPE=1 AND po.FFIRMFINISHDATE>=? and po.FFIRMFINISHDATE<=? " +
                 " ORDER BY f.FSNO,po.FMATERIALID,po.FDEMANDDATE";
 
         Session session = super.entityManager.unwrap(Session.class);
@@ -47,7 +50,19 @@ public class FindPlanOrderDao extends BaseQueryDao {
                 planOrder = new PlanOrder();
                 planOrder.setFBILLNO(map.get("FBILLNO")==null?"":map.get("FBILLNO").toString());
                 planOrder.setFDOCUMENTSTATUS(map.get("FDOCUMENTSTATUS").toString());
-                planOrder.setFFIRMQTY(new BigDecimal(map.get("FFIRMQTY").toString()));
+                if(new BigDecimal(map.get("FDEMANDQTY").toString()).compareTo(new BigDecimal(0))==0){
+                    planOrder.setFFIRMQTY(new BigDecimal(map.get("FFIRMQTY").toString()));
+                }else{
+                    planOrder.setFFIRMQTY(new BigDecimal(map.get("FDEMANDQTY").toString()));
+                }
+                if(map.get("FRTQTY")!=null){
+                    if (new BigDecimal(map.get("FRTQTY").toString()).compareTo(BigDecimal.ZERO)>0
+                            &&planOrder.getFFIRMQTY().compareTo(new BigDecimal(map.get("FRTQTY").toString()))!=0) {
+                        planOrder.setFFIRMQTY(new BigDecimal(map.get("FFIRMQTY").toString()));
+                    }
+                }
+                planOrder.setFID(Long.parseLong(map.get("FID").toString()));
+                planOrder.setFDEMANDQTY(new BigDecimal(map.get("FDEMANDQTY").toString()));
                 planOrder.setFRELEASETYPE(map.get("FRELEASETYPE").toString());
                 planOrder.setFMATERIALID(Long.parseLong(map.get("FMATERIALID").toString()));
                 planOrder.setFDEMANDDATE(DateUtil.getFormatDate(map.get("FDEMANDDATE").toString(),DateUtil.shortDatePattern));
@@ -73,7 +88,7 @@ public class FindPlanOrderDao extends BaseQueryDao {
         String[] tableNames = {"PlanOrder p"};
         Map<String,Object> params = new HashMap<String, Object>();
         params.put("p.FMATERIALID",fMaterialId);
-        params.put("p.FDEMANDDATE",demandDate);
+        params.put("p.FFIRMFINISHDATE",demandDate);
         params.put("p.FRELEASETYPE","1");
         params.put("p.FDOCUMENTSTATUS","A");
         return super.findListByHql(tableNames,fields,params,null,PlanOrder.class);

@@ -61,12 +61,16 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
                     continue;
                 }
                 if(planOrders!=null&&planOrders.size()>0){
+                    BigDecimal FDEMANDQTY = new BigDecimal(0);
                     if(planOrders.size()>1){
                         for (int i=1;i<planOrders.size();i++){
+                            FDEMANDQTY = FDEMANDQTY.add(planOrders.get(i).getFDEMANDQTY());
                             planOrderDao.delete(planOrders.get(i));
                         }
                     }
+                    planOrders.get(0).setFDEMANDQTY(FDEMANDQTY);
                     planOrders.get(0).setFFIRMQTY(productionPlan.getActualProductionNum());
+                    planOrders.get(0).setFRTQTY(productionPlan.getActualProductionNum());
                     planOrderDao.save(planOrders.get(0));
                     continue;
                 }
@@ -81,6 +85,7 @@ public class ReturnProductionPlanServiceImpl implements ReturnProductionPlanServ
                 planOrder.setFDOCUMENTSTATUS("A");
                 planOrder.setFRELEASETYPE("1");
                 planOrder.setFDATASOURCE("1");
+                planOrder.setFRTQTY(productionPlan.getActualProductionNum());
                 planOrder.setFBASEDEMANDQTY(productionPlan.getActualProductionNum());
                 planOrder.setFBASEORDERQTY(productionPlan.getActualProductionNum());
                 planOrder.setFBASESUGQTY(productionPlan.getActualProductionNum());

@@ -78,7 +78,7 @@
        $("a[name='showEditFSNO']").on('click',function(){
                var id = $(this).attr("data-fmaterialid");
                var fsno = $(this).attr("data-fsno");
-               app.openDialog("${pageContext.request.contextPath}/editProduct/open.html?id="+id+"&fsno="+(!fsno||fsno=='')?0:fsno, '设置产品顺序号', 300,180, function(index){
+               app.openDialog("${pageContext.request.contextPath}/editProduct/open.html?id="+id+"&fsno="+((!fsno||fsno=='')?0:fsno), '设置产品顺序号', 300,180, function(index){
                    app.edit("${pageContext.request.contextPath}/editProduct/editor.json",$('#eidtProductSnoForm').serialize(), index);
                });
        });

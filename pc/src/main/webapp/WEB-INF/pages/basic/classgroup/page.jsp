@@ -38,6 +38,7 @@
     <th style="width: 5%;">序号</th>
     <th style="width: 15%;">编号</th>
     <th style="width: 20%;">名称</th>
+    <th style="width: 15%;">最长工作时间</th>
     <th style="width: 10%;">操作人</th>
     <th style="width: 15%;">操作时间</th>
     <th>操作</th>
@@ -52,6 +53,7 @@
       <td align="center">${status.index+1}</td>
       <td>${classGroup.code}</td>
       <td>${classGroup.name}</td>
+      <td>${classGroup.maxProduceTime}</td>
       <td>${classGroup.operator}</td>
       <td><fmt:formatDate value="${classGroup.operateTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
       <td>
@@ -70,9 +72,10 @@
 
   function edit(id){
     var url = '${pageContext.request.contextPath}/editClassGroup/open.html?id='+id;
-    app.openDialog(url, '编辑班组', 600, 260, function(index){
+    app.openDialog(url, '编辑工作中心', 600, 270, function(index){
       var code = $("#edit_code").val().trim();
       var name = $("#edit_name").val().trim();
+      var maxProduceTime = $("#edit_maxProduceTime").val().trim();
       if(code == ""){
         app.msg("请输入编号", 1);
         return;
@@ -80,15 +83,20 @@
       if(name == ""){
         app.msg("请输入名称", 1);
         return;
+      }
+      if(maxProduceTime == ""||maxProduceTime==0){
+          app.msg("请输入最大工作时间", 1);
+          return;
       }
       app.edit("${pageContext.request.contextPath}/editClassGroup/editor.json", $('#editForm').serialize(), index);
     });
   }
 
   function add(){
-    app.openDialog("${pageContext.request.contextPath}/addClassGroup/open.html", "新增班组", 600, 260, function(index){
+    app.openDialog("${pageContext.request.contextPath}/addClassGroup/open.html", "新增工作中心", 600, 270, function(index){
       var code = $("#add_code").val().trim();
       var name = $("#add_name").val().trim();
+      var maxProduceTime = $('#add_maxProduceTime').val().trim();
       if(code == ""){
         app.msg("请输入编号", 1);
         return;
@@ -97,12 +105,16 @@
         app.msg("请输入名称", 1);
         return;
       }
+      if(maxProduceTime == ""||maxProduceTime==0){
+          app.msg("请输入最大工作时间", 1);
+          return;
+      }
       app.add("${pageContext.request.contextPath}/addClassGroup/add.json", $('#addForm').serialize(), index);
     });
   }
 
   function del(id){
-    app.del("您确定要删除该班组信息？", "${pageContext.request.contextPath}/delClassGroup/del.json", {"id":id});
+    app.del("您确定要删除该工作中心信息？", "${pageContext.request.contextPath}/delClassGroup/del.json", {"id":id});
   }
 
 </script>

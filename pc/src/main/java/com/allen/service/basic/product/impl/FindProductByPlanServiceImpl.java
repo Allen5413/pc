@@ -1,6 +1,7 @@
 package com.allen.service.basic.product.impl;
 
 import com.allen.dao.basic.planorder.FindPlanOrderDao;
+import com.allen.dao.basic.planorder.PlanOrderDao;
 import com.allen.dao.basic.product.FindProductDao;
 import com.allen.dao.basic.productselfuse.FindProductSelfUseDao;
 import com.allen.entity.basic.PlanOrder;
@@ -26,6 +27,8 @@ public class FindProductByPlanServiceImpl implements FindProductByPlanService {
     private FindPlanOrderDao findPlanOrderDao;
     @Autowired
     private FindProductSelfUseDao findProductSelfUseDao;
+    @Autowired
+    private PlanOrderDao planOrderDao;
     @Transactional
     @Override
     public List<PlanOrder> findProductByPlan(String start,String end) {
@@ -33,11 +36,17 @@ public class FindProductByPlanServiceImpl implements FindProductByPlanService {
         List<PlanOrder> planOrders = findPlanOrderDao.findPlanOrder(
                 DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
                 DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
+
         //获取订单产品信息
         Map<String,PlanOrder> productMap = new LinkedHashMap<String, PlanOrder>();
         Map<Long,Integer> materialLevel = new HashMap<Long, Integer>();
         Map<Long,Boolean> isSelectLevel = new HashMap<Long, Boolean>();
         for(PlanOrder planOrder:planOrders){
+            if(planOrder.getFDEMANDQTY().compareTo(BigDecimal.ZERO)==0){
+                PlanOrder oldPlanOrder = planOrderDao.findOne(planOrder.getFID());
+                oldPlanOrder.setFDEMANDQTY(planOrder.getFFIRMQTY());
+                planOrderDao.save(oldPlanOrder);
+            }
             if(isSelectLevel.get(planOrder.getFMATERIALID())==null||isSelectLevel.get(planOrder.getFMATERIALID())==false){
                 if(materialLevel.get(planOrder.getFMATERIALID())==null){
                     materialLevel.put(planOrder.getFMATERIALID(),1);

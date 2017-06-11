@@ -17,4 +17,11 @@
     </div>
     <div class="am-u-sm-5">*必填，不可重复</div>
   </div>
+  <div class="am-g am-margin-top">
+    <div class="am-u-sm-3 am-text-right"><label >最长工作时间：</label></div>
+    <div class="am-u-sm-4">
+      <input class="am-input-sm" type="number" step="0.1" min="0" placeholder="工作时间" required id="add_maxProduceTime" name="maxProduceTime"  />
+    </div>
+    <div class="am-u-sm-5">*必填</div>
+  </div>
 </form>

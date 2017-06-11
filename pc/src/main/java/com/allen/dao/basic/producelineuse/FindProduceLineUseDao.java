@@ -30,7 +30,7 @@ public class FindProduceLineUseDao extends BaseQueryDao {
     @Transactional
     public List<Map> findUnUserProduceLine(long productId){
         String sql = "select f.begin_time,f.end_time,c.qualified_rate,b.produce_line_id,b.work_core_id,d.class_group_id, " +
-                "d.unit_time_capacity,d.sno,c.product_id,d.min_batch,f.sno as workTimeSno,f.id as work_time_id,a.is_public,b.sno as workCoreSno " +
+                "d.unit_time_capacity*1000 as unit_time_capacity,d.sno,c.product_id,d.min_batch,f.sno as workTimeSno,f.id as work_time_id,a.is_public,b.sno as workCoreSno " +
                 "from produce_line a,produce_line_core b,produce_line_core_product c ,produce_line_core_product_cg d,work_time f  " +
                 "where  a.id = b.produce_line_id and b.id = c.produce_line_core_id " +
                 "and c.product_id = ? and c.id = d.produce_line_core_product_id  " +
@@ -78,7 +78,8 @@ public class FindProduceLineUseDao extends BaseQueryDao {
      */
     public List<Map<String,Object>> findProduceLineUseDetail(Date start,Date end){
         String sql = "select bname.FNAME,bnum.FNUMBER,a.plan_quantity,a.capacity,a.production_date,wcore.name as wName,cg.name as cgName," +
-                "wt.name as wtName,wt.sno,a.work_start,a.work_time,cg.code as cgCode,wcore.code as wCode,wt.code as wtCode " +
+                "wt.name as wtName,wt.sno,a.work_start,a.work_time,cg.code as cgCode,wcore.code as wCode,wt.code as wtCode," +
+                "(select MAX(stock_num) from production_plan bP where bP.product_id = a.product_id) as stockNum " +
                 "from produce_line_use a,t_bd_material bnum,t_bd_material_l bname,work_core wcore,class_group cg,work_time wt " +
                 "where a.product_id = bnum.FMATERIALID and a.product_id = bname.FMATERIALID and a.work_core_id = wcore.id " +
                 "and cg.id = a.work_team_id and a.work_time_id = wt.id and a.production_date>=? and a.production_date<=? " +
