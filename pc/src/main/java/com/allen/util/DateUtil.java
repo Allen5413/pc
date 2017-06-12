@@ -99,6 +99,43 @@ public class DateUtil {
         return strWeek;
     }
 
+    public static String getThisWeek(String dateStr)throws Exception{
+        SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd");
+        Date date =sdf.parse(dateStr);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        // 获得年月日
+        String strWeek = "";
+        switch (calendar.get(Calendar.DAY_OF_WEEK)){
+            case 1:
+                strWeek = "星期天";
+                break;
+            case 2:
+                strWeek = "星期一";
+                break;
+            case 3:
+                strWeek = "星期二";
+                break;
+            case 4:
+                strWeek = "星期三";
+                break;
+            case 5:
+                strWeek = "星期四";
+                break;
+            case 6:
+                strWeek = "星期五";
+                break;
+            case 7:
+                strWeek = "星期六";
+                break;
+            default:
+                strWeek = "未知";
+                break;
+        }
+        return strWeek;
+    }
+
     // 获取当天时间,长时间格式
     public static Timestamp getLongNowTime() {
         return getNowTime(longDatePattern);

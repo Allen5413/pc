@@ -27,18 +27,73 @@ public class FindWorkGroupSchedulDao extends BaseQueryDao {
         String startDate = param.get("startDate");
         String endDate = param.get("endDate");
         String wgId = param.get("wgId");
+        String name = param.get("name");
+        String coreCode = param.get("coreCode");
 
-        paramsList.add(startDate);
-        paramsList.add(endDate);
-        paramsList.add(Long.parseLong(wgId));
+        paramsList.add(startDate+" 00:00:00");
+        paramsList.add(endDate+" 23:59:59");
 
-        String sql = "select plu.product_id, pp.product_name, pp.product_no, pp.plan_total_num, pp.stock_num  ";
-        sql += "FROM produce_line_use plu, work_group_core wgc, production_plan pp ";
-        sql += "where and wgc.work_core_id = plu.work_core_id and plu.product_id = pp.product_id ";
-        sql += "plu.production_date BETWEEN ? AND ? and wgc.work_group_id = ? ";
-        sql += "group bycar plu.product_id, pp.product_name, pp.product_no, pp.plan_total_num, pp.stock_num  ";
-        sql += "GROUP BY wg.name, wc.name, cg.name, wt.name, plu.production_date, begin_time, end_time, add_time, capacity,plu.work_time  ";
-        sql += "order by wg.name, wc.name, cg.name, wt.name, plu.production_date, wt.begin_time,plu.work_time ";
+
+        String sql = "SELECT ps.product_name, ps.product_no, ps.plan_capacity, ps.stock_num ";
+        sql += "FROM product_scheduling ps, work_group_core wgc, work_core wc ";
+        sql += "where ps.work_core_code = wc.code and wc.id = wgc.work_core_id and ps.production_date BETWEEN ? and ? ";
+        if(!StringUtil.isEmpty(wgId)) {
+            paramsList.add(Long.parseLong(wgId));
+            sql += "and wgc.work_group_id = ? ";
+        }
+        if(!StringUtil.isEmpty(name)) {
+            paramsList.add("%"+name+"%");
+            sql += "and ps.product_name = ? ";
+        }
+        if(!StringUtil.isEmpty(coreCode)) {
+            paramsList.add(coreCode);
+            sql += "and ps.work_core_code = ? ";
+        }
+        sql += "group by ps.product_name, ps.proc_code, ps.plan_capacity, ps.stock_num ";
+        sql += "order by ps.proc_code";
+
+        List<Map> list = super.sqlQueryByNativeSqlToMap(sql.toString(), paramsList.toArray());
+        return list;
+    }
+
+    /**
+     * 查询产品每天生产信息
+     * @param param
+     * @return
+     * @throws Exception
+     */
+    public List<Map> findProductDetail(Map<String, String> param)throws Exception{
+        List<Object> paramsList = new ArrayList<Object>();
+
+        String date = param.get("date");
+        String wgId = param.get("wgId");
+        String name = param.get("name");
+        String coreCode = param.get("coreCode");
+        String productNo = param.get("productNo");
+        String planCapacity = param.get("planCapacity");
+        String stock = param.get("stock");
+
+
+        String sql = "SELECT ps.capacity, ps.work_core_name, ps.work_class_name, ps.work_time_start, ps.work_time_end, ps.work_time ";
+        sql += "FROM product_scheduling ps, work_group_core wgc, work_core wc ";
+        sql += "where ps.work_core_code = wc.code and wc.id = wgc.work_core_id and ps.production_date BETWEEN ? and ? and ps.product_name = ? and ps.product_no = ? and ps.plan_capacity = ? and ps.stock_num = ? ";
+
+        paramsList.add(date+" 00:00:00");
+        paramsList.add(date+" 23:59:59");
+        paramsList.add(name);
+        paramsList.add(productNo);
+        paramsList.add(Double.parseDouble(planCapacity));
+        paramsList.add(Double.parseDouble(stock));
+
+        if(!StringUtil.isEmpty(wgId)) {
+            paramsList.add(Long.parseLong(wgId));
+            sql += "and wgc.work_group_id = ? ";
+        }
+        if(!StringUtil.isEmpty(coreCode)) {
+            paramsList.add(coreCode);
+            sql += "and ps.work_core_code = ? ";
+        }
+        sql += "group by ps.capacity, ps.work_core_name, ps.work_class_name, ps.work_time_start, ps.work_time_end, ps.work_time";
 
         List<Map> list = super.sqlQueryByNativeSqlToMap(sql.toString(), paramsList.toArray());
         return list;
