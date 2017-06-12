@@ -64,9 +64,9 @@
         <tr class="am-primary">
           <th style="width:150px;text-align: center;vertical-align: middle;" rowspan="2">产品编码</th>
           <th style="width:450px;text-align: center;vertical-align: middle;" rowspan="2">产品名称</th>
-          <th style="width:100px;text-align: center;vertical-align: middle;" rowspan="2">客户需求</th>
+          <th style="width:100px;text-align: center;vertical-align: middle;display: none;" rowspan="2">客户需求</th>
           <th style="width:100px;text-align: center;vertical-align: middle;" rowspan="2">净需求</th>
-          <th style="width:100px;text-align: center;vertical-align: middle;" rowspan="2">库存</th>
+          <th style="width:100px;text-align: center;vertical-align: middle;display: none;" rowspan="2" >库存</th>
           <c:forEach items="${planCycle}" var="plans">
             <th colspan="3" style="width:300px;text-align: center;">${plans}</th>
           </c:forEach>
@@ -89,9 +89,9 @@
           <tr>
             <td>${planInfo.productNo}</td>
             <td>${planInfo.productName}</td>
-            <td>${planInfo.grossNum}</td>
+            <td style="display: none;">${planInfo.grossNum}</td>
             <td>${planInfo.planTotalNum}</td>
-            <td>${planInfo.stockNum}</td>
+            <td style="display: none;">${planInfo.stockNum}</td>
             <c:forEach items="${planCycle}" var="plans">
               <td>${planInfo.plans[plans]['planNum']}</td>
               <td>${planInfo.plans[plans]['capacity']}</td>

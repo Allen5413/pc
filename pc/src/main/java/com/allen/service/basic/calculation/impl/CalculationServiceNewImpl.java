@@ -118,7 +118,7 @@ public class CalculationServiceNewImpl implements CalculationService {
     Map<String,Boolean> exitProduct = new HashMap<String, Boolean>();
     @Override
     public boolean calculation(String start, String end) throws Exception {
-        exitProduct.put("16.CF002A.A100C",true);
+        //exitProduct.put("16.CF002A.A100C",true);
         this.start = start;
         this.end = end;
         //删除计划时间已经存在的数据
@@ -170,8 +170,8 @@ public class CalculationServiceNewImpl implements CalculationService {
         //计算
         calProPlan();
         //拆分班次
-        splitProduceLineUseService.splitProduceLineUserService(DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
-                DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
+        //splitProduceLineUseService.splitProduceLineUserService(DateUtil.getFormatDate(start,DateUtil.shortDatePattern),
+         //       DateUtil.getFormatDate(end,DateUtil.shortDatePattern));
         return true;
     }
     /**
@@ -217,7 +217,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                 continue;
             }
             //库存够用
-            if (materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(useQty) >= 0) {
+            if (materialStock.getFQTY().compareTo(useQty) >= 0) {
                 if(useQty.compareTo(BigDecimal.ZERO)==0){
                     lastDemandDate = demandDate;
                     continue;
@@ -228,7 +228,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                 //记录当天产品的实际产能
                 produce.get(fMaterialId).get(demandDate).setCapacity(useQty);
                 produce.get(fMaterialId).get(demandDate).setBalanceCapacity(new BigDecimal(0));
-                produce.get(fMaterialId).get(demandDate).setUseQtyStock(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()));
+                produce.get(fMaterialId).get(demandDate).setUseQtyStock(materialStock.getFQTY());
                 productionPlan = new ProductionPlan();
                 productionPlan.setProductId(fMaterialId);
                 productionPlan.setProductionDate(productionDate);
@@ -246,7 +246,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                 addProductionPlanService.addProductionPlan(productionPlan);
                 continue;
             } else {
-                useQty = useQty.subtract(materialStock.getFQTY()).add(materialStock.getFSAFESTOCK());
+                useQty = useQty.subtract(materialStock.getFQTY());//安全库存问题.add(materialStock.getFSAFESTOCK());
                 if(isBack){
                     useQty = useQty.add(planDayMaterial.getStorageNum());
                 }
@@ -256,7 +256,8 @@ public class CalculationServiceNewImpl implements CalculationService {
                 }
                 //判断产品是否有下级产品
                 childMaterials = planDayMaterial.getSelfChilds();
-                if (childMaterials != null && childMaterials.size() > 0&&exitProduct.get(planDayMaterial.getProductNo())==null) {
+                //false&&exitProduct.get(planDayMaterial.getProductNo())==null
+                if (childMaterials != null && childMaterials.size() > 0) {
                     minChildMaterial = new BigDecimal(0);
                     //根据下级产品的产能，计算当前产品实际的产能数量
                     for (String[] childMaterial : childMaterials) {
@@ -414,9 +415,9 @@ public class CalculationServiceNewImpl implements CalculationService {
             //记录当天产品的实际产能
             produce.get(fMaterialId).get(demandDate).setCapacity(lineTotalCapacity);
             //如果库存有多余的 当天实际有的产品数量要加上库存
-            if(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(BigDecimal.ZERO)>=0){
+            if(materialStock.getFQTY().compareTo(BigDecimal.ZERO)>=0){//
                 produce.get(fMaterialId).get(demandDate).setUseQtyStock(lineTotalCapacity.add(
-                        materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK())));
+                        materialStock.getFQTY()));
             }else{
                 //库存没有多余的  当天实际产品数量以生产量为准
                 produce.get(fMaterialId).get(demandDate).setUseQtyStock(lineTotalCapacity);
@@ -440,7 +441,7 @@ public class CalculationServiceNewImpl implements CalculationService {
                 productionPlan.setProductName(planDayMaterial.getProductName());
                 productionPlan.setActualProductionNum(actualProductionNum);
                 productionPlan.setBomId(planDayMaterial.getBomId());
-                productionPlan.setCapacity(totalEighthCapacity.divide(new BigDecimal(1000)));
+                productionPlan.setCapacity(totalEighthCapacity);//.divide(new BigDecimal(1000))
                 addProductionPlanService.addProductionPlan(productionPlan);
             }
             if (lineTotalCapacity.compareTo(useQty) < 0) {
@@ -756,7 +757,7 @@ public class CalculationServiceNewImpl implements CalculationService {
             //计算排产信息
             calMaterialDate(fMaterialId,null,true);
             //如果产品实际生产还不够  根据产品库存判断
-            if(materialStock.getFQTY().subtract(materialStock.getFSAFESTOCK()).compareTo(new BigDecimal(0))<0){
+            if(materialStock.getFQTY().compareTo(new BigDecimal(0))<0){
                 if(unWorkDate.size()>0){
                     materialDemandDate = unWorkDate;
                     LinkedHashMap<String, PlanDayMaterial> playDayMaterials = produce.get(fMaterialId);
@@ -852,7 +853,7 @@ public class CalculationServiceNewImpl implements CalculationService {
             productionPlan.setBomId(planDayMaterial.getBomId());
             productionPlan.setStockNum(first==0?materialStock.getFQTY():new BigDecimal(0));
             if(first==0){
-                materialStock.setFQTY(materialStock.getFSAFESTOCK());
+                materialStock.setFQTY(new BigDecimal(0));//materialStock.getFSAFESTOCK()
                 pInvMaps.put(fMaterialId,materialStock);
             }
             productionPlan.setProductType(planDayMaterial.getProductType());

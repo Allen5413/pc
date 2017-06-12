@@ -70,7 +70,7 @@ public class ExportProPlanController extends BaseController {
         ExportUtil exportUtil = new ExportUtil(workBook, sheet);
         XSSFCellStyle headStyle = exportUtil.getHeadStyle();
         XSSFCellStyle bodyStyle = exportUtil.getBodyStyle();
-        String[] titles = { "产品编码","产品名称","客户需求", "净需求","库存"};
+        String[] titles = { "产品编码","产品名称", "净需求"};
         // 构建表头
         XSSFRow headRow = sheet.createRow(0);
         XSSFRow headRow2 = sheet.createRow(1);
@@ -121,20 +121,20 @@ public class ExportProPlanController extends BaseController {
                 cell.setCellValue(productionPlan.getProductName());
                 cellIndex++;
 
-                cell = bodyRow.createCell(cellIndex);
+                /*cell = bodyRow.createCell(cellIndex);
                 cell.setCellStyle(bodyStyle);
                 cell.setCellValue(productionPlan.getGrossNum()==null?"0":productionPlan.getGrossNum().toString());
-                cellIndex++;
+                cellIndex++;*/
 
                 cell = bodyRow.createCell(cellIndex);
                 cell.setCellStyle(bodyStyle);
                 cell.setCellValue(productionPlan.getPlanTotalNum()==null?"0":productionPlan.getPlanTotalNum().toString());
                 cellIndex++;
 
-                cell = bodyRow.createCell(cellIndex);
+               /* cell = bodyRow.createCell(cellIndex);
                 cell.setCellStyle(bodyStyle);
                 cell.setCellValue(productionPlan.getStockNum()==null?"0":productionPlan.getStockNum().toString());
-                cellIndex++;
+                cellIndex++;*/
 
                 for(String time:planCycle) {
                     cell = bodyRow.createCell(cellIndex);

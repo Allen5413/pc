@@ -30,7 +30,7 @@ public class FindProduceLineUseDao extends BaseQueryDao {
     @Transactional
     public List<Map> findUnUserProduceLine(long productId){
         String sql = "select f.begin_time,f.end_time,c.qualified_rate,b.produce_line_id,b.work_core_id,d.class_group_id, " +
-                "d.unit_time_capacity*1000 as unit_time_capacity,d.sno,c.product_id,d.min_batch,f.sno as workTimeSno,f.id as work_time_id,a.is_public,b.sno as workCoreSno " +
+                "d.unit_time_capacity as unit_time_capacity,d.sno,c.product_id,d.min_batch,f.sno as workTimeSno,f.id as work_time_id,a.is_public,b.sno as workCoreSno " +
                 "from produce_line a,produce_line_core b,produce_line_core_product c ,produce_line_core_product_cg d,work_time f  " +
                 "where  a.id = b.produce_line_id and b.id = c.produce_line_core_id " +
                 "and c.product_id = ? and c.id = d.produce_line_core_product_id  " +
