@@ -10,12 +10,21 @@ import java.util.Map;
  * Created by Allen on 2017/4/20 0020.
  */
 public class WorkGroupForSchedulBean {
+    private long id;
     private long productId;                     //产品id
     private String productName;                 //产品名称
     private String productCode;                 //产品编码
     private String customerNum;                 //客户需求
     private String stock;                       //初期库存
     private Map<String, List<ClassGroupForWgSchedulBean>> cgListMap;        //工作中心信息
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public long getProductId() {
         return productId;

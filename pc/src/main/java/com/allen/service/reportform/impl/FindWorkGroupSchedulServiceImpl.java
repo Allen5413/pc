@@ -34,12 +34,14 @@ public class FindWorkGroupSchedulServiceImpl implements FindWorkGroupSchedulServ
             for(Map map : productList){
                 WorkGroupForSchedulBean workGroupForSchedulBean = new WorkGroupForSchedulBean();
 
+                long id = Long.parseLong(map.get("id").toString());
                 String productName = map.get("product_name").toString();
                 String productCode = map.get("product_no").toString();
                 String customerNum = map.get("plan_capacity").toString();
                 String stock = map.get("stock_num").toString();
 
                 //记录产品信息
+                workGroupForSchedulBean.setId(id);
                 workGroupForSchedulBean.setProductName(productName);
                 workGroupForSchedulBean.setProductCode(productCode);
                 workGroupForSchedulBean.setCustomerNum(customerNum);
@@ -72,6 +74,7 @@ public class FindWorkGroupSchedulServiceImpl implements FindWorkGroupSchedulServ
                             classGroupForWgSchedulBeanList = new ArrayList<ClassGroupForWgSchedulBean>(detailList.size());
                             for(Map map2 : detailList) {
                                 ClassGroupForWgSchedulBean classGroupForWgSchedulBean = new ClassGroupForWgSchedulBean();
+                                classGroupForWgSchedulBean.setId(Long.parseLong(map2.get("id").toString()));
                                 classGroupForWgSchedulBean.setCgName(map2.get("work_core_name").toString());
                                 classGroupForWgSchedulBean.setHour(map2.get("work_time").toString());
                                 classGroupForWgSchedulBean.setNum(map2.get("capacity").toString());

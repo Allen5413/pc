@@ -5,11 +5,20 @@ package com.allen.entity.pojo.classgroup;
  * Created by Allen on 2017/4/20 0020.
  */
 public class ClassGroupForWgSchedulBean {
+    private long id;
     private String num;         //生产数量
     private String cgName;      //工作中心
     private String wtName;      //班次
     private String time;        //时间
     private String hour;        //时长
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getNum() {
         return num;
