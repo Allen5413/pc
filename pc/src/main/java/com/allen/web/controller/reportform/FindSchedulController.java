@@ -1,6 +1,7 @@
 package com.allen.web.controller.reportform;
 
 import com.allen.entity.pojo.workgroup.WorkGroupForSchedulBean;
+import com.allen.service.basic.classgroup.FindClassGroupForAllService;
 import com.allen.service.basic.workcore.FindWorkCoreForAllService;
 import com.allen.service.basic.workgroup.FindWorkGroupForAllService;
 import com.allen.service.reportform.FindWorkGroupSchedulService;
@@ -25,12 +26,12 @@ public class FindSchedulController extends BaseController {
     @Resource
     private FindWorkGroupForAllService findWorkGroupForAllService;
     @Resource
-    private FindWorkCoreForAllService findWorkCoreForAllService;
+    private FindClassGroupForAllService findClassGroupForAllService;
 
     @RequestMapping(value = "open")
     public String open(HttpServletRequest request) throws Exception {
         request.setAttribute("wgList", findWorkGroupForAllService.find());
-        request.setAttribute("wcList", findWorkCoreForAllService.find());
+        request.setAttribute("wcList", findClassGroupForAllService.find());
         return "/reportform/schedul";
     }
 
@@ -44,7 +45,7 @@ public class FindSchedulController extends BaseController {
         List<WorkGroupForSchedulBean> resultList = findWorkGroupSchedulService.find(startDate, endDate, wgId, name, wcCode);
         request.setAttribute("resultList", resultList);
         request.setAttribute("wgList", findWorkGroupForAllService.find());
-        request.setAttribute("wcList", findWorkCoreForAllService.find());
+        request.setAttribute("wcList", findClassGroupForAllService.find());
 
         //循环查询时间
         Date start = DateUtil.getFormatDate(startDate, DateUtil.shortDatePattern);

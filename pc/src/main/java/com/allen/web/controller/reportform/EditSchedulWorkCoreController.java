@@ -2,6 +2,7 @@ package com.allen.web.controller.reportform;
 
 import com.alibaba.fastjson.JSONObject;
 import com.allen.entity.basic.ProductScheduling;
+import com.allen.service.basic.classgroup.FindClassGroupForAllService;
 import com.allen.service.basic.productscheduling.EditPSCapacityByIdService;
 import com.allen.service.basic.productscheduling.EditPSWorkClassByIdService;
 import com.allen.service.basic.productscheduling.EditPSWorkCoreByIdService;
@@ -29,7 +30,7 @@ public class EditSchedulWorkCoreController extends BaseController {
     @Resource
     private FindPSByIdService findPSByIdService;
     @Resource
-    private FindWorkCoreForAllService findWorkCoreForAllService;
+    private FindClassGroupForAllService findClassGroupForAllService;
 
     /**
      * @return
@@ -38,7 +39,7 @@ public class EditSchedulWorkCoreController extends BaseController {
     public String openEditMenuPage(@RequestParam("id") long id, HttpServletRequest request) throws Exception {
         ProductScheduling productScheduling = findPSByIdService.findById(id);
         request.setAttribute("productScheduling", productScheduling);
-        request.setAttribute("workCoreList", findWorkCoreForAllService.find());
+        request.setAttribute("workCoreList", findClassGroupForAllService.find());
         return "/reportform/editSchedulWC";
     }
 

@@ -35,12 +35,14 @@ public class FindWorkGroupSchedulDao extends BaseQueryDao {
 
 
         String sql = "SELECT ps.id, ps.product_name, ps.product_no, ps.plan_capacity, ps.stock_num ";
-        sql += "FROM product_scheduling ps, work_group_core wgc, work_core wc ";
-        sql += "where ps.work_core_code = wc.code and wc.id = wgc.work_core_id and ps.production_date BETWEEN ? and ? ";
-        if(!StringUtil.isEmpty(wgId)) {
-            paramsList.add(Long.parseLong(wgId));
-            sql += "and wgc.work_group_id = ? ";
-        }
+//        sql += "FROM product_scheduling ps, work_group_core wgc, work_core wc ";
+//        sql += "where ps.work_core_code = wc.code and wc.id = wgc.work_core_id and ps.production_date BETWEEN ? and ? ";
+        sql += "FROM product_scheduling ps ";
+        sql += "where ps.production_date BETWEEN ? and ? ";
+//        if(!StringUtil.isEmpty(wgId)) {
+//            paramsList.add(Long.parseLong(wgId));
+//            sql += "and wgc.work_group_id = ? ";
+//        }
         if(!StringUtil.isEmpty(name)) {
             paramsList.add("%"+name+"%");
             sql += "and ps.product_name = ? ";
@@ -75,8 +77,10 @@ public class FindWorkGroupSchedulDao extends BaseQueryDao {
 
 
         String sql = "SELECT ps.id, ps.capacity, ps.work_core_name, ps.work_class_name, ps.work_time_start, ps.work_time_end, ps.work_time ";
-        sql += "FROM product_scheduling ps, work_group_core wgc, work_core wc ";
-        sql += "where ps.work_core_code = wc.code and wc.id = wgc.work_core_id and ps.production_date BETWEEN ? and ? and ps.product_name = ? and ps.product_no = ? and ps.plan_capacity = ? and ps.stock_num = ? ";
+//        sql += "FROM product_scheduling ps, work_group_core wgc, work_core wc ";
+//        sql += "where ps.work_core_code = wc.code and wc.id = wgc.work_core_id and ps.production_date BETWEEN ? and ? and ps.product_name = ? and ps.product_no = ? and ps.plan_capacity = ? and ps.stock_num = ? ";
+        sql += "FROM product_scheduling ps ";
+        sql += "where ps.production_date BETWEEN ? and ? and ps.product_name = ? and ps.product_no = ? and ps.plan_capacity = ? and ps.stock_num = ? ";
 
         paramsList.add(date+" 00:00:00");
         paramsList.add(date+" 23:59:59");
