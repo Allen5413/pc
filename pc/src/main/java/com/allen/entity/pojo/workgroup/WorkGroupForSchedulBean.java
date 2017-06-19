@@ -16,6 +16,7 @@ public class WorkGroupForSchedulBean {
     private String productCode;                 //产品编码
     private String customerNum;                 //客户需求
     private String stock;                       //初期库存
+    private int maxNum;                         //最大工作中心数量，页面显示用
     private Map<String, List<ClassGroupForWgSchedulBean>> cgListMap;        //工作中心信息
 
     public long getId() {
@@ -72,5 +73,13 @@ public class WorkGroupForSchedulBean {
 
     public void setCgListMap(Map<String, List<ClassGroupForWgSchedulBean>> cgListMap) {
         this.cgListMap = cgListMap;
+    }
+
+    public int getMaxNum() {
+        return maxNum;
+    }
+
+    public void setMaxNum(int maxNum) {
+        this.maxNum = maxNum;
     }
 }

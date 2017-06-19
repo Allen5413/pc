@@ -89,7 +89,7 @@ public class FindWorkGroupSchedulServiceImpl implements FindWorkGroupSchedulServ
                         cgListMap.put(date, classGroupForWgSchedulBeanList);
                         date = DateUtil.afterDay(date);
                     }
-                    //cgListMap.put("maxNum", maxNum);
+                    workGroupForSchedulBean.setMaxNum(maxNum);
                     workGroupForSchedulBean.setCgListMap(cgListMap);
                     list.add(workGroupForSchedulBean);
                 }

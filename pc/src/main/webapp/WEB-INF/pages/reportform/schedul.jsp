@@ -86,13 +86,13 @@
         </c:forEach>
       </tr>
       <c:forEach var="data" items="${resultList}">
-        <%--<c:set var="num" value="<fmt:formatNumber value='${data.cgListMap.maxNum}'/>"/>--%>
-        <tr>
-          <td>${data.productName}</td>
-          <td>${data.productCode}</td>
-          <td>${data.customerNum}</td>
-          <td>${data.stock}</td>
-          <%--<c:if test="${num == 1}">--%>
+        <%--先循环这个产品某一天中工作中心最多的数量，用来控制用几个tr--%>
+        <c:forEach begin="1" end="${data.maxNum}" var="num">
+          <tr>
+            <td>${data.productName}</td>
+            <td>${data.productCode}</td>
+            <td>${data.customerNum}</td>
+            <td>${data.stock}${data.cgListMap.value}</td>
             <c:forEach items="${data.cgListMap}" var="cg">
               <c:if test="${empty cg.value}">
                 <td></td>
@@ -102,26 +102,32 @@
                 <td></td>
               </c:if>
               <c:if test="${!empty cg.value}">
+                <%--因为每天的工作中心数量可能不一样，就要判断每次只显示1个，所以要加个变量i来判断循环到第几次了--%>
+                <%--flag是用来标记当天是否已经显示过了，如果没有多的中心了，该天就不会显示，直接放5个空td就行了--%>
+                <c:set var="i" value="1" />
+                <c:set var="flag" value="0"/>
                 <c:forEach items="${cg.value}" var="cg">
-                  <td><a href="#" onclick="editCapacity(${cg.id})">${cg.num}</a></td>
-                  <td><a href="#" onclick="editWorkCore(${cg.id})">${cg.cgName}</a></td>
-                  <td><a href="#" onclick="editWorkClass(${cg.id})">${cg.wtName}</a></td>
-                  <td>${cg.time}</td>
-                  <td>${cg.hour}</td>
+                  <c:if test="${num == i}">
+                    <td><a href="#" onclick="editCapacity(${cg.id})">${cg.num}</a></td>
+                    <td><a href="#" onclick="editWorkCore(${cg.id})">${cg.cgName}</a></td>
+                    <td><a href="#" onclick="editWorkClass(${cg.id})">${cg.wtName}</a></td>
+                    <td>${cg.time}</td>
+                    <td>${cg.hour}</td>
+                    <c:set var="flag" value="1"/>
+                  </c:if>
+                  <c:set var="i" value="${i+1}" />
                 </c:forEach>
+                <c:if test="${flag == 0}">
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </c:if>
               </c:if>
             </c:forEach>
-          <%--</c:if>--%>
-        </tr>
-        <%--<c:if test="${num > 1}">--%>
-          <%--<c:forEach items="${data.cgListMap}" var="cg">--%>
-            <%--<td>${cg.value.num}</td>--%>
-            <%--<td>${cg.value.cgName}</td>--%>
-            <%--<td>${cg.value.wtName}</td>--%>
-            <%--<td>${cg.value.time}</td>--%>
-            <%--<td>${cg.value.hour}</td>--%>
-          <%--</c:forEach>--%>
-        <%--</c:if>--%>
+          </tr>
+        </c:forEach>
       </c:forEach>
     </table>
   </div>
