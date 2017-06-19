@@ -1,6 +1,7 @@
 package com.allen.util;
 
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
 
@@ -101,6 +102,7 @@ public class ExportUtil {
         font.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);
         font.setFontName("宋体");
         font.setFontHeight((short) 200);
+        font.setColor(Font.COLOR_RED);
         cellStyle.setFont(font);
         // 设置单元格边框为细线条
         cellStyle.setBorderLeft(XSSFCellStyle.BORDER_THIN);

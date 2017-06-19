@@ -56,7 +56,7 @@
         <fieldset>
           <center>
             <div class="am-form-group" style="color: #ffffff; text-align: center; font-size: 30px;">
-              欢迎登录${name}系统管理后台
+              金蝶高级排程系统
             </div>
             <div class="am-form-group">
               <input type="text" class="" id="loginName" name="loginName" placeholder="请输入用户名" style="width: 300px;" onfocus="$(this).css('color', '#fff');">

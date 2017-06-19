@@ -51,7 +51,7 @@ public class FindWorkGroupSchedulDao extends BaseQueryDao {
             paramsList.add(coreCode);
             sql += "and ps.work_core_code = ? ";
         }
-        sql += "group by ps.product_name, ps.proc_code, ps.plan_capacity, ps.stock_num ";
+        sql += "group by ps.product_name, ps.proc_code, ps.plan_capacity, ps.stock_num,ps.product_no,ps.id ";
         sql += "order by ps.proc_code";
 
         List<Map> list = super.sqlQueryByNativeSqlToMap(sql.toString(), paramsList.toArray());
@@ -97,7 +97,7 @@ public class FindWorkGroupSchedulDao extends BaseQueryDao {
             paramsList.add(coreCode);
             sql += "and ps.work_core_code = ? ";
         }
-        sql += "group by ps.capacity, ps.work_core_name, ps.work_class_name, ps.work_time_start, ps.work_time_end, ps.work_time";
+        sql += "group by ps.capacity, ps.work_core_name, ps.work_class_name, ps.work_time_start, ps.work_time_end, ps.work_time,ps.id";
 
         List<Map> list = super.sqlQueryByNativeSqlToMap(sql.toString(), paramsList.toArray());
         return list;
