@@ -58,7 +58,7 @@
 </form>
 <p /><p />
 <div style="overflow: auto; width: 100%;">
-  <div class="scroll-content" style="width:3000px">
+  <div class="scroll-content" style="width:3000px; height: 700px;">
     <table id="findProductCgTable" class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%; overflow: auto">
       <tr class="am-primary" style="border-right: 0px;">
         <th style="width:5%;" rowspan="4">物料名称</th>
