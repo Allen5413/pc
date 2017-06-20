@@ -43,6 +43,8 @@
           </c:forEach>
         </select>
       </td>
+      <td></td>
+      <td></td>
     </tr>
     <tr style="height: 50px;">
       <td>
@@ -53,12 +55,17 @@
                   onclick="searchForm()"><span class="am-icon-search"></span> 查询</button>
         </c:if>
       </td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
     </tr>
   </table>
 </form>
 <p /><p />
 <div style="overflow: auto; width: 100%;">
-  <div class="scroll-content" style="width:3000px; height: 700px;">
+  <div id="contentDiv" class="scroll-content" style="width:4000px;">
     <table id="findProductCgTable" class="am-table am-table-bordered am-table-striped am-table-hover" style="width:100%; overflow: auto">
       <tr class="am-primary" style="border-right: 0px;">
         <th style="width:5%;" rowspan="4">物料名称</th>
@@ -134,6 +141,14 @@
 </div>
 <script>
   $("select").selected();
+  
+  var wHei = $(window).height();
+  if(wHei >= 800){
+    $("#contentDiv").css("height", "530px");
+  }else{
+    $("#contentDiv").css("height", "200px");
+  }
+
 
   function searchForm(){
     var startDate = $("#start").val();
@@ -187,3 +202,4 @@
     });
   }
 </script>
+
